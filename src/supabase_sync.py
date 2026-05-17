@@ -32,30 +32,50 @@ class SupabaseSync:
     def __init__(self):
         self.slug_to_id: dict[str, int] = {}
         self.id_to_slug: dict[int, str] = {}
+        self.equipos_sin_escudo: set[int] = set()  # ids con escudo_url=null
         self._load_existing_equipos()
 
     def _load_existing_equipos(self) -> None:
-        rows = sb_get("equipos?select=id,nombre")
+        rows = sb_get("equipos?select=id,nombre,escudo_url")
         for e in rows:
             slug = canonical(e["nombre"])
-            self.slug_to_id[slug] = int(e["id"])
-            self.id_to_slug[int(e["id"])] = slug
+            eid = int(e["id"])
+            self.slug_to_id[slug] = eid
+            self.id_to_slug[eid] = slug
+            if not e.get("escudo_url"):
+                self.equipos_sin_escudo.add(eid)
         # Aseguramos los hardcodeados (por si el nombre en Supabase difiere mucho)
         for sid, slug in SUPABASE_TO_SLUG.items():
             self.slug_to_id.setdefault(slug, sid)
             self.id_to_slug.setdefault(sid, slug)
-        print(f"[sync] cache de equipos: {len(self.slug_to_id)} entradas")
+        print(f"[sync] cache de equipos: {len(self.slug_to_id)} entradas "
+              f"({len(self.equipos_sin_escudo)} sin escudo)")
 
     def ensure_equipo(self, slug: str, fd_name: str, liga_id: int,
+                      escudo_url: str | None,
                       dry_run: bool) -> int | None:
         if slug in self.slug_to_id:
-            return self.slug_to_id[slug]
+            eid = self.slug_to_id[slug]
+            # Si existe pero no tiene escudo y ahora tenemos uno, actualizar
+            if eid in self.equipos_sin_escudo and escudo_url:
+                if dry_run:
+                    print(f"  [dry-run] update escudo equipo id={eid}: {escudo_url}")
+                else:
+                    try:
+                        sb_patch(f"equipos?id=eq.{eid}", {"escudo_url": escudo_url})
+                        self.equipos_sin_escudo.discard(eid)
+                        print(f"  + escudo actualizado: {slug:25} id={eid}")
+                    except Exception as e:
+                        print(f"  ! error update escudo {slug}: {e}")
+            return eid
+
         payload = {
             "nombre": fd_name,
             "abreviacion": slug.upper().replace("_", "")[:5],
             "liga_id": liga_id,
             "color_prim": "#1f2937",
             "color_sec": "#ffffff",
+            "escudo_url": escudo_url,
         }
         if dry_run:
             print(f"  [dry-run] crear equipo: {slug} -> {payload}")
@@ -65,7 +85,8 @@ class SupabaseSync:
             new_id = int(res[0]["id"])
             self.slug_to_id[slug] = new_id
             self.id_to_slug[new_id] = slug
-            print(f"  + equipo creado: {slug:25} -> id={new_id}  ({fd_name})")
+            print(f"  + equipo creado: {slug:25} -> id={new_id}  ({fd_name})"
+                  f"  escudo={'si' if escudo_url else 'no'}")
             return new_id
         except Exception as e:
             print(f"  ! error creando equipo {slug}: {e}")
@@ -173,12 +194,14 @@ def sync_upcoming(horizon_days: int = 14, dry_run: bool = False,
                 slug=m["home_team_id"],
                 fd_name=m.get("home_team_name") or m["home_team_id"],
                 liga_id=liga_id,
+                escudo_url=(m.get("home_team_crest") if isinstance(m.get("home_team_crest"), str) else None),
                 dry_run=dry_run,
             )
             away_id = sync.ensure_equipo(
                 slug=m["away_team_id"],
                 fd_name=m.get("away_team_name") or m["away_team_id"],
                 liga_id=liga_id,
+                escudo_url=(m.get("away_team_crest") if isinstance(m.get("away_team_crest"), str) else None),
                 dry_run=dry_run,
             )
             stats["created_equipos"] += len(sync.slug_to_id) - n_before
