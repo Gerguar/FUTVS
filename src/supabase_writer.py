@@ -108,14 +108,15 @@ def _sb_url() -> str:
     u = os.getenv("SUPABASE_URL")
     if not u:
         raise RuntimeError("Falta SUPABASE_URL")
-    return u.rstrip("/")
+    return u.strip().rstrip("/")
 
 
 def _sb_key() -> str:
     k = os.getenv("SUPABASE_SERVICE_KEY")
     if not k:
         raise RuntimeError("Falta SUPABASE_SERVICE_KEY (rol service_role)")
-    return k
+    # Strip de cualquier whitespace / newline accidental al copiar-pegar en GitHub.
+    return k.strip()
 
 
 def _headers(extra: dict | None = None) -> dict:
