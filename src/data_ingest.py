@@ -228,6 +228,9 @@ def upsert_matches(df_new: pd.DataFrame) -> pd.DataFrame:
         df = pd.concat([existing, df_new], ignore_index=True)
     else:
         df = df_new
+    if df.empty or "match_id" not in df.columns:
+        print("[ingest] no hay partidos para guardar (df vacio).", flush=True)
+        return df
     df = df.drop_duplicates(subset=["match_id"], keep="last")
     df["kickoff_ts_utc"] = pd.to_datetime(df["kickoff_ts_utc"], utc=True)
     df = df.sort_values("kickoff_ts_utc").reset_index(drop=True)
@@ -238,8 +241,8 @@ def upsert_matches(df_new: pd.DataFrame) -> pd.DataFrame:
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--backfill", action="store_true",
-                   help="Backfill histórico desde --since")
-    p.add_argument("--since", default="2018-08-01")
+                   help="Backfill desde --since (free tier: solo temporada actual)")
+    p.add_argument("--since", default="2025-07-01")
     p.add_argument("--days-ahead", type=int, default=14,
                    help="Sólo refresca fixtures próximos")
     args = p.parse_args()
@@ -251,6 +254,14 @@ def main() -> None:
         df = backfill(since=(today - timedelta(days=14)).isoformat(),
                       until=(today + timedelta(days=args.days_ahead)).isoformat())
 
+    if df.empty:
+        print("[ingest] ningun partido fue fetcheado. Posibles causas:", flush=True)
+        print("  - token de football-data.org invalido (chequear FOOTBALL_DATA_TOKEN)", flush=True)
+        print("  - rango de fechas fuera del free tier (solo temporada actual disponible)", flush=True)
+        print("  - rate limit estricto del free tier", flush=True)
+        print("[ingest] terminando con exit 0 para no romper el workflow.", flush=True)
+        return
+
     odds_rows = []
     for comp in COMPETITIONS:
         odds_rows.extend(fetch_odds(comp.code))
@@ -258,7 +269,7 @@ def main() -> None:
     df = merge_odds(df, odds_df)
 
     df = upsert_matches(df)
-    print(f"[ingest] total matches: {len(df)}")
+    print(f"[ingest] total matches: {len(df)}", flush=True)
 
 
 if __name__ == "__main__":

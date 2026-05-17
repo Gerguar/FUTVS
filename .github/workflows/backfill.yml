@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       since:
-        description: "Fecha desde (YYYY-MM-DD)"
+        description: "Fecha desde (YYYY-MM-DD) — free tier solo permite temporada actual"
         required: true
-        default: "2022-08-01"
+        default: "2025-07-01"
 
 jobs:
   backfill:
