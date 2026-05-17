@@ -38,11 +38,11 @@ jobs:
       - name: Predict
         run: python -m src.predict --horizon 14 --snapshot 24h --out data/predictions.json
 
-      - name: Push predictions to Supabase
+      - name: Push predictions to Supabase (on-demand para partidos en DB)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-        run: python -m src.supabase_writer --predictions data/predictions.json
+        run: python -m src.supabase_writer --mode on-demand
 
       - name: Commit state
         run: |

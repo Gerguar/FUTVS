@@ -32,6 +32,25 @@ import urllib.request
 from .config import PATHS
 
 
+# Supabase equipos.id → football-data.org team id (string).
+# Necesario para el modo "on-demand": dado un partido en Supabase, ubicar
+# las ratings (Elo, Dixon-Coles) del equipo en el modelo entrenado.
+SUPABASE_TO_FD_ID: dict[int, str] = {
+    1:  "86",   # Real Madrid
+    2:  "81",   # Barcelona
+    3:  "78",   # Atlético Madrid
+    4:  "5",    # Bayern München
+    5:  "4",    # Borussia Dortmund
+    6:  "57",   # Arsenal
+    7:  "65",   # Manchester City
+    8:  "64",   # Liverpool
+    9:  "61",   # Chelsea
+    10: "108",  # Inter
+    11: "98",   # AC Milan
+    12: "524",  # PSG
+}
+
+
 # football-data.org team name → Supabase equipos.id
 TEAM_ALIAS: dict[str, int] = {
     "Real Madrid CF":                 1,
@@ -283,15 +302,106 @@ def apply_predictions(predictions_path: Path = PATHS.predictions,
     return stats
 
 
+def apply_on_demand(dry_run: bool = False) -> dict:
+    """
+    Modo "on-demand": para cada partido `programado` en Supabase, calcula
+    el pronóstico usando los ratings del modelo (Elo + Dixon-Coles) y hace
+    upsert en `pronosticos`.
+
+    No depende de que el matchup exista en predictions.json — usa las fuerzas
+    de los equipos directamente. Ideal cuando los partidos de Supabase son
+    fixtures elegidos a mano que pueden no coincidir con el calendario real.
+    """
+    from .dixon_coles import DixonColesState
+    from .elo import EloState
+
+    dc = DixonColesState.from_json()
+    elo = EloState.from_json()
+
+    partidos = sb_get("partidos?select=id,equipo_local_id,equipo_visitante_id,fecha,liga_id&estado=eq.programado&order=fecha")
+    stats = {"total": len(partidos), "applied": 0, "skipped_no_alias": 0,
+             "skipped_no_rating": 0, "errors": 0}
+
+    for p in partidos:
+        pid = int(p["id"])
+        eq_h_sb = int(p["equipo_local_id"])
+        eq_a_sb = int(p["equipo_visitante_id"])
+
+        fd_h = SUPABASE_TO_FD_ID.get(eq_h_sb)
+        fd_a = SUPABASE_TO_FD_ID.get(eq_a_sb)
+        if not fd_h or not fd_a:
+            print(f"  - partido_id={pid}: sin mapeo Supabase->FD para uno de los equipos ({eq_h_sb},{eq_a_sb})")
+            stats["skipped_no_alias"] += 1
+            continue
+
+        if fd_h not in dc.attack or fd_a not in dc.attack:
+            print(f"  - partido_id={pid}: equipo sin rating en DC (h={fd_h} a={fd_a}). "
+                  f"Probable que el equipo no haya jugado en las ligas bajadas.")
+            stats["skipped_no_rating"] += 1
+            continue
+
+        try:
+            probs = dc.probs_1x2(fd_h, fd_a, is_neutral=False)
+            lam_h, lam_a = dc.lambdas(fd_h, fd_a, is_neutral=False)
+            elo_h = elo.get(fd_h)
+            elo_a = elo.get(fd_a)
+            elo_diff = elo_h - elo_a
+
+            # Construyo un "match" sintético con la forma que esperan
+            # derive_factors() y build_notas().
+            synthetic_match = {
+                "probabilities": {
+                    "home": probs["H"], "draw": probs["D"], "away": probs["A"],
+                },
+                "expected_goals": {"home": lam_h, "away": lam_a},
+                "ratings": {"elo_home": elo_h, "elo_away": elo_a, "elo_diff": elo_diff},
+                "is_neutral": False,
+                "home": {"name": f"team-{eq_h_sb}"},
+                "away": {"name": f"team-{eq_a_sb}"},
+            }
+
+            payload = {
+                "partido_id": pid,
+                "prob_local":     round(probs["H"] * 100, 1),
+                "prob_empate":    round(probs["D"] * 100, 1),
+                "prob_visitante": round(probs["A"] * 100, 1),
+                **derive_factors(synthetic_match),
+                "notas": (f"Modelo IA (on-demand DC+Elo) - "
+                          f"xG {lam_h:.2f}-{lam_a:.2f} - d-Elo {elo_diff:+.0f}"),
+            }
+            if dry_run:
+                print(f"  [dry-run] partido_id={pid} payload={payload}")
+            else:
+                sb_post("pronosticos?on_conflict=partido_id",
+                        [payload],
+                        prefer="resolution=merge-duplicates,return=minimal")
+                print(f"  ok partido_id={pid}  "
+                      f"H={probs['H']:.2f} D={probs['D']:.2f} A={probs['A']:.2f}  "
+                      f"(elo {elo_h:.0f} vs {elo_a:.0f})")
+            stats["applied"] += 1
+        except Exception as e:
+            print(f"  ! error partido_id={pid}: {e}")
+            stats["errors"] += 1
+
+    return stats
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--predictions", default=str(PATHS.predictions))
+    p.add_argument("--mode", choices=["from-json", "on-demand"], default="on-demand",
+                   help=("from-json: matchea predictions.json contra partidos reales. "
+                         "on-demand: calcula prob para los partidos programados en Supabase."))
+    p.add_argument("--predictions", default=str(PATHS.predictions),
+                   help="Solo para --mode from-json")
     p.add_argument("--dry-run", action="store_true",
                    help="Imprime el payload sin escribir en Supabase")
     args = p.parse_args()
 
-    print(f"[supabase-writer] usando {args.predictions} (dry_run={args.dry_run})")
-    stats = apply_predictions(Path(args.predictions), dry_run=args.dry_run)
+    print(f"[supabase-writer] mode={args.mode} dry_run={args.dry_run}")
+    if args.mode == "from-json":
+        stats = apply_predictions(Path(args.predictions), dry_run=args.dry_run)
+    else:
+        stats = apply_on_demand(dry_run=args.dry_run)
     print(f"[supabase-writer] resumen: {stats}")
 
 
