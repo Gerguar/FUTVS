@@ -31,9 +31,6 @@ jobs:
           THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
         run: python -m src.data_ingest --days-ahead 14 --skip-couk
 
-      - name: Train DC + isotonic calibrator (siempre)
-        run: python -m src.train_dc --calib-days 30
-
       - name: Train full pipeline XGBoost (weekly o manual)
         if: github.event.schedule == '0 0 * * 0' || github.event_name == 'workflow_dispatch'
         run: python -m src.train || echo "[train] fallo no critico (mejora 3 sin uso en on-demand)"

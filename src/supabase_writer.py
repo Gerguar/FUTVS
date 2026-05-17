@@ -313,29 +313,16 @@ def apply_on_demand(dry_run: bool = False) -> dict:
     de los equipos directamente. Ideal cuando los partidos de Supabase son
     fixtures elegidos a mano que pueden no coincidir con el calendario real.
 
-    Si existe un calibrador isotonico entrenado (data/models/dc_calibrator.joblib),
-    se aplica a las probabilidades crudas de DC para corregir la subestimación
-    de empates y la sobre-confianza en favoritos.
+    Nota: evaluamos aplicar un calibrador isotonico encima de DC y el resultado
+    fue PEOR (ver eval del 2026-05-17). DC ya esta bien calibrado de fabrica
+    porque modela conteos Poisson estructuralmente. Por eso usamos DC puro.
     """
-    import numpy as np
     from .dixon_coles import DixonColesState
     from .elo import EloState
-    from .train_dc import CALIBRATOR_PATH
-    from .xgb_model import IsotonicMulticlassCalibrator
 
     dc = DixonColesState.from_json()
     elo = EloState.from_json()
-
-    calibrator = None
-    if CALIBRATOR_PATH.exists():
-        try:
-            calibrator = IsotonicMulticlassCalibrator.load(CALIBRATOR_PATH)
-            print(f"[supabase-writer] calibrador isotonico cargado desde {CALIBRATOR_PATH.name}")
-        except Exception as e:
-            print(f"[supabase-writer] calibrador no se pudo cargar: {e}. Uso DC crudo.")
-    else:
-        print(f"[supabase-writer] sin calibrador entrenado. Uso DC crudo. "
-              f"(Para activar: python -m src.train_dc)")
+    calibrator = None  # se mantiene None para no afectar las probabilidades
 
     partidos = sb_get("partidos?select=id,equipo_local_id,equipo_visitante_id,fecha,liga_id&estado=eq.programado&order=fecha")
     stats = {"total": len(partidos), "applied": 0, "skipped_no_alias": 0,
@@ -361,11 +348,6 @@ def apply_on_demand(dry_run: bool = False) -> dict:
 
         try:
             probs = dc.probs_1x2(slug_h, slug_a, is_neutral=False)
-            # Aplicar calibrador si esta disponible
-            if calibrator is not None:
-                raw = np.array([[probs["H"], probs["D"], probs["A"]]])
-                cal_p = calibrator.transform(raw)[0]
-                probs = {"H": float(cal_p[0]), "D": float(cal_p[1]), "A": float(cal_p[2])}
             lam_h, lam_a = dc.lambdas(slug_h, slug_a, is_neutral=False)
             elo_h = elo.get(slug_h)
             elo_a = elo.get(slug_a)
@@ -390,7 +372,7 @@ def apply_on_demand(dry_run: bool = False) -> dict:
                 "prob_empate":    round(probs["D"] * 100, 1),
                 "prob_visitante": round(probs["A"] * 100, 1),
                 **derive_factors(synthetic_match),
-                "notas": (f"Modelo IA (on-demand DC+Elo{'+calib' if calibrator else ''}) - "
+                "notas": (f"Modelo IA (on-demand DC+Elo) - "
                           f"xG {lam_h:.2f}-{lam_a:.2f} - d-Elo {elo_diff:+.0f}"),
             }
             if dry_run:
