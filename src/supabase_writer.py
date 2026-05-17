@@ -32,22 +32,22 @@ import urllib.request
 from .config import PATHS
 
 
-# Supabase equipos.id → football-data.org team id (string).
-# Necesario para el modo "on-demand": dado un partido en Supabase, ubicar
-# las ratings (Elo, Dixon-Coles) del equipo en el modelo entrenado.
-SUPABASE_TO_FD_ID: dict[int, str] = {
-    1:  "86",   # Real Madrid
-    2:  "81",   # Barcelona
-    3:  "78",   # Atlético Madrid
-    4:  "5",    # Bayern München
-    5:  "4",    # Borussia Dortmund
-    6:  "57",   # Arsenal
-    7:  "65",   # Manchester City
-    8:  "64",   # Liverpool
-    9:  "61",   # Chelsea
-    10: "108",  # Inter
-    11: "98",   # AC Milan
-    12: "524",  # PSG
+# Supabase equipos.id → slug canónico (mismo identificador que usan DC/Elo).
+# Si cambia el alias de un equipo en team_normalize.py, hay que mantenerlo
+# consistente con este map.
+SUPABASE_TO_SLUG: dict[int, str] = {
+    1:  "real_madrid",
+    2:  "barcelona",
+    3:  "atletico_madrid",
+    4:  "bayern_munich",
+    5:  "dortmund",
+    6:  "arsenal",
+    7:  "man_city",
+    8:  "liverpool",
+    9:  "chelsea",
+    10: "inter_milan",
+    11: "ac_milan",
+    12: "paris_sg",
 }
 
 
@@ -328,24 +328,24 @@ def apply_on_demand(dry_run: bool = False) -> dict:
         eq_h_sb = int(p["equipo_local_id"])
         eq_a_sb = int(p["equipo_visitante_id"])
 
-        fd_h = SUPABASE_TO_FD_ID.get(eq_h_sb)
-        fd_a = SUPABASE_TO_FD_ID.get(eq_a_sb)
-        if not fd_h or not fd_a:
-            print(f"  - partido_id={pid}: sin mapeo Supabase->FD para uno de los equipos ({eq_h_sb},{eq_a_sb})")
+        slug_h = SUPABASE_TO_SLUG.get(eq_h_sb)
+        slug_a = SUPABASE_TO_SLUG.get(eq_a_sb)
+        if not slug_h or not slug_a:
+            print(f"  - partido_id={pid}: sin slug para uno de los equipos ({eq_h_sb},{eq_a_sb})")
             stats["skipped_no_alias"] += 1
             continue
 
-        if fd_h not in dc.attack or fd_a not in dc.attack:
-            print(f"  - partido_id={pid}: equipo sin rating en DC (h={fd_h} a={fd_a}). "
+        if slug_h not in dc.attack or slug_a not in dc.attack:
+            print(f"  - partido_id={pid}: equipo sin rating en DC (h={slug_h} a={slug_a}). "
                   f"Probable que el equipo no haya jugado en las ligas bajadas.")
             stats["skipped_no_rating"] += 1
             continue
 
         try:
-            probs = dc.probs_1x2(fd_h, fd_a, is_neutral=False)
-            lam_h, lam_a = dc.lambdas(fd_h, fd_a, is_neutral=False)
-            elo_h = elo.get(fd_h)
-            elo_a = elo.get(fd_a)
+            probs = dc.probs_1x2(slug_h, slug_a, is_neutral=False)
+            lam_h, lam_a = dc.lambdas(slug_h, slug_a, is_neutral=False)
+            elo_h = elo.get(slug_h)
+            elo_a = elo.get(slug_a)
             elo_diff = elo_h - elo_a
 
             # Construyo un "match" sintético con la forma que esperan

@@ -1,0 +1,184 @@
+"""
+Ingesta de partidos históricos desde football-data.co.uk.
+
+Fuente: CSVs públicos por liga × temporada. Sin API key, sin rate limit.
+
+URL pattern:
+    https://www.football-data.co.uk/mmz4281/{season_code}/{league_code}.csv
+
+Donde:
+    season_code = "2021" para 2020/21, "2122" para 2021/22, etc.
+    league_code = E0 (Premier), SP1 (La Liga), I1 (Serie A),
+                  D1 (Bundesliga), F1 (Ligue 1)
+
+El CSV trae:
+    - Resultado: Date, HomeTeam, AwayTeam, FTHG, FTAG, FTR
+    - Odds de bookmakers (B365H, B365D, B365A, PSH, PSD, PSA, etc.)
+
+Salida: lista[dict] con el mismo schema que `fetch_fd_matches`
+        + odds promediadas entre bookmakers cuando están disponibles.
+"""
+from __future__ import annotations
+import io
+from datetime import datetime
+import pandas as pd
+import requests
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+from .team_normalize import canonical
+
+
+COUK_BASE = "https://www.football-data.co.uk/mmz4281"
+
+# league_code -> nuestro competition_code interno
+LEAGUE_MAP_COUK = {
+    "E0":  "EPL",
+    "SP1": "LL",
+    "I1":  "SA",
+    "D1":  "BL",
+    "F1":  "L1",
+}
+
+# Bookmakers a promediar para sacar odds 1X2. Si una columna falta en una
+# temporada vieja, se ignora — promediamos solo las que existan.
+BOOKMAKER_COLS = [
+    ("B365H", "B365D", "B365A"),  # Bet365
+    ("BWH",   "BWD",   "BWA"),    # Bet&Win
+    ("PSH",   "PSD",   "PSA"),    # Pinnacle
+    ("WHH",   "WHD",   "WHA"),    # William Hill
+    ("VCH",   "VCD",   "VCA"),    # VC Bet
+]
+
+
+def season_code(year_start: int) -> str:
+    """2020 -> '2021', 2024 -> '2425'."""
+    return f"{year_start % 100:02d}{(year_start + 1) % 100:02d}"
+
+
+def url_for(season_year: int, league_code: str) -> str:
+    return f"{COUK_BASE}/{season_code(season_year)}/{league_code}.csv"
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=2, max=20))
+def _download(url: str) -> bytes | None:
+    r = requests.get(url, timeout=30)
+    if r.status_code == 404:
+        return None
+    r.raise_for_status()
+    return r.content
+
+
+def _parse_date(s: str) -> str | None:
+    """football-data.co.uk usa DD/MM/YYYY o DD/MM/YY."""
+    if not s:
+        return None
+    s = str(s).strip()
+    for fmt in ("%d/%m/%Y", "%d/%m/%y"):
+        try:
+            d = datetime.strptime(s, fmt)
+            # asumimos kickoff a las 15:00 UTC si no hay hora (suficiente
+            # para feature engineering de rest_days/congestion).
+            return d.replace(hour=15).isoformat() + "+00:00"
+        except ValueError:
+            continue
+    return None
+
+
+def _avg_odds(row: pd.Series) -> tuple[float | None, float | None, float | None]:
+    h, d, a, n = 0.0, 0.0, 0.0, 0
+    for cH, cD, cA in BOOKMAKER_COLS:
+        if cH in row and cD in row and cA in row:
+            vh, vd, va = row.get(cH), row.get(cD), row.get(cA)
+            if pd.notna(vh) and pd.notna(vd) and pd.notna(va) and vh > 1 and vd > 1 and va > 1:
+                h += float(vh); d += float(vd); a += float(va); n += 1
+    if n == 0:
+        return None, None, None
+    return h / n, d / n, a / n
+
+
+def parse_csv(content: bytes, league_code: str, season_year: int) -> list[dict]:
+    """Convierte un CSV de football-data.co.uk a nuestro schema canónico."""
+    df = pd.read_csv(io.BytesIO(content), encoding="latin-1", on_bad_lines="skip")
+    needed = {"Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG"}
+    if not needed.issubset(df.columns):
+        return []
+    comp_code = LEAGUE_MAP_COUK[league_code]
+    season = f"{season_year}/{(season_year + 1) % 100:02d}"
+
+    out: list[dict] = []
+    for _, row in df.iterrows():
+        home_name = str(row.get("HomeTeam") or "").strip()
+        away_name = str(row.get("AwayTeam") or "").strip()
+        if not home_name or not away_name:
+            continue
+        ts = _parse_date(row.get("Date"))
+        if not ts:
+            continue
+        hg = row.get("FTHG"); ag = row.get("FTAG")
+        if pd.isna(hg) or pd.isna(ag):
+            continue
+        odds_h, odds_d, odds_a = _avg_odds(row)
+
+        home_slug = canonical(home_name)
+        away_slug = canonical(away_name)
+
+        # match_id estable basado en fuente + competición + fecha + equipos
+        match_id = f"couk-{league_code}-{season_code(season_year)}-{home_slug}-{away_slug}-{ts[:10]}"
+
+        out.append({
+            "match_id": match_id,
+            "kickoff_ts_utc": ts,
+            "competition_code": comp_code,
+            "season": season,
+            "home_team_id": home_slug,
+            "away_team_id": away_slug,
+            "home_team_name": home_name,
+            "away_team_name": away_name,
+            "is_neutral": False,
+            "status": "FINISHED",
+            "home_goals": int(hg),
+            "away_goals": int(ag),
+            "venue": None,
+            "referee_id": str(row["Referee"]).strip() if "Referee" in row and pd.notna(row.get("Referee")) else None,
+            "odds_home": odds_h,
+            "odds_draw": odds_d,
+            "odds_away": odds_a,
+            "odds_ts_utc": None,
+        })
+    return out
+
+
+def backfill_couk(seasons: list[int] | None = None,
+                  leagues: list[str] | None = None) -> pd.DataFrame:
+    """
+    Baja CSVs de football-data.co.uk para varias temporadas y ligas.
+
+    seasons: lista de años de inicio. Default: [2020..2025].
+    leagues: lista de league_code. Default: todos los de LEAGUE_MAP_COUK.
+    """
+    if seasons is None:
+        seasons = list(range(2020, 2026))
+    if leagues is None:
+        leagues = list(LEAGUE_MAP_COUK.keys())
+
+    rows: list[dict] = []
+    for s in seasons:
+        for lg in leagues:
+            url = url_for(s, lg)
+            print(f"[couk] {LEAGUE_MAP_COUK[lg]} {s}/{(s+1)%100:02d} -> {url}", flush=True)
+            try:
+                content = _download(url)
+                if content is None:
+                    print(f"  - 404 (temporada/liga no disponible)", flush=True)
+                    continue
+                chunk = parse_csv(content, lg, s)
+                rows.extend(chunk)
+                print(f"  + {len(chunk)} partidos", flush=True)
+            except Exception as e:
+                print(f"  ! error: {e}", flush=True)
+    return pd.DataFrame(rows)
+
+
+if __name__ == "__main__":
+    df = backfill_couk()
+    print(f"[couk] total: {len(df)} partidos")

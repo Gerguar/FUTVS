@@ -27,6 +27,8 @@ import requests
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 from .config import COMPETITIONS, PATHS, KEYS
+from .team_normalize import canonical, is_known
+from .ingest_couk import backfill_couk
 
 
 class RetryableHTTPError(Exception):
@@ -85,7 +87,11 @@ def _is_neutral_match(venue: str | None, home_name: str | None) -> bool:
 
 
 def fetch_fd_matches(fd_code: str, date_from: str, date_to: str) -> list[dict]:
-    """Trae partidos de football-data.org en un rango."""
+    """Trae partidos de football-data.org en un rango.
+
+    home_team_id / away_team_id se normalizan a slug canónico (mismo ID
+    que usa football-data.co.uk), para que ambas fuentes se unifiquen.
+    """
     data = _fd_get(f"/competitions/{fd_code}/matches",
                    params={"dateFrom": date_from, "dateTo": date_to})
     out = []
@@ -93,15 +99,17 @@ def fetch_fd_matches(fd_code: str, date_from: str, date_to: str) -> list[dict]:
         score = m.get("score", {}).get("fullTime") or {}
         home = m["homeTeam"]
         away = m["awayTeam"]
+        home_name = home.get("shortName") or home.get("name")
+        away_name = away.get("shortName") or away.get("name")
         out.append({
             "match_id": f"fd-{m['id']}",
             "kickoff_ts_utc": m["utcDate"],
             "competition_code": fd_code,
             "season": m.get("season", {}).get("startDate", "")[:4],
-            "home_team_id": str(home.get("id")),
-            "away_team_id": str(away.get("id")),
-            "home_team_name": home.get("shortName") or home.get("name"),
-            "away_team_name": away.get("shortName") or away.get("name"),
+            "home_team_id": canonical(home_name),
+            "away_team_id": canonical(away_name),
+            "home_team_name": home_name,
+            "away_team_name": away_name,
             "is_neutral": _is_neutral_match(m.get("venue"), home.get("name")),
             "status": m.get("status"),
             "home_goals": score.get("home"),
@@ -241,35 +249,72 @@ def upsert_matches(df_new: pd.DataFrame) -> pd.DataFrame:
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--backfill", action="store_true",
-                   help="Backfill desde --since (free tier: solo temporada actual)")
-    p.add_argument("--since", default="2025-07-01")
+                   help="Backfill: combina football-data.org (temporada actual + UCL) "
+                        "con football-data.co.uk (5 temporadas historicas de top 5 ligas).")
+    p.add_argument("--since", default="2025-07-01",
+                   help="Solo aplica al ingest de football-data.org (free tier).")
     p.add_argument("--days-ahead", type=int, default=14,
-                   help="Sólo refresca fixtures próximos")
+                   help="Sólo refresca fixtures próximos (modo no-backfill)")
+    p.add_argument("--couk-seasons", default="2020,2021,2022,2023,2024,2025",
+                   help="Temporadas (anio inicio) a bajar de football-data.co.uk")
+    p.add_argument("--skip-couk", action="store_true",
+                   help="Salta el ingest historico de football-data.co.uk")
+    p.add_argument("--skip-fd", action="store_true",
+                   help="Salta el ingest de football-data.org")
     args = p.parse_args()
 
-    if args.backfill:
-        df = backfill(since=args.since)
-    else:
-        today = datetime.now(timezone.utc).date()
-        df = backfill(since=(today - timedelta(days=14)).isoformat(),
-                      until=(today + timedelta(days=args.days_ahead)).isoformat())
+    frames = []
 
-    if df.empty:
+    # Fuente 1: football-data.org (temporada actual + UCL + fixtures proximos)
+    if not args.skip_fd:
+        if args.backfill:
+            df_fd = backfill(since=args.since)
+        else:
+            today = datetime.now(timezone.utc).date()
+            df_fd = backfill(since=(today - timedelta(days=14)).isoformat(),
+                             until=(today + timedelta(days=args.days_ahead)).isoformat())
+        print(f"[ingest] football-data.org: {len(df_fd)} partidos", flush=True)
+        if not df_fd.empty:
+            frames.append(df_fd)
+
+    # Fuente 2: football-data.co.uk (historico profundo, solo en modo backfill)
+    if args.backfill and not args.skip_couk:
+        seasons = [int(s) for s in args.couk_seasons.split(",") if s.strip()]
+        df_couk = backfill_couk(seasons=seasons)
+        print(f"[ingest] football-data.co.uk: {len(df_couk)} partidos", flush=True)
+        if not df_couk.empty:
+            frames.append(df_couk)
+
+    if not frames:
         print("[ingest] ningun partido fue fetcheado. Posibles causas:", flush=True)
-        print("  - token de football-data.org invalido (chequear FOOTBALL_DATA_TOKEN)", flush=True)
-        print("  - rango de fechas fuera del free tier (solo temporada actual disponible)", flush=True)
-        print("  - rate limit estricto del free tier", flush=True)
+        print("  - token de football-data.org invalido", flush=True)
+        print("  - football-data.co.uk caido o blocked en el runner", flush=True)
         print("[ingest] terminando con exit 0 para no romper el workflow.", flush=True)
         return
 
+    df = pd.concat(frames, ignore_index=True)
+
+    # Odds en tiempo real desde The Odds API (opcional, solo si hay key)
     odds_rows = []
     for comp in COMPETITIONS:
         odds_rows.extend(fetch_odds(comp.code))
     odds_df = pd.DataFrame(odds_rows)
     df = merge_odds(df, odds_df)
 
+    # Cuantos equipos no estan en el alias hardcodeado (telemetria util)
+    if "home_team_name" in df.columns:
+        all_names = pd.concat([df["home_team_name"], df["away_team_name"]]).dropna().unique()
+        unknown = [n for n in all_names if not is_known(n)]
+        if unknown:
+            print(f"[ingest] {len(unknown)} equipos no estan en TEAM_NAME_TO_SLUG, "
+                  f"se usa slugify automatico:", flush=True)
+            for n in unknown[:30]:
+                print(f"   - {n!r} -> {canonical(n)}", flush=True)
+            if len(unknown) > 30:
+                print(f"   ... y {len(unknown) - 30} mas", flush=True)
+
     df = upsert_matches(df)
-    print(f"[ingest] total matches: {len(df)}", flush=True)
+    print(f"[ingest] total matches en parquet: {len(df)}", flush=True)
 
 
 if __name__ == "__main__":

@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       since:
-        description: "Fecha desde (YYYY-MM-DD) — free tier solo permite temporada actual"
+        description: "Fecha desde football-data.org (free tier = temp. actual)"
         required: true
         default: "2025-07-01"
+      couk_seasons:
+        description: "Temporadas de football-data.co.uk (anios inicio, csv)"
+        required: true
+        default: "2020,2021,2022,2023,2024,2025"
 
 jobs:
   backfill:
@@ -23,7 +27,12 @@ jobs:
       - env:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
           THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
-        run: python -m src.data_ingest --backfill --since ${{ inputs.since }}
+        run: |
+          # Borramos el parquet viejo para evitar match_ids huerfanos con el id-format anterior.
+          rm -f data/matches.parquet
+          python -m src.data_ingest --backfill \
+            --since ${{ inputs.since }} \
+            --couk-seasons ${{ inputs.couk_seasons }}
       - run: python -m src.train
       - run: python -m src.predict --horizon 14 --snapshot 24h --out data/predictions.json
       - env:
