@@ -1,0 +1,55 @@
+name: sync (manual)
+
+# Workflow rapido (~3 min) para refrescar partidos proximos y escudos en Supabase
+# sin re-entrenar el modelo ni regenerar predicciones.
+#
+# Util cuando:
+#  - Agregaste un mapeo nuevo en team_normalize.py y queres refrescar equipos
+#  - Cambiaste algo en supabase_sync.py
+#  - Queres traer escudos nuevos de fixtures recien aparecidos
+
+on:
+  workflow_dispatch:
+    inputs:
+      horizon:
+        description: "Dias hacia adelante para sincronizar partidos"
+        required: true
+        default: "14"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Ingest fixtures proximos (con escudos)
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+        run: python -m src.data_ingest --days-ahead ${{ inputs.horizon }} --skip-couk
+
+      - name: Sincronizar a Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.supabase_sync --horizon ${{ inputs.horizon }}
+
+      - name: Commit parquet actualizado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/matches.parquet || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: sync $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          else
+            echo "no changes"
+          fi
