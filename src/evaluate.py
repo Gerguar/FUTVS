@@ -48,6 +48,8 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--test-days", type=int, default=30,
                     help="N dias al final del dataset que usamos como test")
+    ap.add_argument("--calib-days", type=int, default=90,
+                    help="Ventana previa al test para entrenar el calibrador HONESTO")
     ap.add_argument("--out", default=str(PATHS.backtest_report))
     args = ap.parse_args()
 
@@ -109,10 +111,12 @@ def main() -> None:
     # nunca ve los partidos del test set.
     proba_cal = None
     ll_dccal = None; br_dccal = None; acc_dccal = None
-    cutoff_calib = cutoff - pd.Timedelta(days=args.test_days)
+    ll_baseline = None
+    cutoff_calib = cutoff - pd.Timedelta(days=args.calib_days)
     train_for_cal = df[df["kickoff_ts_utc"] < cutoff_calib]
     calib_block = df[(df["kickoff_ts_utc"] >= cutoff_calib) &
                       (df["kickoff_ts_utc"] < cutoff)]
+    print(f"[evaluate] calib block: {len(calib_block)} partidos en {args.calib_days} dias")
     if len(train_for_cal) >= 500 and len(calib_block) >= 30:
         try:
             print("[evaluate] (honesto) entrenando DC sobre train < T-2*test_days...")
@@ -140,6 +144,8 @@ def main() -> None:
                     test_y_for_cal.append(label_to_idx(int(m["home_goals"]), int(m["away_goals"])))
                 test_proba_for_cal = np.array(test_proba_for_cal)
                 test_y_for_cal = np.array(test_y_for_cal)
+                # Apples-to-apples: usamos el mismo DC (mas viejo) para ambas mediciones
+                ll_baseline = multi_log_loss(test_y_for_cal, test_proba_for_cal)
                 proba_cal = fresh_cal.transform(test_proba_for_cal)
                 ll_dccal = multi_log_loss(test_y_for_cal, proba_cal)
                 br_dccal = multi_brier(test_y_for_cal, proba_cal)
@@ -208,9 +214,14 @@ def main() -> None:
     print(f"{'Prior historico (frecuencias)':<35} {ll_freq:>10.4f} {'':>10} {acc_freq:>10.1%}")
     if ll_mkt is not None:
         print(f"{f'Mercado bookmakers (n={mkt_n})':<35} {ll_mkt:>10.4f} {'':>10} {acc_mkt:>10.1%}")
-    print(f"{'Dixon-Coles crudo':<35} {ll:>10.4f} {br:>10.4f} {acc:>10.1%}")
+    print(f"{'Dixon-Coles crudo (full training)':<35} {ll:>10.4f} {br:>10.4f} {acc:>10.1%}")
+    if ll_baseline is not None:
+        print(f"{'  -DC crudo (training reducido)':<35} {ll_baseline:>10.4f}      ...      ... (referencia)")
     if ll_dccal is not None:
-        print(f"{'DC + isotonic (calib HONESTO)':<35} {ll_dccal:>10.4f} {br_dccal:>10.4f} {acc_dccal:>10.1%}  <- ASI RINDE EN PRODUCCION")
+        delta = ll_dccal - ll_baseline if ll_baseline else None
+        marker = (f"  <- gana {-delta:.4f} sobre su DC base" if delta and delta < 0
+                  else f"  <- empeora {delta:.4f} sobre su DC base" if delta else "")
+        print(f"{'DC + isotonic (calib HONESTO)':<35} {ll_dccal:>10.4f} {br_dccal:>10.4f} {acc_dccal:>10.1%}{marker}")
     print()
 
     print("Calibración por clase:")
