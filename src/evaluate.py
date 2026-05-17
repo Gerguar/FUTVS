@@ -103,18 +103,49 @@ def main() -> None:
     acc = accuracy_top1(y, proba)
     cal = calibration_per_class(y, proba, n_bins=8)
 
-    # Métricas del modelo DC + isotonic calibration (si existe)
+    # Métricas del modelo DC + isotonic calibration HONESTO (sin data leakage):
+    # entrenamos un calibrador independiente con datos PREVIOS al test,
+    # usando un DC ajustado a una fecha aun mas vieja. Asi el calibrador
+    # nunca ve los partidos del test set.
     proba_cal = None
     ll_dccal = None; br_dccal = None; acc_dccal = None
-    if CALIBRATOR_PATH.exists():
+    cutoff_calib = cutoff - pd.Timedelta(days=args.test_days)
+    train_for_cal = df[df["kickoff_ts_utc"] < cutoff_calib]
+    calib_block = df[(df["kickoff_ts_utc"] >= cutoff_calib) &
+                      (df["kickoff_ts_utc"] < cutoff)]
+    if len(train_for_cal) >= 500 and len(calib_block) >= 30:
         try:
-            calibrator = IsotonicMulticlassCalibrator.load(CALIBRATOR_PATH)
-            proba_cal = calibrator.transform(proba)
-            ll_dccal = multi_log_loss(y, proba_cal)
-            br_dccal = multi_brier(y, proba_cal)
-            acc_dccal = accuracy_top1(y, proba_cal)
+            print("[evaluate] (honesto) entrenando DC sobre train < T-2*test_days...")
+            dc_for_cal = fit_dc(train_for_cal, asof_ts=cutoff_calib)
+            print("[evaluate] (honesto) prediciendo bloque de calibracion...")
+            proba_calb, y_calb = [], []
+            for _, m in calib_block.iterrows():
+                h, a = m["home_team_id"], m["away_team_id"]
+                if h not in dc_for_cal.attack or a not in dc_for_cal.attack:
+                    continue
+                p = dc_for_cal.probs_1x2(h, a, is_neutral=bool(m.get("is_neutral", False)))
+                proba_calb.append([p["H"], p["D"], p["A"]])
+                y_calb.append(label_to_idx(int(m["home_goals"]), int(m["away_goals"])))
+            if len(y_calb) >= 30:
+                fresh_cal = IsotonicMulticlassCalibrator.fit(np.array(proba_calb), np.array(y_calb))
+                # ahora SI: re-predecimos el test con dc_for_cal y aplicamos el calibrador
+                test_proba_for_cal = []
+                test_y_for_cal = []
+                for _, m in test_df.iterrows():
+                    h, a = m["home_team_id"], m["away_team_id"]
+                    if h not in dc_for_cal.attack or a not in dc_for_cal.attack:
+                        continue
+                    p = dc_for_cal.probs_1x2(h, a, is_neutral=bool(m.get("is_neutral", False)))
+                    test_proba_for_cal.append([p["H"], p["D"], p["A"]])
+                    test_y_for_cal.append(label_to_idx(int(m["home_goals"]), int(m["away_goals"])))
+                test_proba_for_cal = np.array(test_proba_for_cal)
+                test_y_for_cal = np.array(test_y_for_cal)
+                proba_cal = fresh_cal.transform(test_proba_for_cal)
+                ll_dccal = multi_log_loss(test_y_for_cal, proba_cal)
+                br_dccal = multi_brier(test_y_for_cal, proba_cal)
+                acc_dccal = accuracy_top1(test_y_for_cal, proba_cal)
         except Exception as e:
-            print(f"[evaluate] calibrador no se pudo aplicar: {e}")
+            print(f"[evaluate] calibrador honesto fallo: {e}")
 
     # Baseline 1: uniforme 1/3
     uniform = np.full_like(proba, 1.0 / 3.0)
@@ -179,8 +210,7 @@ def main() -> None:
         print(f"{f'Mercado bookmakers (n={mkt_n})':<35} {ll_mkt:>10.4f} {'':>10} {acc_mkt:>10.1%}")
     print(f"{'Dixon-Coles crudo':<35} {ll:>10.4f} {br:>10.4f} {acc:>10.1%}")
     if ll_dccal is not None:
-        marker = " <- MODELO EN PRODUCCION" if calibrator else ""
-        print(f"{'Dixon-Coles + isotonic calib':<35} {ll_dccal:>10.4f} {br_dccal:>10.4f} {acc_dccal:>10.1%}{marker}")
+        print(f"{'DC + isotonic (calib HONESTO)':<35} {ll_dccal:>10.4f} {br_dccal:>10.4f} {acc_dccal:>10.1%}  <- ASI RINDE EN PRODUCCION")
     print()
 
     print("Calibración por clase:")

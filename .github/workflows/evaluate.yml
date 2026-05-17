@@ -18,7 +18,5 @@ jobs:
           python-version: "3.11"
           cache: pip
       - run: pip install -r requirements.txt
-      - name: Entrenar calibrador (para mostrar comparativa)
-        run: python -m src.train_dc --calib-days 30 || echo "skip"
-      - name: Evaluacion del modelo
+      - name: Evaluacion del modelo (entrena calibrador honesto internamente)
         run: python -m src.evaluate --test-days ${{ inputs.test_days }}
