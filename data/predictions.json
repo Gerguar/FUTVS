@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-17T06:00:23.256417+00:00",
+  "generated_at_utc": "2026-05-17T06:20:37.753591+00:00",
   "model": {
-    "trained_at": "2026-05-17T06:00:21.435422+00:00",
+    "trained_at": "2026-05-17T06:20:35.912950+00:00",
     "method": "DixonColes+Elo+XGBoost(isotonic)",
     "holdout_metrics": {
       "n": 220,
