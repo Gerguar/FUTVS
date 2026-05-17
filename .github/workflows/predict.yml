@@ -1,0 +1,57 @@
+name: predict
+
+on:
+  schedule:
+    # Cada 6 horas
+    - cron: "0 */6 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Ingest matches + odds
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+          THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
+        run: python -m src.data_ingest --days-ahead 14
+
+      - name: Retrain (weekly)
+        if: github.event.schedule == '0 0 * * 0' || github.event_name == 'workflow_dispatch'
+        run: python -m src.train
+
+      - name: Predict
+        run: python -m src.predict --horizon 14 --snapshot 24h --out data/predictions.json
+
+      - name: Push predictions to Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.supabase_writer --predictions data/predictions.json
+
+      - name: Commit state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/predictions.json data/elo_state.json data/dc_state.json data/matches.parquet data/models/ || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh predictions $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          else
+            echo "no changes"
+          fi

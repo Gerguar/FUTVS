@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+.idea/
+.vscode/
+# Mantenemos data/ commiteable porque la consume Netlify.
+# Si tu dataset crece mucho, considerar Git LFS o mover predictions.json a un bucket.

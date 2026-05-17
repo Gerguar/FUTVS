@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pronósticos Champions / Internacionales</title>
+  <meta name="description" content="Pronósticos probabilísticos de partidos de fútbol profesional. Dixon-Coles + Elo + XGBoost calibrado." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Pronósticos de fútbol</h1>
+    <p class="subtitle">Modelo híbrido <strong>Dixon-Coles + Elo + XGBoost</strong> calibrado · Champions y competiciones internacionales</p>
+  </header>
+
+  <section id="model-info" class="card">
+    <h2>Estado del modelo</h2>
+    <div id="model-meta" class="meta-grid">Cargando…</div>
+  </section>
+
+  <section id="filters" class="filters">
+    <label>Competición
+      <select id="filter-comp"><option value="">Todas</option></select>
+    </label>
+    <label>Solo con odds de mercado
+      <input type="checkbox" id="filter-market" />
+    </label>
+    <input type="search" id="filter-search" placeholder="Buscar equipo…" />
+  </section>
+
+  <section id="matches" class="matches">
+    <p>Cargando partidos…</p>
+  </section>
+
+  <template id="match-card">
+    <article class="match">
+      <header class="match-head">
+        <span class="comp"></span>
+        <time class="kickoff"></time>
+      </header>
+      <div class="teams">
+        <div class="team home"><span class="name"></span><span class="elo"></span></div>
+        <div class="vs">vs</div>
+        <div class="team away"><span class="name"></span><span class="elo"></span></div>
+      </div>
+      <div class="probs">
+        <div class="bar home"><span class="lbl">Local</span><span class="pct"></span><div class="fill"></div></div>
+        <div class="bar draw"><span class="lbl">Empate</span><span class="pct"></span><div class="fill"></div></div>
+        <div class="bar away"><span class="lbl">Visitante</span><span class="pct"></span><div class="fill"></div></div>
+      </div>
+      <details>
+        <summary>Detalles</summary>
+        <div class="details">
+          <div class="row"><span>xG esperado</span><span class="xg"></span></div>
+          <div class="row"><span>Over 2.5</span><span class="over"></span></div>
+          <div class="row"><span>Ambos marcan</span><span class="btts"></span></div>
+          <div class="row market-row hidden">
+            <span>Mercado (H/E/V)</span><span class="market"></span>
+          </div>
+          <div class="scorelines">
+            <h4>Marcadores más probables</h4>
+            <ul class="scoreline-list"></ul>
+          </div>
+        </div>
+      </details>
+    </article>
+  </template>
+
+  <footer>
+    <p>Modelo probabilístico con fines analíticos. No es asesoramiento financiero ni una promesa de rentabilidad. <a href="https://www.who.int/health-topics/gambling" target="_blank" rel="noopener">Juego responsable</a>.</p>
+    <p>Generado: <time id="generated-at"></time></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
