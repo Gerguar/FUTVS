@@ -1,15 +1,15 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-17T20:42:50.387406+00:00",
+  "generated_at_utc": "2026-05-17T20:57:13.706697+00:00",
   "model": {
-    "trained_at": "2026-05-17T20:42:47.845953+00:00",
+    "trained_at": "2026-05-17T20:57:11.350516+00:00",
     "method": "DixonColes+Elo+XGBoost(isotonic)",
     "holdout_metrics": {
       "n": 453,
-      "log_loss": 1.011250429786361,
-      "brier": 0.6090878478927733,
-      "accuracy": 0.4966887417218543,
-      "market_log_loss": 0.9865653497811817
+      "log_loss": 1.0137337694486819,
+      "brier": 0.610168911619021,
+      "accuracy": 0.49448123620309054,
+      "market_log_loss": 0.9769546285684405
     }
   },
   "matches": [
@@ -32,14 +32,14 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.9651,
-        "draw": 0.0348,
-        "away": 0.0001
+        "home": 0.7937,
+        "draw": 0.1092,
+        "away": 0.097
       },
       "market_probabilities": {
-        "home": 0.8826,
-        "draw": 0.0802,
-        "away": 0.0372
+        "home": 0.8829,
+        "draw": 0.0801,
+        "away": 0.037
       },
       "scoreline_top": [
         {
@@ -68,7 +68,7 @@
         "away": 0.53
       },
       "derived": {
-        "p_over_2_5": 0.676,
+        "p_over_2_5": 0.6759,
         "p_btts": 0.3946
       },
       "ratings": {
@@ -96,9 +96,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.1308,
-        "draw": 0.2151,
-        "away": 0.6541
+        "home": 0.2489,
+        "draw": 0.2034,
+        "away": 0.5478
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -156,9 +156,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.5793,
-        "draw": 0.2671,
-        "away": 0.1536
+        "home": 0.594,
+        "draw": 0.2432,
+        "away": 0.1628
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -216,9 +216,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.1196,
-        "draw": 0.1967,
-        "away": 0.6837
+        "home": 0.2152,
+        "draw": 0.1716,
+        "away": 0.6131
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -249,7 +249,7 @@
       },
       "derived": {
         "p_over_2_5": 0.6758,
-        "p_btts": 0.5825
+        "p_btts": 0.5826
       },
       "ratings": {
         "elo_home": 1512.2,
@@ -276,9 +276,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.4103,
-        "draw": 0.3216,
-        "away": 0.2681
+        "home": 0.3955,
+        "draw": 0.3271,
+        "away": 0.2774
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -336,9 +336,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.6507,
-        "draw": 0.2043,
-        "away": 0.145
+        "home": 0.7224,
+        "draw": 0.1562,
+        "away": 0.1213
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -356,11 +356,11 @@
         },
         {
           "score": "1-0",
-          "p": 0.0818
+          "p": 0.0819
         },
         {
           "score": "3-0",
-          "p": 0.078
+          "p": 0.0779
         }
       ],
       "expected_goals": {
@@ -368,7 +368,7 @@
         "away": 0.96
       },
       "derived": {
-        "p_over_2_5": 0.6367,
+        "p_over_2_5": 0.6366,
         "p_btts": 0.5631
       },
       "ratings": {
@@ -396,15 +396,15 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.5793,
-        "draw": 0.2671,
-        "away": 0.1536
+        "home": 0.5548,
+        "draw": 0.2657,
+        "away": 0.1795
       },
       "market_probabilities": null,
       "scoreline_top": [
         {
           "score": "1-0",
-          "p": 0.1817
+          "p": 0.1818
         },
         {
           "score": "0-0",
@@ -456,9 +456,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.678,
-        "draw": 0.1878,
-        "away": 0.1342
+        "home": 0.7699,
+        "draw": 0.1221,
+        "away": 0.1079
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -488,7 +488,7 @@
         "away": 0.74
       },
       "derived": {
-        "p_over_2_5": 0.6048,
+        "p_over_2_5": 0.6047,
         "p_btts": 0.4802
       },
       "ratings": {
@@ -516,9 +516,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.4444,
-        "draw": 0.265,
-        "away": 0.2906
+        "home": 0.327,
+        "draw": 0.3016,
+        "away": 0.3714
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -549,7 +549,7 @@
       },
       "derived": {
         "p_over_2_5": 0.4837,
-        "p_btts": 0.5386
+        "p_btts": 0.5387
       },
       "ratings": {
         "elo_home": 1477.1,
@@ -576,9 +576,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.562,
-        "draw": 0.2785,
-        "away": 0.1595
+        "home": 0.572,
+        "draw": 0.2553,
+        "away": 0.1727
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -636,9 +636,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.4102,
-        "draw": 0.3216,
-        "away": 0.2682
+        "home": 0.3852,
+        "draw": 0.3037,
+        "away": 0.3111
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -696,9 +696,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.4444,
-        "draw": 0.265,
-        "away": 0.2906
+        "home": 0.3369,
+        "draw": 0.2986,
+        "away": 0.3645
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -716,7 +716,7 @@
         },
         {
           "score": "1-0",
-          "p": 0.1321
+          "p": 0.1322
         },
         {
           "score": "0-2",
@@ -756,9 +756,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3267,
-        "draw": 0.2407,
-        "away": 0.4326
+        "home": 0.2699,
+        "draw": 0.2771,
+        "away": 0.453
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -788,8 +788,8 @@
         "away": 1.52
       },
       "derived": {
-        "p_over_2_5": 0.4735,
-        "p_btts": 0.5149
+        "p_over_2_5": 0.4734,
+        "p_btts": 0.5148
       },
       "ratings": {
         "elo_home": 1517.1,
@@ -816,9 +816,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.1224,
-        "draw": 0.2483,
-        "away": 0.6293
+        "home": 0.2022,
+        "draw": 0.2319,
+        "away": 0.5659
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -876,9 +876,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.1284,
-        "draw": 0.2111,
-        "away": 0.6605
+        "home": 0.2098,
+        "draw": 0.2443,
+        "away": 0.5459
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -908,8 +908,8 @@
         "away": 2.13
       },
       "derived": {
-        "p_over_2_5": 0.6033,
-        "p_btts": 0.5612
+        "p_over_2_5": 0.6034,
+        "p_btts": 0.5613
       },
       "ratings": {
         "elo_home": 1520.5,
@@ -936,9 +936,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.6558,
-        "draw": 0.2008,
-        "away": 0.1435
+        "home": 0.7219,
+        "draw": 0.158,
+        "away": 0.1201
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -996,9 +996,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3445,
-        "draw": 0.2571,
-        "away": 0.3985
+        "home": 0.2912,
+        "draw": 0.3008,
+        "away": 0.4079
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1056,9 +1056,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.1796,
-        "draw": 0.2368,
-        "away": 0.5836
+        "home": 0.221,
+        "draw": 0.2726,
+        "away": 0.5064
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1088,7 +1088,7 @@
         "away": 1.42
       },
       "derived": {
-        "p_over_2_5": 0.3338,
+        "p_over_2_5": 0.3337,
         "p_btts": 0.358
       },
       "ratings": {
@@ -1116,9 +1116,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.1284,
-        "draw": 0.2111,
-        "away": 0.6605
+        "home": 0.2039,
+        "draw": 0.2225,
+        "away": 0.5736
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1176,9 +1176,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.6402,
-        "draw": 0.2105,
-        "away": 0.1494
+        "home": 0.6292,
+        "draw": 0.2305,
+        "away": 0.1403
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1236,9 +1236,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.4102,
-        "draw": 0.3216,
-        "away": 0.2682
+        "home": 0.3313,
+        "draw": 0.3323,
+        "away": 0.3364
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1296,9 +1296,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.6507,
-        "draw": 0.2043,
-        "away": 0.145
+        "home": 0.6751,
+        "draw": 0.2038,
+        "away": 0.1211
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1356,9 +1356,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3267,
-        "draw": 0.2407,
-        "away": 0.4326
+        "home": 0.274,
+        "draw": 0.277,
+        "away": 0.449
       },
       "market_probabilities": {
         "home": 0.2732,
@@ -1376,11 +1376,11 @@
         },
         {
           "score": "0-0",
-          "p": 0.1159
+          "p": 0.1158
         },
         {
           "score": "1-0",
-          "p": 0.0991
+          "p": 0.0992
         },
         {
           "score": "0-2",
@@ -1420,9 +1420,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.4444,
-        "draw": 0.265,
-        "away": 0.2906
+        "home": 0.3999,
+        "draw": 0.2972,
+        "away": 0.303
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1480,9 +1480,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.1245,
-        "draw": 0.2527,
-        "away": 0.6227
+        "home": 0.221,
+        "draw": 0.2411,
+        "away": 0.5379
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1496,7 +1496,7 @@
         },
         {
           "score": "1-1",
-          "p": 0.1166
+          "p": 0.1167
         },
         {
           "score": "0-0",
@@ -1513,7 +1513,7 @@
       },
       "derived": {
         "p_over_2_5": 0.4154,
-        "p_btts": 0.4108
+        "p_btts": 0.4107
       },
       "ratings": {
         "elo_home": 1503.3,
@@ -1540,9 +1540,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.446,
-        "draw": 0.2624,
-        "away": 0.2916
+        "home": 0.3572,
+        "draw": 0.3035,
+        "away": 0.3393
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1573,7 +1573,7 @@
       },
       "derived": {
         "p_over_2_5": 0.5906,
-        "p_btts": 0.6209
+        "p_btts": 0.621
       },
       "ratings": {
         "elo_home": 1535.3,
@@ -1600,9 +1600,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.5318,
-        "draw": 0.2636,
-        "away": 0.2047
+        "home": 0.5432,
+        "draw": 0.247,
+        "away": 0.2098
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1660,9 +1660,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3445,
-        "draw": 0.2571,
-        "away": 0.3985
+        "home": 0.3333,
+        "draw": 0.2962,
+        "away": 0.3705
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1720,9 +1720,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.4444,
-        "draw": 0.265,
-        "away": 0.2906
+        "home": 0.3952,
+        "draw": 0.3114,
+        "away": 0.2934
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1740,7 +1740,7 @@
         },
         {
           "score": "0-1",
-          "p": 0.0977
+          "p": 0.0978
         },
         {
           "score": "2-1",
@@ -1780,9 +1780,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3445,
-        "draw": 0.2571,
-        "away": 0.3985
+        "home": 0.2762,
+        "draw": 0.3351,
+        "away": 0.3887
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1840,19 +1840,19 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.5231,
-        "draw": 0.27,
-        "away": 0.2069
+        "home": 0.4446,
+        "draw": 0.3172,
+        "away": 0.2382
       },
       "market_probabilities": null,
       "scoreline_top": [
         {
           "score": "1-1",
-          "p": 0.133
+          "p": 0.1331
         },
         {
           "score": "1-0",
-          "p": 0.1181
+          "p": 0.1182
         },
         {
           "score": "0-0",
@@ -1872,7 +1872,7 @@
         "away": 0.99
       },
       "derived": {
-        "p_over_2_5": 0.4411,
+        "p_over_2_5": 0.441,
         "p_btts": 0.4896
       },
       "ratings": {
@@ -1900,9 +1900,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.5324,
-        "draw": 0.2627,
-        "away": 0.2049
+        "home": 0.5636,
+        "draw": 0.2302,
+        "away": 0.2061
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1916,7 +1916,7 @@
         },
         {
           "score": "2-0",
-          "p": 0.1011
+          "p": 0.1012
         },
         {
           "score": "2-1",
@@ -1933,7 +1933,7 @@
       },
       "derived": {
         "p_over_2_5": 0.4857,
-        "p_btts": 0.5052
+        "p_btts": 0.5051
       },
       "ratings": {
         "elo_home": 1767.1,
@@ -1960,9 +1960,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.424,
-        "draw": 0.2495,
-        "away": 0.3265
+        "home": 0.3514,
+        "draw": 0.2818,
+        "away": 0.3668
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -2020,9 +2020,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3271,
-        "draw": 0.2399,
-        "away": 0.433
+        "home": 0.2957,
+        "draw": 0.2652,
+        "away": 0.4391
       },
       "market_probabilities": null,
       "scoreline_top": [
