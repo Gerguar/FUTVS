@@ -241,6 +241,13 @@ def upsert_matches(df_new: pd.DataFrame) -> pd.DataFrame:
         return df
     df = df.drop_duplicates(subset=["match_id"], keep="last")
     df["kickoff_ts_utc"] = pd.to_datetime(df["kickoff_ts_utc"], utc=True)
+    # Normalizar tipos para parquet: columnas que pueden venir como int/str/None
+    # entre fuentes distintas se fuerzan a string para evitar ArrowTypeError.
+    for col in ("referee_id", "home_team_id", "away_team_id", "venue", "season",
+                "competition_code", "status"):
+        if col in df.columns:
+            df[col] = df[col].astype("object").where(df[col].notna(), None)
+            df[col] = df[col].map(lambda v: None if v is None or (isinstance(v, float) and pd.isna(v)) else str(v))
     df = df.sort_values("kickoff_ts_utc").reset_index(drop=True)
     df.to_parquet(PATHS.matches, index=False)
     return df

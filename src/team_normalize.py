@@ -45,6 +45,8 @@ TEAM_NAME_TO_SLUG: dict[str, str] = {
     # Barcelona
     "barcelona": "barcelona",
     "fc barcelona": "barcelona",
+    "barça": "barcelona",
+    "barca": "barcelona",
 
     # Atlético Madrid
     "atletico madrid": "atletico_madrid",
@@ -54,8 +56,10 @@ TEAM_NAME_TO_SLUG: dict[str, str] = {
     "club atlético de madrid": "atletico_madrid",
     "club atletico de madrid": "atletico_madrid",
     "ath madrid": "atletico_madrid",
+    "atleti": "atletico_madrid",
 
     # Bayern
+    "bayern": "bayern_munich",
     "bayern munich": "bayern_munich",
     "bayern múnich": "bayern_munich",
     "bayern munchen": "bayern_munich",
@@ -116,15 +120,18 @@ TEAM_NAME_TO_SLUG: dict[str, str] = {
     "tottenham hotspur": "tottenham",
     "tottenham hotspur fc": "tottenham",
     "nott'm forest": "nottingham_forest",
+    "nottingham": "nottingham_forest",
     "nottingham forest": "nottingham_forest",
     "nottingham forest fc": "nottingham_forest",
     "west ham": "west_ham",
     "west ham united": "west_ham",
     "west ham united fc": "west_ham",
     "wolves": "wolves",
+    "wolverhampton": "wolves",
     "wolverhampton wanderers": "wolves",
     "wolverhampton wanderers fc": "wolves",
     "brighton": "brighton",
+    "brighton hove": "brighton",
     "brighton & hove albion": "brighton",
     "brighton & hove albion fc": "brighton",
     "brighton and hove albion fc": "brighton",
@@ -162,6 +169,7 @@ TEAM_NAME_TO_SLUG: dict[str, str] = {
     # La Liga
     "ath bilbao": "athletic_bilbao",
     "athletic bilbao": "athletic_bilbao",
+    "athletic": "athletic_bilbao",
     "athletic club": "athletic_bilbao",
     "sociedad": "real_sociedad",
     "real sociedad": "real_sociedad",
@@ -284,6 +292,7 @@ TEAM_NAME_TO_SLUG: dict[str, str] = {
     "1. fc heidenheim 1846": "heidenheim",
     "werder bremen": "werder_bremen",
     "sv werder bremen": "werder_bremen",
+    "frankfurt": "eintracht_frankfurt",
     "ein frankfurt": "eintracht_frankfurt",
     "eintracht frankfurt": "eintracht_frankfurt",
     "eintracht frankfurt fußball ag": "eintracht_frankfurt",
@@ -297,6 +306,7 @@ TEAM_NAME_TO_SLUG: dict[str, str] = {
     "darmstadt": "darmstadt",
     "sv darmstadt 98": "darmstadt",
     "st pauli": "st_pauli",
+    "st. pauli": "st_pauli",
     "fc st. pauli 1910": "st_pauli",
     "holstein kiel": "holstein_kiel",
     "ksv holstein": "holstein_kiel",
