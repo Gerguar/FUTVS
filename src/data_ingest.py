@@ -24,9 +24,17 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import pandas as pd
 import requests
-from tenacity import retry, stop_after_attempt, wait_exponential
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 from .config import COMPETITIONS, PATHS, KEYS
+
+
+class RetryableHTTPError(Exception):
+    """429 o 5xx — reintentar."""
+
+
+class PermanentHTTPError(Exception):
+    """403/404/401 — no reintentar, saltear."""
 
 FD_BASE = "https://api.football-data.org/v4"
 ODDS_BASE = "https://api.the-odds-api.com/v4"
@@ -46,7 +54,9 @@ ODDS_SPORTS = {
 }
 
 
-@retry(stop=stop_after_attempt(5), wait=wait_exponential(min=2, max=30))
+@retry(stop=stop_after_attempt(3),
+       wait=wait_exponential(min=5, max=60),
+       retry=retry_if_exception_type(RetryableHTTPError))
 def _fd_get(path: str, params: dict | None = None) -> dict:
     if not KEYS.football_data:
         raise RuntimeError("Falta FOOTBALL_DATA_TOKEN en el entorno")
@@ -54,9 +64,13 @@ def _fd_get(path: str, params: dict | None = None) -> dict:
                      headers={"X-Auth-Token": KEYS.football_data},
                      params=params or {}, timeout=30)
     if r.status_code == 429:
-        time.sleep(60)
-        r.raise_for_status()
-    r.raise_for_status()
+        raise RetryableHTTPError("rate limited (429)")
+    if r.status_code in (401, 403, 404):
+        raise PermanentHTTPError(f"http {r.status_code} (plan no incluye este recurso)")
+    if r.status_code >= 500:
+        raise RetryableHTTPError(f"server {r.status_code}")
+    if r.status_code != 200:
+        raise PermanentHTTPError(f"http {r.status_code}: {r.text[:120]}")
     return r.json()
 
 
@@ -95,29 +109,46 @@ def fetch_fd_matches(fd_code: str, date_from: str, date_to: str) -> list[dict]:
             "venue": m.get("venue"),
             "referee_id": (m.get("referees") or [{}])[0].get("id"),
         })
-        time.sleep(6.5)
     return out
 
 
-def backfill(since: str = "2018-08-01", until: str | None = None) -> pd.DataFrame:
-    """Backfill histórico. Itera por competición y por chunks de 90 días."""
+def backfill(since: str = "2022-08-01", until: str | None = None) -> pd.DataFrame:
+    """
+    Backfill histórico. Itera por competición y chunks de 90 días.
+    - Si una competición devuelve 403/404 una vez, la saltea entera (no está en el plan).
+    - Sleep entre llamadas para respetar el rate limit del free tier (10 req/min).
+    """
     until_dt = pd.to_datetime(until or datetime.now(timezone.utc).date())
     since_dt = pd.to_datetime(since)
     rows: list[dict] = []
+    sleep_between_calls = 6.5  # 10 req/min con margen
+
     for comp in COMPETITIONS:
         if not comp.fd_code:
             continue
         cur = since_dt
+        comp_total = 0
+        comp_blocked = False
         while cur < until_dt:
             nxt = min(cur + timedelta(days=90), until_dt)
-            print(f"[backfill] {comp.code} {cur.date()} → {nxt.date()}")
+            print(f"[backfill] {comp.code} {cur.date()} -> {nxt.date()}", flush=True)
             try:
-                rows.extend(fetch_fd_matches(comp.fd_code,
-                                             cur.strftime("%Y-%m-%d"),
-                                             nxt.strftime("%Y-%m-%d")))
+                chunk = fetch_fd_matches(comp.fd_code,
+                                         cur.strftime("%Y-%m-%d"),
+                                         nxt.strftime("%Y-%m-%d"))
+                rows.extend(chunk)
+                comp_total += len(chunk)
+                print(f"  + {len(chunk)} partidos", flush=True)
+            except PermanentHTTPError as e:
+                print(f"  ! {comp.code} no disponible en este plan: {e}. Salteando el resto de {comp.code}.", flush=True)
+                comp_blocked = True
+                break
             except Exception as e:
-                print(f"  ! error: {e}")
+                print(f"  ! error temporal: {e}", flush=True)
             cur = nxt
+            time.sleep(sleep_between_calls)
+        if not comp_blocked:
+            print(f"[backfill] {comp.code} total: {comp_total} partidos", flush=True)
     return pd.DataFrame(rows)
 
 

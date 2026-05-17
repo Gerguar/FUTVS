@@ -6,7 +6,7 @@ on:
       since:
         description: "Fecha desde (YYYY-MM-DD)"
         required: true
-        default: "2018-08-01"
+        default: "2022-08-01"
 
 jobs:
   backfill:

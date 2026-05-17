@@ -27,19 +27,15 @@ class Competition:
 
 
 COMPETITIONS: list[Competition] = [
+    # Solo competiciones disponibles en el FREE TIER de football-data.org.
+    # UEL y UECL requieren plan pago — se omiten.
     Competition("UCL", "UEFA Champions League", "CL", True),
-    Competition("UEL", "UEFA Europa League", "EL", True),
-    Competition("UECL", "UEFA Conference League", "ECL", True),
-    Competition("LIB", "Copa Libertadores", None, True),
-    Competition("SUD", "Copa Sudamericana", None, True),
 
     Competition("EPL", "Premier League", "PL"),
     Competition("LL",  "La Liga",        "PD"),
     Competition("SA",  "Serie A",        "SA"),
     Competition("BL",  "Bundesliga",     "BL1"),
     Competition("L1",  "Ligue 1",        "FL1"),
-    Competition("BRA", "Brasileirão",    "BSA"),
-    Competition("ARG", "Liga Profesional", None),
 ]
 
 INTERNATIONAL_CODES = [c.code for c in COMPETITIONS if c.is_international]
@@ -77,7 +73,7 @@ class XGBConfig:
 
 @dataclass(frozen=True)
 class BacktestConfig:
-    min_train_matches: int = 1500
+    min_train_matches: int = 500
     valid_window_days: int = 60
     test_window_days: int = 30
     step_days: int = 30
