@@ -32,6 +32,8 @@ from .dixon_coles import fit as fit_dc
 from .metrics import (multi_log_loss, multi_brier, accuracy_top1,
                       calibration_per_class, market_baseline_log_loss)
 from .data_ingest import devig_odds
+from .train_dc import CALIBRATOR_PATH
+from .xgb_model import IsotonicMulticlassCalibrator
 
 
 def label_to_idx(home: int, away: int) -> int:
@@ -95,11 +97,24 @@ def main() -> None:
     print(f"[evaluate] partidos predichos : {len(y):>6}  (skipped {skipped} sin rating)")
     print()
 
-    # Métricas del modelo
+    # Métricas del modelo DC raw
     ll = multi_log_loss(y, proba)
     br = multi_brier(y, proba)
     acc = accuracy_top1(y, proba)
     cal = calibration_per_class(y, proba, n_bins=8)
+
+    # Métricas del modelo DC + isotonic calibration (si existe)
+    proba_cal = None
+    ll_dccal = None; br_dccal = None; acc_dccal = None
+    if CALIBRATOR_PATH.exists():
+        try:
+            calibrator = IsotonicMulticlassCalibrator.load(CALIBRATOR_PATH)
+            proba_cal = calibrator.transform(proba)
+            ll_dccal = multi_log_loss(y, proba_cal)
+            br_dccal = multi_brier(y, proba_cal)
+            acc_dccal = accuracy_top1(y, proba_cal)
+        except Exception as e:
+            print(f"[evaluate] calibrador no se pudo aplicar: {e}")
 
     # Baseline 1: uniforme 1/3
     uniform = np.full_like(proba, 1.0 / 3.0)
@@ -162,7 +177,10 @@ def main() -> None:
     print(f"{'Prior historico (frecuencias)':<35} {ll_freq:>10.4f} {'':>10} {acc_freq:>10.1%}")
     if ll_mkt is not None:
         print(f"{f'Mercado bookmakers (n={mkt_n})':<35} {ll_mkt:>10.4f} {'':>10} {acc_mkt:>10.1%}")
-    print(f"{'Dixon-Coles (NUESTRO MODELO)':<35} {ll:>10.4f} {br:>10.4f} {acc:>10.1%}")
+    print(f"{'Dixon-Coles crudo':<35} {ll:>10.4f} {br:>10.4f} {acc:>10.1%}")
+    if ll_dccal is not None:
+        marker = " <- MODELO EN PRODUCCION" if calibrator else ""
+        print(f"{'Dixon-Coles + isotonic calib':<35} {ll_dccal:>10.4f} {br_dccal:>10.4f} {acc_dccal:>10.1%}{marker}")
     print()
 
     print("Calibración por clase:")

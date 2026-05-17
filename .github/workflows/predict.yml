@@ -29,16 +29,19 @@ jobs:
         env:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
           THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
-        run: python -m src.data_ingest --days-ahead 14
+        run: python -m src.data_ingest --days-ahead 14 --skip-couk
 
-      - name: Retrain (weekly)
+      - name: Train DC + isotonic calibrator (siempre)
+        run: python -m src.train_dc --calib-days 30
+
+      - name: Train full pipeline XGBoost (weekly o manual)
         if: github.event.schedule == '0 0 * * 0' || github.event_name == 'workflow_dispatch'
-        run: python -m src.train
+        run: python -m src.train || echo "[train] fallo no critico (mejora 3 sin uso en on-demand)"
 
-      - name: Predict
-        run: python -m src.predict --horizon 14 --snapshot 24h --out data/predictions.json
+      - name: Predict (real fixtures upcoming)
+        run: python -m src.predict --horizon 14 --snapshot 24h --out data/predictions.json || echo "[predict] sin XGBoost artefactos"
 
-      - name: Push predictions to Supabase (on-demand para partidos en DB)
+      - name: Push predictions to Supabase (on-demand calibrado)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}

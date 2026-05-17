@@ -33,8 +33,9 @@ jobs:
           python -m src.data_ingest --backfill \
             --since ${{ inputs.since }} \
             --couk-seasons ${{ inputs.couk_seasons }}
-      - run: python -m src.train
-      - run: python -m src.predict --horizon 14 --snapshot 24h --out data/predictions.json
+      - run: python -m src.train_dc --calib-days 30
+      - run: python -m src.train || echo "[train] fallo no critico"
+      - run: python -m src.predict --horizon 14 --snapshot 24h --out data/predictions.json || echo "[predict] sin XGBoost artefactos"
       - env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
