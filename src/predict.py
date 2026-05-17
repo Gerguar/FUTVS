@@ -150,19 +150,14 @@ def main() -> None:
         import numpy as np
         X = feat_df.reindex(columns=feature_columns()).astype(float)
         proba_raw = clf.predict_proba(X)
-        proba_cal = calibrator.transform(proba_raw)
-
-        # Diagnostico: contar valores unicos para detectar el bug del calibrador
+        # Diagnostico: cuantas probs unicas vs duplicadas
         unique_raw = len(set(tuple(round(p, 4) for p in row) for row in proba_raw))
-        unique_cal = len(set(tuple(round(p, 4) for p in row) for row in proba_cal))
-        print(f"[predict] {len(proba_raw)} partidos -> {unique_raw} probabilidades unicas crudas, "
-              f"{unique_cal} unicas calibradas")
-        if unique_cal < unique_raw * 0.7:
-            print(f"[predict] WARNING: calibrador colapsando outputs (saturado). "
-                  f"Uso RAW XGBoost en su lugar.")
-            proba = proba_raw
-        else:
-            proba = proba_cal
+        print(f"[predict] {len(proba_raw)} partidos -> {unique_raw} probabilidades unicas (XGBoost crudo)")
+        # Decisión: usar XGBoost CRUDO siempre. El calibrador isotonico:
+        #  (a) demostro empeorar DC en evaluacion honesta (+0.034 log loss)
+        #  (b) colapsa outputs de XGBoost en bins identicos (escalones isotonic)
+        # Si en el futuro queremos calibracion, usaremos Platt/sigmoide.
+        proba = proba_raw
     else:
         # Fallback: probabilidades vienen de DC directamente.
         import numpy as np
