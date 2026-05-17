@@ -1,0 +1,22 @@
+name: evaluate (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_days:
+        description: "Dias finales del dataset que usar como TEST"
+        required: true
+        default: "30"
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Evaluacion del modelo
+        run: python -m src.evaluate --test-days ${{ inputs.test_days }}
