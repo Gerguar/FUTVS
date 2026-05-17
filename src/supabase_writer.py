@@ -151,6 +151,19 @@ def sb_post(path: str, body: list[dict] | dict, prefer: str = "return=representa
         return json.loads(raw) if raw else None
 
 
+def sb_patch(path: str, body: dict, prefer: str = "return=minimal") -> Any:
+    data = json.dumps(body).encode("utf-8")
+    req = urllib.request.Request(
+        f"{_sb_url()}/rest/v1/{path}",
+        data=data,
+        headers=_headers({"Prefer": prefer}),
+        method="PATCH",
+    )
+    with urllib.request.urlopen(req, timeout=30) as r:
+        raw = r.read()
+        return json.loads(raw) if raw else None
+
+
 # ───────── Lookup de partidos ─────────
 
 def _normalize(name: str | None) -> str:
@@ -263,38 +276,65 @@ def upsert_pronostico(partido_id: int, match: dict, dry_run: bool = False) -> No
 
 def apply_predictions(predictions_path: Path = PATHS.predictions,
                       dry_run: bool = False) -> dict:
+    """
+    Modo from-json: lee predictions.json (output del pipeline XGBoost completo)
+    y para cada predicción busca el partido correspondiente en Supabase usando
+    el SLUG del equipo (no el nombre).
+
+    Requiere que `supabase_sync` haya corrido primero para asegurar que los
+    partidos existan en Supabase.
+    """
+    from .team_normalize import canonical
+
     doc = json.loads(predictions_path.read_text(encoding="utf-8"))
+
+    # Cache slug -> equipos.id desde Supabase
+    slug_to_id: dict[str, int] = {}
+    for e in sb_get("equipos?select=id,nombre"):
+        slug_to_id[canonical(e["nombre"])] = int(e["id"])
+    for sid, slug in SUPABASE_TO_SLUG.items():
+        slug_to_id.setdefault(slug, sid)
+    print(f"[writer] cache de equipos: {len(slug_to_id)} entradas")
+
     stats = {"total": 0, "applied": 0, "skipped_team": 0,
              "skipped_no_partido": 0, "errors": 0}
 
     for match in doc.get("matches", []):
         stats["total"] += 1
-        home_name = _normalize(match.get("home", {}).get("name"))
-        away_name = _normalize(match.get("away", {}).get("name"))
-        eq_h = TEAM_ALIAS.get(home_name)
-        eq_a = TEAM_ALIAS.get(away_name)
+        # Tras la refactorizacion a slugs, match.home.id ES el slug.
+        slug_h = (match.get("home", {}) or {}).get("id")
+        slug_a = (match.get("away", {}) or {}).get("id")
+        name_h = (match.get("home", {}) or {}).get("name") or slug_h
+        name_a = (match.get("away", {}) or {}).get("name") or slug_a
+        if not slug_h or not slug_a:
+            stats["skipped_team"] += 1
+            continue
+
+        eq_h = slug_to_id.get(slug_h)
+        eq_a = slug_to_id.get(slug_a)
         if not eq_h or not eq_a:
             stats["skipped_team"] += 1
-            print(f"  · sin alias: '{home_name}' vs '{away_name}'")
+            missing = [s for s, eq in [(slug_h, eq_h), (slug_a, eq_a)] if not eq]
+            print(f"  - sin equipo en Supabase: {missing}  ({name_h} vs {name_a})")
             continue
 
         try:
             pid = find_partido_id(eq_h, eq_a, match["kickoff_ts_utc"])
         except Exception as e:
             stats["errors"] += 1
-            print(f"  ! lookup error {home_name} vs {away_name}: {e}")
+            print(f"  ! lookup error {name_h} vs {name_a}: {e}")
             continue
 
         if pid is None:
             stats["skipped_no_partido"] += 1
-            print(f"  · no hay partido en Supabase para {home_name} vs {away_name} @ {match['kickoff_ts_utc']}")
             continue
 
         try:
             upsert_pronostico(pid, match, dry_run=dry_run)
             stats["applied"] += 1
-            print(f"  ok partido_id={pid}  {home_name} vs {away_name}  "
-                  f"H={match['probabilities']['home']:.2f} D={match['probabilities']['draw']:.2f} "
+            print(f"  ok partido_id={pid:>5}  {name_h:<22} vs {name_a:<22}  "
+                  f"H={match['probabilities']['home']:.2f} "
+                  f"D={match['probabilities']['draw']:.2f} "
                   f"A={match['probabilities']['away']:.2f}")
         except Exception as e:
             stats["errors"] += 1

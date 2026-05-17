@@ -93,7 +93,8 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--horizon", default="14", help="Días hacia adelante (entero)")
     p.add_argument("--snapshot", default=SNAPSHOTS.mid, choices=["7d", "24h", "60m"])
-    p.add_argument("--only-international", action="store_true", default=True)
+    p.add_argument("--only-international", action="store_true", default=False,
+                   help="Si se setea, predice solo competiciones internacionales (UCL/UEL/etc.)")
     p.add_argument("--out", default=str(PATHS.predictions))
     args = p.parse_args()
     horizon_days = int(args.horizon.rstrip("d"))
@@ -103,7 +104,17 @@ def main() -> None:
 
     elo_state = EloState.from_json()
     dc_state = DixonColesState.from_json()
-    clf, calibrator, meta = load_artifacts()
+    # XGBoost es opcional. Si no esta entrenado, caemos a DC + Elo solamente.
+    use_xgb = True
+    try:
+        clf, calibrator, meta = load_artifacts()
+    except Exception as e:
+        print(f"[predict] XGBoost artefactos no disponibles ({e}). Uso DC-only fallback.")
+        clf, calibrator = None, None
+        meta = {"trained_at": dc_state.fitted_at,
+                "method": "DixonColes+Elo (fallback sin XGBoost)",
+                "holdout_metrics": {}}
+        use_xgb = False
 
     finished = matches.dropna(subset=["home_goals", "away_goals"])
     team_features = build_team_features(finished)
@@ -135,8 +146,18 @@ def main() -> None:
         rows.append(feat)
 
     feat_df = pd.DataFrame(rows)
-    X = feat_df.reindex(columns=feature_columns()).astype(float)
-    proba = calibrator.transform(clf.predict_proba(X))
+    if use_xgb:
+        X = feat_df.reindex(columns=feature_columns()).astype(float)
+        proba = calibrator.transform(clf.predict_proba(X))
+    else:
+        # Fallback: probabilidades vienen de DC directamente.
+        import numpy as np
+        proba_rows = []
+        for _, m in upcoming.iterrows():
+            p = dc_state.probs_1x2(m["home_team_id"], m["away_team_id"],
+                                    is_neutral=bool(m.get("is_neutral", False)))
+            proba_rows.append([p["H"], p["D"], p["A"]])
+        proba = np.array(proba_rows)
 
     out_matches = []
     for i, (_, m) in enumerate(upcoming.iterrows()):

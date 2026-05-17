@@ -33,16 +33,22 @@ jobs:
 
       - name: Train full pipeline XGBoost (weekly o manual)
         if: github.event.schedule == '0 0 * * 0' || github.event_name == 'workflow_dispatch'
-        run: python -m src.train || echo "[train] fallo no critico (mejora 3 sin uso en on-demand)"
+        run: python -m src.train || echo "[train] fallo no critico - predict cae a DC fallback"
 
       - name: Predict (real fixtures upcoming)
-        run: python -m src.predict --horizon 14 --snapshot 24h --out data/predictions.json || echo "[predict] sin XGBoost artefactos"
+        run: python -m src.predict --horizon 14 --snapshot 24h --out data/predictions.json
 
-      - name: Push predictions to Supabase (on-demand calibrado)
+      - name: Sincronizar partidos proximos a Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-        run: python -m src.supabase_writer --mode on-demand
+        run: python -m src.supabase_sync --horizon 14
+
+      - name: Push predictions to Supabase (from-json)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.supabase_writer --mode from-json --predictions data/predictions.json
 
       - name: Commit state
         run: |
