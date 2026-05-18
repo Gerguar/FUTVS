@@ -1,0 +1,27 @@
+name: squads (semanal + manual)
+
+# Sincroniza plantillas (jugadores) y metadata de equipos (fundacion, estadio)
+# desde football-data.org. Las plantillas cambian poco: corremos esto una vez
+# por semana (lunes a las 06:00 UTC), o manualmente cuando hace falta.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"  # Lunes 06:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  squads:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Sincronizar plantillas + metadata
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.ingest_squads
