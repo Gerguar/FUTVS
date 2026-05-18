@@ -136,6 +136,8 @@ def parse_csv(content: bytes, league_code: str, season_year: int) -> list[dict]:
             "away_team_name": away_name,
             "home_team_crest": None,
             "away_team_crest": None,
+            "home_team_tla": None,
+            "away_team_tla": None,
             "is_neutral": False,
             "status": "FINISHED",
             "home_goals": int(hg),

@@ -112,6 +112,8 @@ def fetch_fd_matches(fd_code: str, date_from: str, date_to: str) -> list[dict]:
             "away_team_name": away_name,
             "home_team_crest": home.get("crest"),
             "away_team_crest": away.get("crest"),
+            "home_team_tla": home.get("tla"),
+            "away_team_tla": away.get("tla"),
             "is_neutral": _is_neutral_match(m.get("venue"), home.get("name")),
             "status": m.get("status"),
             "home_goals": score.get("home"),
