@@ -1,11 +1,11 @@
 """
-Ingest de estadísticas de jugadores desde fbref.com vía la librería soccerdata.
+Ingest de estadísticas de jugadores desde Understat vía la librería soccerdata.
 
-fbref provee stats detalladas de la temporada actual por jugador (goles,
-asistencias, minutos, xG, etc.) para las top 5 ligas europeas.
+Understat provee stats detalladas por jugador (goles, asistencias, minutos,
+xG, xA, shots, key_passes, etc.) para las top 5 ligas europeas.
 
 Flujo:
-1. Por cada liga top 5, llama a fbref.read_player_season_stats()
+1. Por cada liga top 5, llama a Understat.read_player_season_stats()
 2. Para cada fila (un jugador de un equipo en la temporada):
    a. Matchea el equipo via slug canónico
    b. Matchea el jugador con los nombres existentes en Supabase (fuzzy match)
@@ -14,8 +14,8 @@ Flujo:
 Requiere SOLO: que la tabla `jugadores` ya tenga el plantel cargado (lo hace
 ingest_squads.py). El matching es por nombre dentro del equipo.
 
-IMPORTANTE: respetar rate limit de fbref. soccerdata lo hace por defecto
-(pausa entre requests).
+Nota: Understat usa AÑO simple para temporada (2024 = 2024-25). Aceptamos
+ambos formatos en el argumento --season.
 """
 from __future__ import annotations
 import argparse
@@ -29,8 +29,8 @@ from .supabase_writer import sb_get, sb_post
 from .supabase_sync import SupabaseSync
 
 
-# Mapeo fbref league name -> nuestro competition code interno
-FBREF_LEAGUES: dict[str, str] = {
+# Mapeo Understat league name -> nuestro competition code interno
+UNDERSTAT_LEAGUES: dict[str, str] = {
     "ENG-Premier League": "EPL",
     "ESP-La Liga":        "LL",
     "ITA-Serie A":        "SA",
@@ -97,54 +97,78 @@ def _flatten_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def fetch_player_stats(league_fbref: str, seasons: list[str]) -> pd.DataFrame:
-    """Llama a soccerdata.FBref para una liga y temporada(s)."""
+def fetch_player_stats(league: str, seasons: list[str]) -> pd.DataFrame:
+    """Llama a soccerdata.Understat para una liga y temporada(s)."""
     import soccerdata as sd
-    fbref = sd.FBref(leagues=league_fbref, seasons=seasons)
-    df = fbref.read_player_season_stats(stat_type="standard")
+    understat = sd.Understat(leagues=league, seasons=seasons,
+                             no_cache=False, no_store=False)
+    df = understat.read_player_season_stats()
+    print(f"  · raw shape: {df.shape}, index_levels: {df.index.nlevels}, "
+          f"col_levels: {df.columns.nlevels if hasattr(df.columns, 'nlevels') else 1}")
     df = _flatten_columns(df)
-    # Reset index para que team y player esten como columnas
-    if df.index.nlevels > 1:
-        df = df.reset_index()
+    if df.index.nlevels >= 1:
+        try:
+            df = df.reset_index()
+        except Exception:
+            pass
     return df
 
 
 def extract_stats(row: pd.Series) -> dict:
-    """Extrae las stats que nos interesan en el formato de Supabase."""
+    """Extrae las stats que nos interesan en el formato de Supabase.
+    Understat columns: games, time, goals, xG, assists, xA, shots,
+    key_passes, yellow_cards, red_cards, npg, npxG, etc.
+    """
     return {
-        "partidos":    _safe_int(row.get("MP") or row.get("matches_played") or row.get("Playing Time MP")),
-        "minutos":     _safe_int(row.get("Min") or row.get("Playing Time Min") or row.get("minutes")),
-        "goles":       _safe_int(row.get("Gls") or row.get("Performance Gls") or row.get("goals")),
-        "asistencias": _safe_int(row.get("Ast") or row.get("Performance Ast") or row.get("assists")),
-        "amarillas":   _safe_int(row.get("CrdY") or row.get("Performance CrdY") or row.get("yellow_cards")),
-        "rojas":       _safe_int(row.get("CrdR") or row.get("Performance CrdR") or row.get("red_cards")),
+        "partidos":    _safe_int(row.get("games") or row.get("apps") or row.get("matches")),
+        "minutos":     _safe_int(row.get("time") or row.get("minutes")),
+        "goles":       _safe_int(row.get("goals")),
+        "asistencias": _safe_int(row.get("assists")),
+        "amarillas":   _safe_int(row.get("yellow_cards") or row.get("yellows")),
+        "rojas":       _safe_int(row.get("red_cards") or row.get("reds")),
     }
 
 
-def sync_league(sync: SupabaseSync, league_fbref: str, our_code: str,
+def sync_league(sync: SupabaseSync, league: str, our_code: str,
                 seasons: list[str], temporada_label: str,
                 dry_run: bool) -> dict:
-    print(f"\n[fbref-stats] === {our_code} ({league_fbref}) ===")
+    print(f"\n[stats] === {our_code} ({league}) ===")
     stats = {"rows_seen": 0, "team_matched": 0, "player_matched": 0,
              "upserted": 0, "no_team": 0, "no_player": 0, "errors": 0}
 
     try:
-        df = fetch_player_stats(league_fbref, seasons)
+        df = fetch_player_stats(league, seasons)
     except Exception as e:
-        print(f"  ! error fetching {league_fbref}: {e}")
+        import traceback
+        print(f"  ! error fetching {league}: {type(e).__name__}: {e}")
+        traceback.print_exc()
         return stats
 
-    print(f"  + {len(df)} filas obtenidas")
+    print(f"  + {len(df)} filas obtenidas. Columnas (primeras 20): "
+          f"{list(df.columns)[:20]}")
+
+    if df.empty:
+        print(f"  ! DataFrame vacio para {league_fbref}")
+        return stats
 
     # Cache de jugadores por equipo para evitar requests redundantes
     players_cache: dict[int, list[tuple[int, str]]] = {}
 
-    # Identificar columna 'team' y 'player' (soccerdata las nombra distinto segun version)
-    team_col = next((c for c in df.columns if c.lower() in ("team", "squad")), None)
-    player_col = next((c for c in df.columns if c.lower() in ("player",)), None)
+    # Identificar columna 'team' y 'player' con matching flexible.
+    # Understat usa 'team' y 'player' (en minusculas).
+    def _find_col(candidates: list[str]) -> str | None:
+        for c in df.columns:
+            cs = str(c).lower().strip()
+            if cs in candidates:
+                return c
+        return None
+    team_col = _find_col(["team", "squad", "club", "team_title"])
+    player_col = _find_col(["player", "name", "jugador", "player_name"])
     if not team_col or not player_col:
-        print(f"  ! no encuentro columnas team/player. Columnas: {list(df.columns)[:15]}")
+        print(f"  ! no encuentro columnas team/player. Columnas disponibles: "
+              f"{list(df.columns)}")
         return stats
+    print(f"  · usando team_col={team_col!r}  player_col={player_col!r}")
 
     payloads_per_team: dict[int, list[dict]] = {}
 
@@ -206,30 +230,48 @@ def sync_all(seasons: list[str], temporada_label: str,
     sync = SupabaseSync()
     totals = {"rows_seen": 0, "team_matched": 0, "player_matched": 0,
               "upserted": 0, "no_team": 0, "no_player": 0, "errors": 0}
-    for fbref_league, our_code in FBREF_LEAGUES.items():
-        lstats = sync_league(sync, fbref_league, our_code, seasons,
+    for league, our_code in UNDERSTAT_LEAGUES.items():
+        lstats = sync_league(sync, league, our_code, seasons,
                              temporada_label, dry_run)
         for k in totals:
             totals[k] += lstats.get(k, 0)
     return totals
 
 
+def normalize_season_for_understat(season: str) -> str:
+    """Understat usa el año del inicio: '2024-25' -> '2024'. Aceptamos ambos."""
+    s = season.strip()
+    if "-" in s and len(s) >= 5:
+        return s.split("-")[0]
+    if "/" in s:
+        return s.split("/")[0]
+    return s
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--season", default="2024-25",
-                    help="Temporada en formato fbref (ej: 2024-25)")
+                    help="Temporada (ej: 2024-25 o 2024). Lo convertimos a formato Understat.")
     ap.add_argument("--temporada-label", default=None,
-                    help="Como guardar en Supabase (default: igual al season pero con / en vez de -)")
+                    help="Como guardar en Supabase (default: 'YYYY/YY')")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
-    seasons = [args.season]
-    label = args.temporada_label or args.season.replace("-", "/")
+    season_understat = normalize_season_for_understat(args.season)
+    seasons = [season_understat]
+    # Etiqueta default: 2024 -> 2024/25
+    if args.temporada_label:
+        label = args.temporada_label
+    elif "-" in args.season:
+        label = args.season.replace("-", "/")
+    else:
+        yr = int(season_understat)
+        label = f"{yr}/{(yr+1) % 100:02d}"
 
-    print(f"[fbref-stats] iniciando: season={args.season} label={label} dry_run={args.dry_run}")
+    print(f"[stats] iniciando: season={season_understat} label={label} dry_run={args.dry_run}")
     stats = sync_all(seasons, label, args.dry_run)
 
-    print(f"\n[fbref-stats] === resumen ===")
+    print(f"\n[stats] === resumen ===")
     print(f"  filas vistas:        {stats['rows_seen']}")
     print(f"  team matched:        {stats['team_matched']}")
     print(f"  player matched:      {stats['player_matched']}")

@@ -1,23 +1,20 @@
-name: fbref-stats (semanal + manual)
+name: player-stats (manual)
 
-# Ingest semanal de estadisticas de jugadores desde fbref.com.
-# fbref se actualiza diariamente pero sus stats son acumulativas de la temporada,
-# asi que tirar 1 vez por semana es suficiente.
+# Ingest de estadisticas de jugadores desde Understat (via soccerdata).
+# SIN cron mientras verificamos que Understat permita scraping desde GH Actions.
+# fbref bloquea las IPs de datacenter — Understat suele ser mas permisivo.
 #
-# Corre los martes a las 07:00 UTC (un dia despues de squads para que las
-# tablas tengan los plantelles frescos antes de cargar stats).
+# Si Understat tambien bloquea, vamos a evaluar otras opciones.
 
 on:
-  schedule:
-    - cron: "0 7 * * 2"  # Martes 07:00 UTC
   workflow_dispatch:
     inputs:
       season:
-        description: "Temporada en formato fbref (ej: 2024-25)"
+        description: "Temporada (ej: 2024-25 o 2024)"
         required: true
         default: "2024-25"
       temporada_label:
-        description: "Etiqueta en Supabase (default: igual a season con / en vez de -)"
+        description: "Etiqueta en Supabase (default: 'YYYY/YY')"
         required: false
         default: ""
 
