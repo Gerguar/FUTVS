@@ -7,5 +7,7 @@ __pycache__/
 .DS_Store
 .idea/
 .vscode/
+downloaded_files/
+data/eafc26_ratings_cache.json
 # Mantenemos data/ commiteable porque la consume Netlify.
 # Si tu dataset crece mucho, considerar Git LFS o mover predictions.json a un bucket.
