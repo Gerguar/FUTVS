@@ -29,8 +29,8 @@ import urllib.request
 from .config import COMPETITIONS
 from .team_normalize import canonical
 from .data_ingest import _fd_get
-from .supabase_writer import sb_get, sb_post, sb_patch, _sb_url, _headers
-from .supabase_sync import SupabaseSync
+from .supabase_writer import sb_get, sb_post, sb_patch, _sb_url, _headers, LEAGUE_ALIAS
+from .supabase_sync import SupabaseSync, TEAM_COLORS, TEAM_COUNTRY, LIGA_TO_PAIS
 
 
 # football-data.org devuelve positions con muchos detalles. Las agrupamos
@@ -103,15 +103,73 @@ def build_squad_payload(eq_id: int, squad: list[dict]) -> list[dict]:
     return rows
 
 
-def sync_all(dry_run: bool = False, sleep_between_comps: float = 7.0) -> dict:
-    """Recorre todas las competitions y sincroniza metadata + squads."""
+def fetch_competition_full(comp_fd_code: str) -> dict:
+    """Devuelve el response completo incluyendo el bloque 'competition' (con emblem)."""
+    return _fd_get(f"/competitions/{comp_fd_code}/teams")
+
+
+def update_liga_emblem(liga_id: int, emblem_url: str | None, dry_run: bool) -> bool:
+    """Actualiza ligas.logo_url si esta vacio."""
+    if not emblem_url:
+        return False
+    rows = sb_get(f"ligas?select=id,logo_url&id=eq.{liga_id}")
+    if not rows or rows[0].get("logo_url"):
+        return False
+    if dry_run:
+        print(f"  [dry-run] liga id={liga_id} logo_url -> {emblem_url}")
+        return True
+    try:
+        sb_patch(f"ligas?id=eq.{liga_id}", {"logo_url": emblem_url})
+        print(f"  + liga id={liga_id}: logo_url actualizado")
+        return True
+    except Exception as e:
+        print(f"  ! patch logo liga {liga_id}: {e}")
+        return False
+
+
+def create_missing_equipo(sync: SupabaseSync, slug: str, fd_team: dict,
+                          liga_id: int, dry_run: bool) -> int | None:
+    """Crea un equipo que esta en football-data.org pero no en Supabase."""
+    name = fd_team.get("shortName") or fd_team.get("name") or slug
+    col_p, col_s = TEAM_COLORS.get(slug, ("#1f2937", "#ffffff"))
+    payload = {
+        "nombre": name,
+        "abreviacion": (fd_team.get("tla") or slug.upper().replace("_", ""))[:5],
+        "liga_id": liga_id,
+        "color_prim": col_p,
+        "color_sec": col_s,
+        "pais": TEAM_COUNTRY.get(slug) or LIGA_TO_PAIS.get(liga_id, "Europa"),
+        "escudo_url": fd_team.get("crest"),
+        "fundacion": fd_team.get("founded"),
+        "estadio": fd_team.get("venue"),
+    }
+    if dry_run:
+        print(f"  [dry-run] crear equipo {slug}: {payload}")
+        return None
+    try:
+        res = sb_post("equipos", [payload], prefer="return=representation")
+        new_id = int(res[0]["id"])
+        sync.slug_to_id[slug] = new_id
+        sync.id_to_slug[new_id] = slug
+        print(f"  + equipo CREADO: {slug:25} id={new_id}  ({name})  "
+              f"fundacion={payload['fundacion']}  estadio={payload['estadio']!r}")
+        return new_id
+    except Exception as e:
+        print(f"  ! crear equipo {slug}: {e}")
+        return None
+
+
+def sync_all(dry_run: bool = False, sleep_between_comps: float = 7.0,
+             create_missing: bool = True) -> dict:
+    """Recorre todas las competitions y sincroniza metadata + squads + logos."""
     sync = SupabaseSync()
     stats = {
         "competitions_seen": 0,
         "teams_seen": 0,
         "teams_matched": 0,
-        "teams_missing_in_supabase": [],
+        "teams_created": 0,
         "metadata_updates": 0,
+        "logos_ligas_updated": 0,
         "squads_replaced": 0,
         "players_inserted": 0,
         "delete_failures": 0,
@@ -124,13 +182,21 @@ def sync_all(dry_run: bool = False, sleep_between_comps: float = 7.0) -> dict:
         stats["competitions_seen"] += 1
         print(f"\n[squads] === {comp.code} ({comp.fd_code}) ===")
         try:
-            teams = fetch_competition_teams(comp.fd_code)
+            full = fetch_competition_full(comp.fd_code)
         except Exception as e:
             print(f"  ! error fetching teams para {comp.fd_code}: {e}")
             stats["errors"] += 1
             time.sleep(sleep_between_comps)
             continue
 
+        # Update logo de la liga
+        liga_id = LEAGUE_ALIAS.get(comp.code) or LEAGUE_ALIAS.get(comp.fd_code)
+        if liga_id:
+            emblem = (full.get("competition") or {}).get("emblem")
+            if update_liga_emblem(liga_id, emblem, dry_run):
+                stats["logos_ligas_updated"] += 1
+
+        teams = full.get("teams", [])
         print(f"  + {len(teams)} equipos en {comp.code}")
         for team in teams:
             stats["teams_seen"] += 1
@@ -138,10 +204,16 @@ def sync_all(dry_run: bool = False, sleep_between_comps: float = 7.0) -> dict:
             slug = canonical(team_name)
             eq_id = sync.slug_to_id.get(slug)
 
+            # Crear el equipo si no existe (cuando create_missing=True)
             if not eq_id:
-                stats["teams_missing_in_supabase"].append((slug, team_name))
-                continue
-            stats["teams_matched"] += 1
+                if create_missing and liga_id:
+                    eq_id = create_missing_equipo(sync, slug, team, liga_id, dry_run)
+                    if eq_id:
+                        stats["teams_created"] += 1
+                if not eq_id:
+                    continue
+            else:
+                stats["teams_matched"] += 1
 
             # 1) Update metadata: fundacion + estadio
             patch = {}
@@ -202,27 +274,24 @@ def sync_all(dry_run: bool = False, sleep_between_comps: float = 7.0) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--no-create-missing", action="store_true",
+                    help="No crear equipos faltantes en Supabase (solo actualizar existentes)")
     args = ap.parse_args()
 
-    print(f"[squads] iniciando (dry_run={args.dry_run})")
-    stats = sync_all(args.dry_run)
+    print(f"[squads] iniciando (dry_run={args.dry_run}, create_missing={not args.no_create_missing})")
+    stats = sync_all(args.dry_run, create_missing=not args.no_create_missing)
 
     print(f"\n[squads] === resumen ===")
     print(f"  competitions vistas:    {stats['competitions_seen']}")
     print(f"  equipos vistos:         {stats['teams_seen']}")
     print(f"  equipos matcheados:     {stats['teams_matched']}")
+    print(f"  equipos CREADOS:        {stats['teams_created']}")
+    print(f"  logos ligas updated:    {stats['logos_ligas_updated']}")
     print(f"  metadata actualizada:   {stats['metadata_updates']}")
     print(f"  squads reemplazados:    {stats['squads_replaced']}")
     print(f"  jugadores insertados:   {stats['players_inserted']}")
     print(f"  delete failures (FK):   {stats['delete_failures']}")
     print(f"  errores:                {stats['errors']}")
-    missing = stats['teams_missing_in_supabase']
-    if missing:
-        print(f"\n  equipos en FD pero NO en Supabase ({len(missing)}):")
-        for slug, name in missing[:20]:
-            print(f"    - {name} ({slug})")
-        if len(missing) > 20:
-            print(f"    ... y {len(missing) - 20} mas")
 
 
 if __name__ == "__main__":
