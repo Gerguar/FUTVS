@@ -101,6 +101,9 @@ TEAM_COLORS: dict[str, tuple[str, str]] = {
     "como":              ("#003DA5", "#FFFFFF"),
     "parma":             ("#FFCD00", "#0067B1"),
     "venezia":           ("#F58220", "#000000"),
+    "cremonese":         ("#A50034", "#A0A0A0"),
+    "ac_pisa":           ("#001F4F", "#FFFFFF"),
+    "pisa":              ("#001F4F", "#FFFFFF"),
     "leverkusen":        ("#E32221", "#000000"),
     "leipzig":           ("#DD0741", "#FFFFFF"),
     "mgladbach":         ("#FFFFFF", "#000000"),
@@ -167,6 +170,7 @@ TEAM_COUNTRY: dict[str, str] = {
     "sassuolo": "Italia", "genoa": "Italia", "lecce": "Italia", "udinese": "Italia",
     "cagliari": "Italia", "monza": "Italia", "empoli": "Italia", "verona": "Italia",
     "como": "Italia", "parma": "Italia", "venezia": "Italia",
+    "cremonese": "Italia", "ac_pisa": "Italia", "pisa": "Italia",
     # Alemania
     "bayern_munich": "Alemania", "dortmund": "Alemania", "leverkusen": "Alemania",
     "leipzig": "Alemania", "mgladbach": "Alemania", "wolfsburg": "Alemania",

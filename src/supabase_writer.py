@@ -89,14 +89,22 @@ TEAM_ALIAS: dict[str, int] = {
     "PSG":                            12,
 }
 
-# Nuestro competition.code → Supabase ligas.id
+# Mapeo de competition codes -> Supabase ligas.id
+# Aceptamos AMBOS: nuestros codigos internos (UCL/EPL/LL/...) y los de
+# football-data.org que aparecen en matches.parquet (CL/PL/PD/...)
 LEAGUE_ALIAS: dict[str, int] = {
-    "UCL": 1,   # Champions League
-    "LL":  2,   # La Liga
-    "EPL": 3,   # Premier League
-    "SA":  4,   # Serie A
-    "BL":  5,   # Bundesliga
-    "L1":  6,   # Ligue 1
+    # Champions League
+    "UCL": 1, "CL": 1,
+    # La Liga
+    "LL":  2, "PD": 2,
+    # Premier League
+    "EPL": 3, "PL": 3,
+    # Serie A (mismo codigo en ambos)
+    "SA":  4,
+    # Bundesliga
+    "BL":  5, "BL1": 5,
+    # Ligue 1
+    "L1":  6, "FL1": 6,
 }
 
 MATCH_FUZZ_HOURS = 6  # tolerancia para matchear partidos por fecha
