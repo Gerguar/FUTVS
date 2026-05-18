@@ -1,0 +1,45 @@
+name: fbref-stats (semanal + manual)
+
+# Ingest semanal de estadisticas de jugadores desde fbref.com.
+# fbref se actualiza diariamente pero sus stats son acumulativas de la temporada,
+# asi que tirar 1 vez por semana es suficiente.
+#
+# Corre los martes a las 07:00 UTC (un dia despues de squads para que las
+# tablas tengan los plantelles frescos antes de cargar stats).
+
+on:
+  schedule:
+    - cron: "0 7 * * 2"  # Martes 07:00 UTC
+  workflow_dispatch:
+    inputs:
+      season:
+        description: "Temporada en formato fbref (ej: 2024-25)"
+        required: true
+        default: "2024-25"
+      temporada_label:
+        description: "Etiqueta en Supabase (default: igual a season con / en vez de -)"
+        required: false
+        default: ""
+
+jobs:
+  fbref:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Sincronizar stats de jugadores desde fbref
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          SEASON="${{ inputs.season || '2024-25' }}"
+          LABEL="${{ inputs.temporada_label }}"
+          if [ -z "$LABEL" ]; then
+            python -m src.ingest_fbref_stats --season "$SEASON"
+          else
+            python -m src.ingest_fbref_stats --season "$SEASON" --temporada-label "$LABEL"
+          fi

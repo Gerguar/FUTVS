@@ -8,3 +8,5 @@ requests>=2.31
 python-dotenv>=1.0
 tenacity>=8.2
 pydantic>=2.5
+soccerdata>=1.7
+rapidfuzz>=3.5
