@@ -62,27 +62,45 @@ def _safe_int(val: Any) -> int:
 
 
 def _best_player_match(target_name: str, candidates: list[tuple[int, str]],
-                       threshold: int = 70) -> int | None:
+                       threshold: int = 60) -> int | None:
     """
     Devuelve el id del jugador con mejor match de nombre.
     candidates: lista de (id, nombre).
-    threshold 0-100 de rapidfuzz (default 70).
+    threshold 0-100 de rapidfuzz (default 60, bajado desde 70 para mejor recall).
     """
     from rapidfuzz import fuzz, process
     if not candidates:
         return None
     target_norm = _normalize_name(target_name)
     options = [(eid, _normalize_name(n)) for eid, n in candidates]
-    # process.extractOne con un dict {eid: norm_name}
     choices = {eid: norm for eid, norm in options}
     result = process.extractOne(target_norm, choices, scorer=fuzz.WRatio)
     if not result:
         return None
-    # result = (norm_match, score, eid)
     _, score, eid = result
     if score < threshold:
         return None
     return eid
+
+
+def _dedupe_payloads(plist: list[dict]) -> tuple[list[dict], int]:
+    """
+    Dedupa payloads del mismo batch por (jugador_id, temporada).
+    Mantiene la fila con mayor `partidos` (más data = más confiable).
+    Devuelve (dedupada, cantidad_descartada).
+    """
+    seen: dict[tuple, dict] = {}
+    duplicates = 0
+    for p in plist:
+        key = (p["jugador_id"], p["temporada"])
+        existing = seen.get(key)
+        if existing is None:
+            seen[key] = p
+        else:
+            duplicates += 1
+            if p.get("partidos", 0) > existing.get("partidos", 0):
+                seen[key] = p
+    return list(seen.values()), duplicates
 
 
 def _flatten_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -206,22 +224,29 @@ def sync_league(sync: SupabaseSync, league: str, our_code: str,
         }
         payloads_per_team.setdefault(eq_id, []).append(payload)
 
-    # Upsert por equipo
+    # Upsert por equipo (deduplicando antes para evitar errores 500)
+    total_dups = 0
     for eq_id, plist in payloads_per_team.items():
+        plist_clean, dups = _dedupe_payloads(plist)
+        total_dups += dups
         if dry_run:
-            print(f"  [dry-run] {our_code} eq_id={eq_id}: {len(plist)} estadisticas")
-            stats["upserted"] += len(plist)
+            extra = f" (descarte {dups} duplicados)" if dups else ""
+            print(f"  [dry-run] {our_code} eq_id={eq_id}: {len(plist_clean)} estadisticas{extra}")
+            stats["upserted"] += len(plist_clean)
             continue
         try:
             sb_post("estadisticas_jugador?on_conflict=jugador_id,temporada",
-                    plist,
+                    plist_clean,
                     prefer="resolution=merge-duplicates,return=minimal")
-            stats["upserted"] += len(plist)
-            print(f"  + {our_code} eq_id={eq_id}: {len(plist)} stats upserted")
+            stats["upserted"] += len(plist_clean)
+            extra = f" (descarte {dups} dups)" if dups else ""
+            print(f"  + {our_code} eq_id={eq_id}: {len(plist_clean)} stats upserted{extra}")
         except Exception as e:
             print(f"  ! upsert eq_id={eq_id}: {e}")
             stats["errors"] += 1
 
+    if total_dups > 0:
+        print(f"  · total duplicados descartados en {our_code}: {total_dups}")
     return stats
 
 
