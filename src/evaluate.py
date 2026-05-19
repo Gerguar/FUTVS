@@ -200,6 +200,41 @@ def main() -> None:
     # Distribución real para contexto
     real = pd.Series(y).value_counts(normalize=True).sort_index()
 
+    # Baseline 4: pipeline completo XGBoost (con features EAFC ratings si team_ratings.json existe)
+    ll_xgb = None; br_xgb = None; acc_xgb = None; xgb_meta = {}
+    try:
+        from .xgb_model import load_artifacts
+        from .features import FeatureBuilder, feature_columns
+        from .elo import EloState
+        from .dixon_coles import DixonColesState
+
+        clf, _calibrator, xgb_meta = load_artifacts()
+        # Usamos el DC y Elo guardados (los que predict carga en runtime).
+        dc_state_saved = DixonColesState.from_json()
+        elo_state_saved = EloState.from_json()
+
+        # Reconstruimos features para el test set usando los states guardados.
+        # Importante: esto es honesto porque el XGBoost fue trained antes del test set
+        # (siempre que el modelo no se haya retrained con datos del test, lo cual no pasa).
+        fb_eval = FeatureBuilder()
+        feat_all = fb_eval.build_training_table(df, dc_state_saved, elo_state_saved)
+        feat_all = feat_all.dropna(subset=["label"])
+        feat_test = feat_all[feat_all["kickoff_ts_utc"] >= cutoff]
+
+        if len(feat_test) >= 30:
+            X_test = feat_test.reindex(columns=feature_columns()).astype(float)
+            y_xgb = feat_test["label"].map(LABEL_MAP).astype(int).values
+            proba_xgb = clf.predict_proba(X_test)
+            ll_xgb = multi_log_loss(y_xgb, proba_xgb)
+            br_xgb = multi_brier(y_xgb, proba_xgb)
+            acc_xgb = accuracy_top1(y_xgb, proba_xgb)
+    except FileNotFoundError as e:
+        print(f"[evaluate] XGBoost no evaluado (artefactos no encontrados): {e}")
+    except Exception as e:
+        import traceback
+        print(f"[evaluate] XGBoost no evaluado: {type(e).__name__}: {e}")
+        traceback.print_exc()
+
     # ===== REPORTE =====
     print("=" * 70)
     print("RESULTADOS")
@@ -222,6 +257,20 @@ def main() -> None:
         marker = (f"  <- gana {-delta:.4f} sobre su DC base" if delta and delta < 0
                   else f"  <- empeora {delta:.4f} sobre su DC base" if delta else "")
         print(f"{'DC + isotonic (calib HONESTO)':<35} {ll_dccal:>10.4f} {br_dccal:>10.4f} {acc_dccal:>10.1%}{marker}")
+    if ll_xgb is not None:
+        method = (xgb_meta or {}).get("method", "XGBoost")
+        delta = ll_xgb - ll  # mejora vs DC crudo
+        if delta < -0.001:
+            tag = f"  <- gana {-delta:.4f} a DC"
+        elif delta > 0.001:
+            tag = f"  <- empeora {delta:.4f} vs DC"
+        else:
+            tag = "  <- empate practico con DC"
+        print(f"{'XGBoost (con EAFC ratings)':<35} {ll_xgb:>10.4f} {br_xgb:>10.4f} {acc_xgb:>10.1%}{tag}")
+        trained = (xgb_meta or {}).get("trained_at", "?")
+        print(f"     trained_at: {trained}")
+    else:
+        print(f"{'XGBoost (con EAFC ratings)':<35} {'no disponible':>10} (necesita correr train.py primero)")
     print()
 
     print("Calibración por clase:")
