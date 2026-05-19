@@ -35,20 +35,29 @@ def main() -> None:
     valid_end = now - pd.Timedelta(days=BACKTEST.test_window_days)
     train_end = valid_end - pd.Timedelta(days=BACKTEST.valid_window_days)
 
-    train_raw = finished[finished["kickoff_ts_utc"] < train_end]
-    if len(train_raw) < BACKTEST.min_train_matches:
-        raise RuntimeError(f"Pocos partidos para entrenar: {len(train_raw)}")
+    # Para DC + Elo entrenamos con TODO el historico (mas data = mejores ratings).
+    train_raw_full = finished[finished["kickoff_ts_utc"] < train_end]
+    if len(train_raw_full) < BACKTEST.min_train_matches:
+        raise RuntimeError(f"Pocos partidos para entrenar DC/Elo: {len(train_raw_full)}")
 
-    print(f"[train] {len(train_raw)} partidos hasta {train_end.date()}")
-    dc_state = fit_dc(train_raw, asof_ts=train_end)
+    print(f"[train] DC+Elo: {len(train_raw_full)} partidos hasta {train_end.date()}")
+    dc_state = fit_dc(train_raw_full, asof_ts=train_end)
     dc_state.to_json()
     elo_state = EloState()
-    replay(train_raw, elo_state)
+    replay(train_raw_full, elo_state)
     elo_state.to_json()
+
+    # Para XGBoost (que usa features de rating EA FC) filtramos a las ultimas
+    # 2 temporadas para minimizar lookahead bias (EA ratings actuales aplicados
+    # a partidos viejos seria contaminacion).
+    xgb_train_from = pd.Timestamp("2024-07-01", tz="UTC")
+    print(f"[train] XGBoost: usa partidos desde {xgb_train_from.date()}")
 
     fb = FeatureBuilder()
     full_feat = fb.build_training_table(finished, dc_state, elo_state)
     full_feat = full_feat.dropna(subset=["label"])
+    full_feat = full_feat[full_feat["kickoff_ts_utc"] >= xgb_train_from]
+    print(f"[train] features post-filtro: {len(full_feat)} partidos")
 
     train_feat = full_feat[full_feat["kickoff_ts_utc"] < train_end]
     valid_feat = full_feat[(full_feat["kickoff_ts_utc"] >= train_end) &

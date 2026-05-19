@@ -25,6 +25,23 @@ from .config import LABEL_MAP, SNAPSHOTS
 from .elo import EloState, pre_match_diff, update_one
 from .dixon_coles import DixonColesState, pre_match_features
 from .data_ingest import devig_odds
+from .team_ratings import load_team_ratings
+
+
+def _ratings_for(team_ratings: dict, slug: str, prefix: str) -> dict:
+    """Devuelve features de EA FC rating para un equipo. NaN si no esta cargado."""
+    r = team_ratings.get(slug) if team_ratings else None
+    if not r:
+        return {
+            f"{prefix}_xi_rating": np.nan,
+            f"{prefix}_attack_rating": np.nan,
+            f"{prefix}_defense_rating": np.nan,
+        }
+    return {
+        f"{prefix}_xi_rating": r.get("top_xi_avg"),
+        f"{prefix}_attack_rating": r.get("attack_score"),
+        f"{prefix}_defense_rating": r.get("defense_score"),
+    }
 
 
 SNAPSHOT_OFFSETS = {
@@ -164,6 +181,7 @@ class FeatureBuilder:
         team_feats_h = team_feats_h.rename(columns={"home_match_id": "match_id"})
         team_feats_a = team_feats_a.rename(columns={"away_match_id": "match_id"})
 
+        team_ratings = load_team_ratings()
         elo_state = EloState()
         rows = []
         for _, row in m.iterrows():
@@ -175,6 +193,8 @@ class FeatureBuilder:
             elo_feats = pre_match_diff(elo_state, home, away, is_neutral=neutral)
             dc_feats = pre_match_features(dc_state, home, away, is_neutral=neutral)
             mkt_feats = _odds_to_features(row)
+            rating_h = _ratings_for(team_ratings, home, "home")
+            rating_a = _ratings_for(team_ratings, away, "away")
 
             label = label_from_score(row.get("home_goals"), row.get("away_goals"))
 
@@ -189,6 +209,8 @@ class FeatureBuilder:
                 **elo_feats,
                 **dc_feats,
                 **mkt_feats,
+                **rating_h,
+                **rating_a,
                 "label": label,
             }
             rows.append(feat)
@@ -208,6 +230,12 @@ class FeatureBuilder:
         out["fatigue_diff"] = out.get("home_fatigue_idx") - out.get("away_fatigue_idx")
         out["gd5_diff"] = out.get("home_gd_roll5") - out.get("away_gd_roll5")
         out["momentum_diff"] = out.get("home_momentum") - out.get("away_momentum")
+
+        # Ratings EA FC: diferencial XI + match-up por posicion
+        out["xi_rating_diff"] = out.get("home_xi_rating") - out.get("away_xi_rating")
+        # Local ataca contra defensa visitante (y viceversa)
+        out["home_attack_vs_away_defense"] = out.get("home_attack_rating") - out.get("away_defense_rating")
+        out["away_attack_vs_home_defense"] = out.get("away_attack_rating") - out.get("home_defense_rating")
 
         return out
 
@@ -238,6 +266,10 @@ class FeatureBuilder:
         dc_feats = pre_match_features(dc_state, home, away, is_neutral=is_neutral)
         mkt_feats = _odds_to_features(pd.Series(odds_row or {}))
 
+        team_ratings = load_team_ratings()
+        rating_h = _ratings_for(team_ratings, home, "home")
+        rating_a = _ratings_for(team_ratings, away, "away")
+
         h = {f"home_{k}": v for k, v in latest(home).items()}
         a = {f"away_{k}": v for k, v in latest(away).items()}
 
@@ -250,6 +282,8 @@ class FeatureBuilder:
             **elo_feats,
             **dc_feats,
             **mkt_feats,
+            **rating_h,
+            **rating_a,
             **h, **a,
         }
         row["rest_diff"] = (h.get("home_rest_days") or 0) - (a.get("away_rest_days") or 0)
@@ -257,6 +291,13 @@ class FeatureBuilder:
         row["fatigue_diff"] = (h.get("home_fatigue_idx") or 0) - (a.get("away_fatigue_idx") or 0)
         row["gd5_diff"] = (h.get("home_gd_roll5") or 0) - (a.get("away_gd_roll5") or 0)
         row["momentum_diff"] = (h.get("home_momentum") or 0) - (a.get("away_momentum") or 0)
+
+        h_xi = rating_h.get("home_xi_rating"); a_xi = rating_a.get("away_xi_rating")
+        h_atk = rating_h.get("home_attack_rating"); a_atk = rating_a.get("away_attack_rating")
+        h_def = rating_h.get("home_defense_rating"); a_def = rating_a.get("away_defense_rating")
+        row["xi_rating_diff"] = (h_xi - a_xi) if (h_xi is not None and a_xi is not None) else np.nan
+        row["home_attack_vs_away_defense"] = (h_atk - a_def) if (h_atk is not None and a_def is not None) else np.nan
+        row["away_attack_vs_home_defense"] = (a_atk - h_def) if (a_atk is not None and h_def is not None) else np.nan
         return row
 
 
@@ -275,4 +316,9 @@ def feature_columns() -> list[str]:
         "home_fatigue_idx", "away_fatigue_idx",
         "home_momentum", "away_momentum",
         "rest_diff", "congestion_diff", "fatigue_diff", "gd5_diff", "momentum_diff",
+        # Ratings EA FC 26 (top XI agregado, ataque/defensa por posicion)
+        "home_xi_rating", "away_xi_rating", "xi_rating_diff",
+        "home_attack_rating", "home_defense_rating",
+        "away_attack_rating", "away_defense_rating",
+        "home_attack_vs_away_defense", "away_attack_vs_home_defense",
     ]

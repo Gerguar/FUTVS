@@ -1,6 +1,6 @@
 # FutPronostico — Documento de traspaso
 
-> Generado: 2026-05-18 17:58
+> Generado: 2026-05-19 18:00
 
 ## 1. Objetivo del proyecto
 
@@ -60,7 +60,8 @@ football-forecast/
 │   ├── data_ingest.py        ← ingest football-data.org (current season + UCL)
 │   ├── ingest_couk.py        ← ingest football-data.co.uk (6 años historicas)
 │   ├── ingest_squads.py      ← squads + metadata equipos + logos ligas
-│   ├── ingest_fbref_stats.py ← player stats via Understat (renombrado pero archivo igual)
+│   ├── ingest_fbref_stats.py ← player stats via Understat (archivo conserva el nombre fbref)
+│   ├── player_ratings.py     ← actualiza jugadores.rating (EA FC 26 CSV + modelo derivado fallback)
 │   ├── elo.py                ← rating Elo dinamico
 │   ├── dixon_coles.py        ← Poisson bivariado con corrección DC
 │   ├── features.py           ← feature engineering snapshot temporal
@@ -85,11 +86,11 @@ football-forecast/
 │   └── backtest_report.json
 │
 └── .github/workflows/
-    ├── predict.yml           ← cron 6h (ingest+train+predict+sync+writer)
+    ├── predict.yml           ← cron 6h + retrain semanal (domingos 00:00 UTC)
     ├── backfill.yml          ← manual (re-baja todo el historico)
     ├── sync.yml              ← manual rapido (solo sync equipos/partidos/escudos)
-    ├── squads.yml            ← cron semanal (squads + metadata)
-    ├── fbref-stats.yml       ← manual (player stats via Understat)
+    ├── squads.yml            ← cron semanal lunes 06:00 UTC (squads + metadata)
+    ├── fbref-stats.yml       ← cron semanal miercoles 08:00 UTC: Understat + player ratings (EAFC)
     └── evaluate.yml          ← manual (backtest)
 ```
 
@@ -104,7 +105,7 @@ football-forecast/
 | `partidos` | ~250 | "programado" o "finalizado". goles_local/visitante se actualizan auto cuando football-data marca FINISHED. |
 | `pronosticos` | 1:1 con partidos programados | UNIQUE en partido_id. prob_local/empate/visitante (0-100), factor_* (0-100), notas |
 | `forma_reciente` | VIEW | Calcula W/D/L ultimos 5 desde partidos automaticamente. |
-| `jugadores` | ~4500 | Plantel real de los 132 equipos. nombre, posicion (POR/DEF/MED/DEL), nacionalidad, fecha_nac. rating en 70 default. |
+| `jugadores` | ~3.700 | Plantel real de los 132 equipos. nombre, posicion (POR/DEF/MED/DEL), nacionalidad, fecha_nac. **rating cargado desde EA FC 26 OVR** (89% match) + modelo derivado para el resto. |
 | `estadisticas_jugador` | ~867 + bug 500s | Cargando via Understat. UNIQUE en (jugador_id, temporada). |
 | `mercado_historico` | 0 | VACIA. Requiere Transfermarkt scraping. |
 | `minutos_por_anio` | 0 | VACIA. Requiere fbref scraping (bloqueado en GH) o API paga. |
@@ -173,6 +174,17 @@ squads.yml (cron lunes 06:00 UTC + dispatch manual)
   - Crea equipos faltantes, update metadata (fundacion, estadio, escudo)
   - Reemplaza plantelles (jugadores)
   - Update logos de ligas
+
+fbref-stats.yml (cron miercoles 08:00 UTC + dispatch manual)
+  1. ingest_fbref_stats.py
+     - Player stats por jugador (goles, asist, partidos, minutos)
+     - Via Understat (soccerdata)
+     - Dedupe payloads para evitar HTTP 500
+  2. player_ratings.py --prefer-eafc
+     - Calcula rating de cada jugador
+     - Fuente primaria: EA FC 26 OVR (CSV publico desde EAFC26-DataHub)
+     - Fallback: modelo derivado de stats (minutos, goles, asistencias, edad)
+     - Bulk PATCH a jugadores.rating
 ```
 
 ## 7. Decisiones tomadas (importantes)
@@ -195,12 +207,9 @@ squads.yml (cron lunes 06:00 UTC + dispatch manual)
 - HTML deployado en Netlify, lee live
 
 ⚠️ Pendientes / bugs:
-- player-stats workflow: Understat funciona desde GH Actions! Pero hay **HTTP 500 en algunos upserts**.
-  Probable causa: dos players de Understat matchean (fuzzy) al mismo jugador en Supabase,
-  generando duplicados (jugador_id, temporada) que violan el unique index.
-  Fix probable: dedupar antes del upsert, manteniendo el mejor match.
-- rating de jugadores siempre 70 default
-- mercado_historico y minutos_por_anio vacios
+- **resueltos:** HTTP 500 en upserts (dedupe pre-upsert), ratings 70 (EA FC 26 OVR)
+- mercado_historico y minutos_por_anio vacios (requieren Transfermarkt/fbref scraping)
+- 409 jugadores (11%) siguen en rating 70 por no matchear en EA FC 26 (juveniles, reservas, transferencias recientes)
 
 ## 9. Roadmap propuesto
 

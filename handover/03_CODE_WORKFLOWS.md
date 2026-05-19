@@ -12,6 +12,8 @@ on:
   schedule:
     # Cada 6 horas
     - cron: "0 */6 * * *"
+    # Reentreno semanal completo: domingos 00:00 UTC
+    - cron: "0 0 * * 0"
   workflow_dispatch: {}
 
 jobs:
@@ -226,15 +228,17 @@ jobs:
 ### `.github/workflows/fbref-stats.yml`
 
 ```yaml
-name: player-stats (manual)
+name: player-stats (semanal + manual)
 
 # Ingest de estadisticas de jugadores desde Understat (via soccerdata).
-# SIN cron mientras verificamos que Understat permita scraping desde GH Actions.
-# fbref bloquea las IPs de datacenter — Understat suele ser mas permisivo.
+# Understat funciona desde GH Actions (fbref nos bloqueo, ese ya esta deprecado).
 #
-# Si Understat tambien bloquea, vamos a evaluar otras opciones.
+# Corre miercoles a las 08:00 UTC (despues de squads del lunes y predict del martes,
+# asi cuando llegan los stats los plantelles y partidos ya estan frescos).
 
 on:
+  schedule:
+    - cron: "0 8 * * 3"  # Miercoles 08:00 UTC
   workflow_dispatch:
     inputs:
       season:
@@ -268,6 +272,12 @@ jobs:
           else
             python -m src.ingest_fbref_stats --season "$SEASON" --temporada-label "$LABEL"
           fi
+
+      - name: Actualizar rating de jugadores
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.player_ratings --prefer-eafc
 
 ```
 
@@ -413,6 +423,8 @@ __pycache__/
 .DS_Store
 .idea/
 .vscode/
+downloaded_files/
+data/eafc26_ratings_cache.json
 # Mantenemos data/ commiteable porque la consume Netlify.
 # Si tu dataset crece mucho, considerar Git LFS o mover predictions.json a un bucket.
 
