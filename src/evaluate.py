@@ -209,6 +209,7 @@ def main() -> None:
     n_train_xgb = 0; n_features_no_rat = 0; n_features_rat = 0
     try:
         from .features import FeatureBuilder, feature_columns
+        from .elo import EloState
         from xgboost import XGBClassifier
         from .config import XGB
 
