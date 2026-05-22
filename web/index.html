@@ -1219,8 +1219,12 @@ function renderSidePlayers(containerId,headerId,players,matchId,side) {
     container.innerHTML = `<div class="loader" style="padding:1rem;color:var(--faint)">Sin jugadores cargados</div>`
     return
   }
-  container.innerHTML=players.map((p,i)=>`
-    <div class="side-player-card ${hc}" onclick="showPlayer(${matchId},${i},'${side}')">
+  const VISIBLE = 4
+  const restCount = Math.max(0, players.length - VISIBLE)
+  const cards = players.map((p,i)=>{
+    const isExtra = i >= VISIBLE
+    return `
+    <div class="side-player-card ${hc}${isExtra?' extra':''}"${isExtra?' style="display:none"':''} onclick="showPlayer(${matchId},${i},'${side}')">
       <div class="spc-info">
         <div class="spc-name">${p.name}</div>
         <div class="spc-pos">${p.pos}</div>
@@ -1228,7 +1232,27 @@ function renderSidePlayers(containerId,headerId,players,matchId,side) {
       </div>
       <div class="spc-rating" style="color:${col}">${p.rating}</div>
       <div class="spc-arrow">›</div>
-    </div>`).join('')
+    </div>`
+  }).join('')
+  const toggleBtn = restCount > 0 ? `
+    <button class="players-toggle-btn" onclick="togglePlayers('${side}',${restCount})"
+            style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:9px 12px;margin-top:8px;cursor:pointer;color:${col};font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:800;letter-spacing:1.2px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s">
+      <span class="toggle-text">VER ${restCount} MÁS</span>
+      <span class="toggle-arrow" style="font-size:.9rem;line-height:1">▾</span>
+    </button>` : ''
+  container.innerHTML = cards + toggleBtn
+}
+
+function togglePlayers(side, restCount) {
+  const container = document.getElementById(`side-players-${side}`)
+  if(!container) return
+  const hidden = container.querySelectorAll('.side-player-card.extra')
+  const btn = container.querySelector('.players-toggle-btn')
+  if(!hidden.length || !btn) return
+  const isHidden = hidden[0].style.display === 'none'
+  hidden.forEach(c => c.style.display = isHidden ? '' : 'none')
+  btn.querySelector('.toggle-text').textContent = isHidden ? 'OCULTAR' : `VER ${restCount} MÁS`
+  btn.querySelector('.toggle-arrow').textContent = isHidden ? '▴' : '▾'
 }
 
 function avgStat(players,fn){ if(!players.length)return 0; return Math.round(players.map(fn).map(v=>parseFloat(v)||0).reduce((a,b)=>a+b,0)/players.length*10)/10 }
