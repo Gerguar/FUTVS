@@ -1,0 +1,37 @@
+name: publish-hostinger
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "web/**"
+      - ".github/workflows/publish-hostinger.yml"
+  workflow_dispatch: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish web/ to hostinger branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf /tmp/futversus-hostinger
+          mkdir -p /tmp/futversus-hostinger
+          cp -a web/. /tmp/futversus-hostinger/
+
+          cd /tmp/futversus-hostinger
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b hostinger
+          git add .
+          git commit -m "deploy: hostinger static site ${GITHUB_SHA}"
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force origin hostinger
