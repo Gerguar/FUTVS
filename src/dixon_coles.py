@@ -129,11 +129,12 @@ def _attach_xg(matches: pd.DataFrame, team_xg: pd.DataFrame) -> pd.DataFrame:
     """
     Mergea matches con team_xg por (date, home_slug, away_slug).
     Devuelve matches con columnas extra home_xg/away_xg (NaN si no hay match).
+    Fuerza float64 limpio para evitar problemas con pandas Nullable types.
     """
     if team_xg.empty:
         m = matches.copy()
-        m["home_xg"] = float("nan")
-        m["away_xg"] = float("nan")
+        m["home_xg"] = np.nan
+        m["away_xg"] = np.nan
         return m
 
     m = matches.copy()
@@ -147,6 +148,9 @@ def _attach_xg(matches: pd.DataFrame, team_xg: pd.DataFrame) -> pd.DataFrame:
         right_on=["match_date", "home_slug", "away_slug"],
         how="left",
     )
+    # Forzar float64 limpio: pd.NA (de Nullable types) -> np.nan
+    for col in ("home_xg", "away_xg"):
+        merged[col] = pd.to_numeric(merged[col], errors="coerce").astype("float64")
     return merged.drop(columns=["match_date", "home_slug", "away_slug", "kickoff_date"],
                        errors="ignore")
 
@@ -193,12 +197,16 @@ def fit(matches: pd.DataFrame, asof_ts: pd.Timestamp | None = None,
     # Calcular target (goles puros o blend con xG)
     if use_xg and team_xg is not None:
         df_with_xg = _attach_xg(df, team_xg)
-        h_xg = pd.to_numeric(df_with_xg["home_xg"], errors="coerce").values
-        a_xg = pd.to_numeric(df_with_xg["away_xg"], errors="coerce").values
+        # to_numpy con dtype=float64 + na_value=np.nan limpia pd.NA -> np.nan
+        h_xg = df_with_xg["home_xg"].to_numpy(dtype="float64", na_value=np.nan)
+        a_xg = df_with_xg["away_xg"].to_numpy(dtype="float64", na_value=np.nan)
         # Blend solo cuando xG esta disponible
-        has_xg = ~np.isnan(h_xg) & ~np.isnan(a_xg)
-        hg = np.where(has_xg, xg_blend * h_xg + (1 - xg_blend) * hg_raw, hg_raw)
-        ag = np.where(has_xg, xg_blend * a_xg + (1 - xg_blend) * ag_raw, ag_raw)
+        has_xg = np.isfinite(h_xg) & np.isfinite(a_xg)
+        # Reemplazar NaN por 0 antes del calculo (se descarta por has_xg en np.where)
+        h_xg_safe = np.where(has_xg, h_xg, 0.0)
+        a_xg_safe = np.where(has_xg, a_xg, 0.0)
+        hg = np.where(has_xg, xg_blend * h_xg_safe + (1 - xg_blend) * hg_raw, hg_raw)
+        ag = np.where(has_xg, xg_blend * a_xg_safe + (1 - xg_blend) * ag_raw, ag_raw)
         coverage = int(has_xg.sum())
         print(f"[dc.fit] use_xg=True: {coverage}/{len(df)} partidos con xG "
               f"(blend={xg_blend}, fallback a goles cuando NaN)")
