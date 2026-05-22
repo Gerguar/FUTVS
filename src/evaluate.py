@@ -301,21 +301,33 @@ def main() -> None:
 
             y_te = xgb_test["label"].map(LABEL_MAP).astype(int).values
 
-            # A) XGBoost SIN EAFC ratings
-            print(f"[evaluate] A) XGBoost SIN ratings ({n_features_no_rat} features)...")
-            clf_no = _fit_xgb_subset(xgb_train, xgb_valid, features_no_rat)
-            proba_no = clf_no.predict_proba(xgb_test[features_no_rat].astype(float))
+            # Lista de features de xG rolling para A/B
+            XG_FEATURES = {
+                "home_xg_roll5", "home_xga_roll5", "home_xgd_roll5",
+                "away_xg_roll5", "away_xga_roll5", "away_xgd_roll5",
+                "home_xg_momentum", "away_xg_momentum",
+                "xgd5_diff", "xg_momentum_diff",
+            }
+            features_no_rat_no_xg = [f for f in features_no_rat if f not in XG_FEATURES]
+            features_no_rat_with_xg = features_no_rat  # incluye xG (esta en feature_columns)
+
+            # A) XGBoost SIN EAFC ratings SIN xG features (baseline)
+            print(f"[evaluate] A) XGBoost SIN ratings SIN xG ({len(features_no_rat_no_xg)} features)...")
+            clf_no = _fit_xgb_subset(xgb_train, xgb_valid, features_no_rat_no_xg)
+            proba_no = clf_no.predict_proba(xgb_test[features_no_rat_no_xg].astype(float))
             ll_xgb_no_rat = multi_log_loss(y_te, proba_no)
             br_xgb_no_rat = multi_brier(y_te, proba_no)
             acc_xgb_no_rat = accuracy_top1(y_te, proba_no)
 
-            # B) XGBoost CON EAFC ratings
-            print(f"[evaluate] B) XGBoost CON ratings ({n_features_rat} features)...")
-            clf_yes = _fit_xgb_subset(xgb_train, xgb_valid, features_rat)
-            proba_yes = clf_yes.predict_proba(xgb_test[features_rat].astype(float))
+            # B) XGBoost SIN EAFC ratings CON xG features
+            print(f"[evaluate] B) XGBoost SIN ratings CON xG ({len(features_no_rat_with_xg)} features)...")
+            clf_yes = _fit_xgb_subset(xgb_train, xgb_valid, features_no_rat_with_xg)
+            proba_yes = clf_yes.predict_proba(xgb_test[features_no_rat_with_xg].astype(float))
             ll_xgb_rat = multi_log_loss(y_te, proba_yes)
             br_xgb_rat = multi_brier(y_te, proba_yes)
             acc_xgb_rat = accuracy_top1(y_te, proba_yes)
+            n_features_no_rat = len(features_no_rat_no_xg)
+            n_features_rat = len(features_no_rat_with_xg)
 
             print(f"[evaluate] A/B test completado sobre {n_xgb_test} partidos test")
         else:
@@ -357,22 +369,22 @@ def main() -> None:
     if ll_xgb_no_rat is not None:
         delta_no = ll_xgb_no_rat - ll
         tag_no = (f"  vs DC: {delta_no:+.4f}")
-        print(f"{'A) XGBoost SIN EAFC ratings':<35} {ll_xgb_no_rat:>10.4f} {br_xgb_no_rat:>10.4f} {acc_xgb_no_rat:>10.1%}{tag_no}")
+        print(f"{'A) XGBoost SIN xG features':<35} {ll_xgb_no_rat:>10.4f} {br_xgb_no_rat:>10.4f} {acc_xgb_no_rat:>10.1%}{tag_no}")
     if ll_xgb_rat is not None:
         delta_yes = ll_xgb_rat - ll
         tag_yes = (f"  vs DC: {delta_yes:+.4f}")
-        print(f"{'B) XGBoost CON EAFC ratings':<35} {ll_xgb_rat:>10.4f} {br_xgb_rat:>10.4f} {acc_xgb_rat:>10.1%}{tag_yes}")
+        print(f"{'B) XGBoost CON xG features':<35} {ll_xgb_rat:>10.4f} {br_xgb_rat:>10.4f} {acc_xgb_rat:>10.1%}{tag_yes}")
     if ll_xgb_no_rat is not None and ll_xgb_rat is not None:
         delta_ab = ll_xgb_rat - ll_xgb_no_rat
         if delta_ab < -0.001:
-            verdict = f"CON-ratings GANA por {-delta_ab:.4f}"
+            verdict = f"CON-xG GANA por {-delta_ab:.4f}"
         elif delta_ab > 0.001:
-            verdict = f"SIN-ratings GANA por {delta_ab:.4f}"
+            verdict = f"SIN-xG GANA por {delta_ab:.4f}"
         else:
             verdict = "empate practico (diferencia < 0.001)"
-        print(f"     ==> Efecto de EAFC ratings: {verdict}")
+        print(f"     ==> Efecto de xG rolling: {verdict}")
         print(f"     ==> Splits: train={n_train_xgb} test={n_xgb_test}  "
-              f"features: sin={n_features_no_rat} con={n_features_rat}")
+              f"features: sin xG={n_features_no_rat} con xG={n_features_rat}")
     print()
 
     print("Calibración por clase:")

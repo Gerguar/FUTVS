@@ -61,8 +61,23 @@ def label_from_score(home_goals: int | float, away_goals: int | float) -> str | 
     return "D"
 
 
-def _team_history_view(matches: pd.DataFrame) -> pd.DataFrame:
-    """Pivota la tabla match-centric a team-centric (dos filas por partido)."""
+def _team_xg_view(team_xg: pd.DataFrame) -> pd.DataFrame:
+    """Convierte team_xg.parquet (1 fila por partido) en team-centric (2 filas)."""
+    if team_xg is None or team_xg.empty:
+        return pd.DataFrame(columns=["match_date", "team_id", "xg_for", "xg_against"])
+    home = team_xg[["match_date", "home_slug", "home_xg", "away_xg"]].copy()
+    home.columns = ["match_date", "team_id", "xg_for", "xg_against"]
+    away = team_xg[["match_date", "away_slug", "away_xg", "home_xg"]].copy()
+    away.columns = ["match_date", "team_id", "xg_for", "xg_against"]
+    out = pd.concat([home, away], ignore_index=True)
+    out["match_date"] = pd.to_datetime(out["match_date"]).dt.date
+    return out
+
+
+def _team_history_view(matches: pd.DataFrame,
+                       team_xg: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Pivota la tabla match-centric a team-centric (dos filas por partido).
+    Si se pasa team_xg, mergea xG (xg_for, xg_against) por (date, team_id)."""
     home = matches.rename(columns={
         "home_team_id": "team_id", "away_team_id": "opp_id",
         "home_goals": "goals_for", "away_goals": "goals_against",
@@ -73,25 +88,50 @@ def _team_history_view(matches: pd.DataFrame) -> pd.DataFrame:
     }).assign(is_home=0)
     keep = ["match_id", "kickoff_ts_utc", "competition_code",
             "team_id", "opp_id", "goals_for", "goals_against", "is_home"]
-    return pd.concat([home[keep], away[keep]], ignore_index=True)
+    df = pd.concat([home[keep], away[keep]], ignore_index=True)
+
+    # Merge xG team-centric (si tenemos team_xg.parquet)
+    if team_xg is not None and not team_xg.empty:
+        tv_xg = _team_xg_view(team_xg)
+        df["match_date"] = pd.to_datetime(df["kickoff_ts_utc"], utc=True).dt.date
+        df = df.merge(tv_xg, on=["match_date", "team_id"], how="left")
+        df = df.drop(columns=["match_date"], errors="ignore")
+        # Forzar float64 limpio
+        for col in ("xg_for", "xg_against"):
+            df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")
+    else:
+        df["xg_for"] = np.nan
+        df["xg_against"] = np.nan
+    return df
 
 
 def _rolling_team_stats(team_view: pd.DataFrame,
                         windows: tuple[int, ...] = (3, 5, 10)) -> pd.DataFrame:
     """
-    Para cada partido del equipo, calcula media de goles a favor/contra
+    Para cada partido del equipo, calcula media de goles + xG a favor/contra
     en los últimos N partidos *previos*. EWMA con halflife=5 también.
     """
     df = team_view.sort_values(["team_id", "kickoff_ts_utc"]).copy()
     df["gd"] = df["goals_for"] - df["goals_against"]
+    has_xg = "xg_for" in df.columns and "xg_against" in df.columns
+    if has_xg:
+        df["xgd"] = df["xg_for"] - df["xg_against"]
     g = df.groupby("team_id", sort=False)
     for w in windows:
         df[f"gf_roll{w}"] = g["goals_for"].shift(1).rolling(w, min_periods=1).mean().reset_index(level=0, drop=True)
         df[f"ga_roll{w}"] = g["goals_against"].shift(1).rolling(w, min_periods=1).mean().reset_index(level=0, drop=True)
         df[f"gd_roll{w}"] = g["gd"].shift(1).rolling(w, min_periods=1).mean().reset_index(level=0, drop=True)
+        if has_xg:
+            df[f"xg_roll{w}"] = g["xg_for"].shift(1).rolling(w, min_periods=1).mean().reset_index(level=0, drop=True)
+            df[f"xga_roll{w}"] = g["xg_against"].shift(1).rolling(w, min_periods=1).mean().reset_index(level=0, drop=True)
+            df[f"xgd_roll{w}"] = g["xgd"].shift(1).rolling(w, min_periods=1).mean().reset_index(level=0, drop=True)
     df["gd_ewma5"] = g["gd"].shift(1).ewm(halflife=5, min_periods=1).mean().reset_index(level=0, drop=True)
     df["gd_ewma10"] = g["gd"].shift(1).ewm(halflife=10, min_periods=1).mean().reset_index(level=0, drop=True)
     df["momentum"] = df["gd_ewma5"] - df["gd_ewma10"]
+    if has_xg:
+        df["xgd_ewma5"] = g["xgd"].shift(1).ewm(halflife=5, min_periods=1).mean().reset_index(level=0, drop=True)
+        df["xgd_ewma10"] = g["xgd"].shift(1).ewm(halflife=10, min_periods=1).mean().reset_index(level=0, drop=True)
+        df["xg_momentum"] = df["xgd_ewma5"] - df["xgd_ewma10"]
     return df
 
 
@@ -123,14 +163,16 @@ def _rest_and_congestion(team_view: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def build_team_features(matches: pd.DataFrame) -> pd.DataFrame:
+def build_team_features(matches: pd.DataFrame,
+                        team_xg: pd.DataFrame | None = None) -> pd.DataFrame:
     """
     Devuelve una tabla con todas las features team-match-level calculadas
     estrictamente con info previa al partido (shift(1) + ventanas rolling).
+    Si se pasa team_xg, suma features de xG rolling.
     """
     matches = matches.copy()
     matches["kickoff_ts_utc"] = pd.to_datetime(matches["kickoff_ts_utc"], utc=True)
-    tv = _team_history_view(matches)
+    tv = _team_history_view(matches, team_xg=team_xg)
     tv = _rolling_team_stats(tv)
     tv = _rest_and_congestion(tv)
     return tv
@@ -175,7 +217,11 @@ class FeatureBuilder:
         m["kickoff_ts_utc"] = pd.to_datetime(m["kickoff_ts_utc"], utc=True)
         m = m.sort_values("kickoff_ts_utc").reset_index(drop=True)
 
-        team_feats = build_team_features(m)
+        # Cargar team_xg para sumar features de xG rolling
+        from .ingest_xg import load_team_xg
+        team_xg_df = load_team_xg()
+
+        team_feats = build_team_features(m, team_xg=team_xg_df)
         team_feats_h = team_feats[team_feats["is_home"] == 1].add_prefix("home_")
         team_feats_a = team_feats[team_feats["is_home"] == 0].add_prefix("away_")
         team_feats_h = team_feats_h.rename(columns={"home_match_id": "match_id"})
@@ -237,6 +283,10 @@ class FeatureBuilder:
         out["home_attack_vs_away_defense"] = out.get("home_attack_rating") - out.get("away_defense_rating")
         out["away_attack_vs_home_defense"] = out.get("away_attack_rating") - out.get("home_defense_rating")
 
+        # xG rolling diff (5 partidos): diferencia de calidad de juego reciente
+        if "home_xgd_roll5" in out.columns and "away_xgd_roll5" in out.columns:
+            out["xgd5_diff"] = out["home_xgd_roll5"] - out["away_xgd_roll5"]
+            out["xg_momentum_diff"] = out.get("home_xg_momentum") - out.get("away_xg_momentum")
         return out
 
     def build_inference_row(self,
@@ -259,6 +309,7 @@ class FeatureBuilder:
                 return {}
             r = sub.sort_values("kickoff_ts_utc").iloc[-1]
             return {k: r[k] for k in r.index if k.startswith(("gf_", "ga_", "gd_",
+                                                               "xg_", "xga_", "xgd_",
                                                                "rest_", "matches_last_",
                                                                "fatigue_", "momentum"))}
 
@@ -321,4 +372,9 @@ def feature_columns() -> list[str]:
         "home_attack_rating", "home_defense_rating",
         "away_attack_rating", "away_defense_rating",
         "home_attack_vs_away_defense", "away_attack_vs_home_defense",
+        # xG rolling (Understat team-level) — calidad de juego reciente
+        "home_xg_roll5", "home_xga_roll5", "home_xgd_roll5",
+        "away_xg_roll5", "away_xga_roll5", "away_xgd_roll5",
+        "home_xg_momentum", "away_xg_momentum",
+        "xgd5_diff", "xg_momentum_diff",
     ]
