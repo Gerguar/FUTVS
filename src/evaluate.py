@@ -200,39 +200,92 @@ def main() -> None:
     # Distribución real para contexto
     real = pd.Series(y).value_counts(normalize=True).sort_index()
 
-    # Baseline 4: pipeline completo XGBoost (con features EAFC ratings si team_ratings.json existe)
-    ll_xgb = None; br_xgb = None; acc_xgb = None; xgb_meta = {}
+    # ====== A/B/C test: XGBoost SIN ratings vs XGBoost CON ratings vs DC ======
+    # Entrenamos 2 XGBoost desde cero (con los mismos splits) — uno usando todas
+    # las features incluyendo EAFC ratings, otro excluyendo solo las de rating.
+    # Asi aislamos el efecto exacto de las EAFC ratings.
+    ll_xgb_no_rat = None; br_xgb_no_rat = None; acc_xgb_no_rat = None; n_xgb_test = 0
+    ll_xgb_rat = None;    br_xgb_rat = None;    acc_xgb_rat = None
+    n_train_xgb = 0; n_features_no_rat = 0; n_features_rat = 0
     try:
-        from .xgb_model import load_artifacts
         from .features import FeatureBuilder, feature_columns
-        from .elo import EloState
-        from .dixon_coles import DixonColesState
+        from xgboost import XGBClassifier
+        from .config import XGB
 
-        clf, _calibrator, xgb_meta = load_artifacts()
-        # Usamos el DC y Elo guardados (los que predict carga en runtime).
-        dc_state_saved = DixonColesState.from_json()
-        elo_state_saved = EloState.from_json()
-
-        # Reconstruimos features para el test set usando los states guardados.
-        # Importante: esto es honesto porque el XGBoost fue trained antes del test set
-        # (siempre que el modelo no se haya retrained con datos del test, lo cual no pasa).
+        print("\n[evaluate] A/B/C test: entrenando XGBoost con y sin EAFC ratings...")
         fb_eval = FeatureBuilder()
-        feat_all = fb_eval.build_training_table(df, dc_state_saved, elo_state_saved)
+        elo_dummy = EloState()  # build_training_table arma Elo internamente
+        feat_all = fb_eval.build_training_table(df, dc, elo_dummy)
         feat_all = feat_all.dropna(subset=["label"])
-        feat_test = feat_all[feat_all["kickoff_ts_utc"] >= cutoff]
 
-        if len(feat_test) >= 30:
-            X_test = feat_test.reindex(columns=feature_columns()).astype(float)
-            y_xgb = feat_test["label"].map(LABEL_MAP).astype(int).values
-            proba_xgb = clf.predict_proba(X_test)
-            ll_xgb = multi_log_loss(y_xgb, proba_xgb)
-            br_xgb = multi_brier(y_xgb, proba_xgb)
-            acc_xgb = accuracy_top1(y_xgb, proba_xgb)
-    except FileNotFoundError as e:
-        print(f"[evaluate] XGBoost no evaluado (artefactos no encontrados): {e}")
+        # Filtro de XGBoost a ultimas 2 temporadas (igual que train.py)
+        xgb_filter = pd.Timestamp("2024-07-01", tz="UTC")
+        feat_xgb = feat_all[feat_all["kickoff_ts_utc"] >= xgb_filter]
+
+        # Splits: train hasta cutoff-60d, valid 60d, test 30d
+        valid_cutoff = cutoff - pd.Timedelta(days=60)
+        xgb_train = feat_xgb[feat_xgb["kickoff_ts_utc"] < valid_cutoff]
+        xgb_valid = feat_xgb[(feat_xgb["kickoff_ts_utc"] >= valid_cutoff) &
+                              (feat_xgb["kickoff_ts_utc"] < cutoff)]
+        xgb_test = feat_xgb[feat_xgb["kickoff_ts_utc"] >= cutoff]
+
+        n_train_xgb = len(xgb_train)
+        n_xgb_test = len(xgb_test)
+        print(f"[evaluate] XGBoost splits: train={n_train_xgb} valid={len(xgb_valid)} test={n_xgb_test}")
+
+        if n_train_xgb >= 500 and len(xgb_valid) >= 30 and n_xgb_test >= 30:
+            all_features = feature_columns()
+            RATING_FEATURES = {
+                "home_xi_rating", "away_xi_rating", "xi_rating_diff",
+                "home_attack_rating", "home_defense_rating",
+                "away_attack_rating", "away_defense_rating",
+                "home_attack_vs_away_defense", "away_attack_vs_home_defense",
+            }
+            features_rat = all_features
+            features_no_rat = [f for f in all_features if f not in RATING_FEATURES]
+            n_features_rat = len(features_rat)
+            n_features_no_rat = len(features_no_rat)
+
+            def _fit_xgb_subset(train_df, valid_df, feats):
+                X_tr = train_df[feats].astype(float)
+                y_tr = train_df["label"].map(LABEL_MAP).astype(int).values
+                X_va = valid_df[feats].astype(float)
+                y_va = valid_df["label"].map(LABEL_MAP).astype(int).values
+                clf = XGBClassifier(
+                    objective=XGB.objective, eval_metric=XGB.eval_metric,
+                    max_depth=XGB.max_depth, learning_rate=XGB.learning_rate,
+                    n_estimators=XGB.n_estimators, subsample=XGB.subsample,
+                    colsample_bytree=XGB.colsample_bytree, reg_lambda=XGB.reg_lambda,
+                    num_class=XGB.num_class, early_stopping_rounds=XGB.early_stopping_rounds,
+                    tree_method="hist", n_jobs=-1, verbosity=0,
+                )
+                clf.fit(X_tr, y_tr, eval_set=[(X_va, y_va)], verbose=False)
+                return clf
+
+            y_te = xgb_test["label"].map(LABEL_MAP).astype(int).values
+
+            # A) XGBoost SIN EAFC ratings
+            print(f"[evaluate] A) XGBoost SIN ratings ({n_features_no_rat} features)...")
+            clf_no = _fit_xgb_subset(xgb_train, xgb_valid, features_no_rat)
+            proba_no = clf_no.predict_proba(xgb_test[features_no_rat].astype(float))
+            ll_xgb_no_rat = multi_log_loss(y_te, proba_no)
+            br_xgb_no_rat = multi_brier(y_te, proba_no)
+            acc_xgb_no_rat = accuracy_top1(y_te, proba_no)
+
+            # B) XGBoost CON EAFC ratings
+            print(f"[evaluate] B) XGBoost CON ratings ({n_features_rat} features)...")
+            clf_yes = _fit_xgb_subset(xgb_train, xgb_valid, features_rat)
+            proba_yes = clf_yes.predict_proba(xgb_test[features_rat].astype(float))
+            ll_xgb_rat = multi_log_loss(y_te, proba_yes)
+            br_xgb_rat = multi_brier(y_te, proba_yes)
+            acc_xgb_rat = accuracy_top1(y_te, proba_yes)
+
+            print(f"[evaluate] A/B test completado sobre {n_xgb_test} partidos test")
+        else:
+            print(f"[evaluate] insuficiente data para A/B test")
     except Exception as e:
         import traceback
-        print(f"[evaluate] XGBoost no evaluado: {type(e).__name__}: {e}")
+        print(f"[evaluate] A/B test fallo: {type(e).__name__}: {e}")
         traceback.print_exc()
 
     # ===== REPORTE =====
@@ -257,20 +310,27 @@ def main() -> None:
         marker = (f"  <- gana {-delta:.4f} sobre su DC base" if delta and delta < 0
                   else f"  <- empeora {delta:.4f} sobre su DC base" if delta else "")
         print(f"{'DC + isotonic (calib HONESTO)':<35} {ll_dccal:>10.4f} {br_dccal:>10.4f} {acc_dccal:>10.1%}{marker}")
-    if ll_xgb is not None:
-        method = (xgb_meta or {}).get("method", "XGBoost")
-        delta = ll_xgb - ll  # mejora vs DC crudo
-        if delta < -0.001:
-            tag = f"  <- gana {-delta:.4f} a DC"
-        elif delta > 0.001:
-            tag = f"  <- empeora {delta:.4f} vs DC"
+    print()
+    print("--- A/B/C test (XGBoost entrenado desde cero en este eval) ---")
+    if ll_xgb_no_rat is not None:
+        delta_no = ll_xgb_no_rat - ll
+        tag_no = (f"  vs DC: {delta_no:+.4f}")
+        print(f"{'A) XGBoost SIN EAFC ratings':<35} {ll_xgb_no_rat:>10.4f} {br_xgb_no_rat:>10.4f} {acc_xgb_no_rat:>10.1%}{tag_no}")
+    if ll_xgb_rat is not None:
+        delta_yes = ll_xgb_rat - ll
+        tag_yes = (f"  vs DC: {delta_yes:+.4f}")
+        print(f"{'B) XGBoost CON EAFC ratings':<35} {ll_xgb_rat:>10.4f} {br_xgb_rat:>10.4f} {acc_xgb_rat:>10.1%}{tag_yes}")
+    if ll_xgb_no_rat is not None and ll_xgb_rat is not None:
+        delta_ab = ll_xgb_rat - ll_xgb_no_rat
+        if delta_ab < -0.001:
+            verdict = f"CON-ratings GANA por {-delta_ab:.4f}"
+        elif delta_ab > 0.001:
+            verdict = f"SIN-ratings GANA por {delta_ab:.4f}"
         else:
-            tag = "  <- empate practico con DC"
-        print(f"{'XGBoost (con EAFC ratings)':<35} {ll_xgb:>10.4f} {br_xgb:>10.4f} {acc_xgb:>10.1%}{tag}")
-        trained = (xgb_meta or {}).get("trained_at", "?")
-        print(f"     trained_at: {trained}")
-    else:
-        print(f"{'XGBoost (con EAFC ratings)':<35} {'no disponible':>10} (necesita correr train.py primero)")
+            verdict = "empate practico (diferencia < 0.001)"
+        print(f"     ==> Efecto de EAFC ratings: {verdict}")
+        print(f"     ==> Splits: train={n_train_xgb} test={n_xgb_test}  "
+              f"features: sin={n_features_no_rat} con={n_features_rat}")
     print()
 
     print("Calibración por clase:")

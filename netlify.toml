@@ -1,6 +1,10 @@
 [build]
   publish = "web"
   command = ""
+  # Skip deploy si el commit no toca archivos de web/ (lee Netlify automaticamente).
+  # Asi los commits del cron de GitHub Actions que solo actualizan data/ no gastan
+  # deploys de Netlify.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- web/"
 
 [[headers]]
   for = "/predictions.json"
