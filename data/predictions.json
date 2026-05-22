@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-21T18:31:16.422144+00:00",
+  "generated_at_utc": "2026-05-22T10:39:57.859481+00:00",
   "model": {
     "trained_at": "2026-05-19T22:54:12.569058+00:00",
     "method": "DixonColes+Elo+XGBoost(isotonic)",
@@ -457,9 +457,9 @@
         "away": 0.2019
       },
       "market_probabilities": {
-        "home": 0.4251,
-        "draw": 0.2906,
-        "away": 0.2843
+        "home": 0.4275,
+        "draw": 0.2896,
+        "away": 0.2829
       },
       "scoreline_top": [
         {
@@ -516,14 +516,14 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3374,
-        "draw": 0.2889,
-        "away": 0.3737
+        "home": 0.3421,
+        "draw": 0.2885,
+        "away": 0.3694
       },
       "market_probabilities": {
-        "home": 0.3899,
-        "draw": 0.277,
-        "away": 0.333
+        "home": 0.3981,
+        "draw": 0.2748,
+        "away": 0.3271
       },
       "scoreline_top": [
         {
@@ -645,9 +645,9 @@
         "away": 0.3437
       },
       "market_probabilities": {
-        "home": 0.3912,
-        "draw": 0.2846,
-        "away": 0.3242
+        "home": 0.3917,
+        "draw": 0.2844,
+        "away": 0.3239
       },
       "scoreline_top": [
         {
@@ -769,9 +769,9 @@
         "away": 0.3278
       },
       "market_probabilities": {
-        "home": 0.3515,
-        "draw": 0.2843,
-        "away": 0.3642
+        "home": 0.3519,
+        "draw": 0.2842,
+        "away": 0.3639
       },
       "scoreline_top": [
         {
@@ -1073,9 +1073,9 @@
         "away": 0.2218
       },
       "market_probabilities": {
-        "home": 0.5236,
-        "draw": 0.2298,
-        "away": 0.2466
+        "home": 0.5243,
+        "draw": 0.2299,
+        "away": 0.2457
       },
       "scoreline_top": [
         {
@@ -1132,14 +1132,14 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.2239,
-        "draw": 0.274,
-        "away": 0.5021
+        "home": 0.2693,
+        "draw": 0.258,
+        "away": 0.4727
       },
       "market_probabilities": {
-        "home": 0.2272,
-        "draw": 0.2399,
-        "away": 0.5329
+        "home": 0.227,
+        "draw": 0.2405,
+        "away": 0.5326
       },
       "scoreline_top": [
         {
@@ -1321,9 +1321,9 @@
         "away": 0.4682
       },
       "market_probabilities": {
-        "home": 0.2651,
-        "draw": 0.2618,
-        "away": 0.4731
+        "home": 0.2667,
+        "draw": 0.261,
+        "away": 0.4723
       },
       "scoreline_top": [
         {
@@ -1445,9 +1445,9 @@
         "away": 0.1393
       },
       "market_probabilities": {
-        "home": 0.6356,
-        "draw": 0.2245,
-        "away": 0.1399
+        "home": 0.6403,
+        "draw": 0.2224,
+        "away": 0.1373
       },
       "scoreline_top": [
         {
@@ -1509,9 +1509,9 @@
         "away": 0.3399
       },
       "market_probabilities": {
-        "home": 0.5447,
-        "draw": 0.2674,
-        "away": 0.1878
+        "home": 0.5416,
+        "draw": 0.2678,
+        "away": 0.1906
       },
       "scoreline_top": [
         {
@@ -1633,9 +1633,9 @@
         "away": 0.5363
       },
       "market_probabilities": {
-        "home": 0.1238,
-        "draw": 0.2027,
-        "away": 0.6735
+        "home": 0.1263,
+        "draw": 0.2058,
+        "away": 0.668
       },
       "scoreline_top": [
         {
