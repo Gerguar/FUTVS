@@ -73,8 +73,22 @@ def main() -> None:
         return
 
     # Entrenar DC SOLO con datos previos al cutoff (no leakage)
-    print("[evaluate] entrenando Dixon-Coles con el train...")
+    print("[evaluate] entrenando Dixon-Coles (GOLES) con el train...")
     dc = fit_dc(train_df, asof_ts=cutoff)
+
+    # Tambien entrenamos un DC con xG si tenemos team_xg.parquet
+    dc_xg = None
+    try:
+        from .ingest_xg import load_team_xg
+        team_xg_df = load_team_xg()
+        if not team_xg_df.empty:
+            print(f"[evaluate] entrenando Dixon-Coles (xG blend) — team_xg cobertura: {len(team_xg_df)} partidos...")
+            dc_xg = fit_dc(train_df, asof_ts=cutoff, use_xg=True,
+                           team_xg=team_xg_df, xg_blend=0.5)
+        else:
+            print("[evaluate] team_xg.parquet vacio o ausente — saltamos DC-xG")
+    except Exception as e:
+        print(f"[evaluate] DC-xG fallo: {type(e).__name__}: {e}")
 
     # Predecir todos los partidos de test
     print("[evaluate] prediciendo el bloque de test...")
@@ -104,6 +118,25 @@ def main() -> None:
     br = multi_brier(y, proba)
     acc = accuracy_top1(y, proba)
     cal = calibration_per_class(y, proba, n_bins=8)
+
+    # Métricas del modelo DC entrenado con xG blend (si esta disponible)
+    ll_dcxg = None; br_dcxg = None; acc_dcxg = None
+    if dc_xg is not None:
+        proba_dcxg_rows = []
+        y_dcxg = []
+        for _, m in test_df.iterrows():
+            h, a = m["home_team_id"], m["away_team_id"]
+            if h not in dc_xg.attack or a not in dc_xg.attack:
+                continue
+            p = dc_xg.probs_1x2(h, a, is_neutral=bool(m.get("is_neutral", False)))
+            proba_dcxg_rows.append([p["H"], p["D"], p["A"]])
+            y_dcxg.append(label_to_idx(int(m["home_goals"]), int(m["away_goals"])))
+        if proba_dcxg_rows:
+            proba_dcxg = np.array(proba_dcxg_rows)
+            y_dcxg_arr = np.array(y_dcxg)
+            ll_dcxg = multi_log_loss(y_dcxg_arr, proba_dcxg)
+            br_dcxg = multi_brier(y_dcxg_arr, proba_dcxg)
+            acc_dcxg = accuracy_top1(y_dcxg_arr, proba_dcxg)
 
     # Métricas del modelo DC + isotonic calibration HONESTO (sin data leakage):
     # entrenamos un calibrador independiente con datos PREVIOS al test,
@@ -304,6 +337,11 @@ def main() -> None:
     if ll_mkt is not None:
         print(f"{f'Mercado bookmakers (n={mkt_n})':<35} {ll_mkt:>10.4f} {'':>10} {acc_mkt:>10.1%}")
     print(f"{'Dixon-Coles crudo (full training)':<35} {ll:>10.4f} {br:>10.4f} {acc:>10.1%}")
+    if ll_dcxg is not None:
+        delta_xg = ll_dcxg - ll
+        tag = (f"  vs DC: {delta_xg:+.4f}")
+        marker = " GANA xG" if delta_xg < -0.001 else (" pierde" if delta_xg > 0.001 else " empate")
+        print(f"{'Dixon-Coles + xG (blend 50%)':<35} {ll_dcxg:>10.4f} {br_dcxg:>10.4f} {acc_dcxg:>10.1%}{tag}{marker}")
     if ll_baseline is not None:
         print(f"{'  -DC crudo (training reducido)':<35} {ll_baseline:>10.4f}      ...      ... (referencia)")
     if ll_dccal is not None:

@@ -41,7 +41,20 @@ def main() -> None:
         raise RuntimeError(f"Pocos partidos para entrenar DC/Elo: {len(train_raw_full)}")
 
     print(f"[train] DC+Elo: {len(train_raw_full)} partidos hasta {train_end.date()}")
-    dc_state = fit_dc(train_raw_full, asof_ts=train_end)
+    # Intentamos entrenar DC con xG si team_xg.parquet existe.
+    try:
+        from .ingest_xg import load_team_xg
+        team_xg_df = load_team_xg()
+        if not team_xg_df.empty:
+            print(f"[train] usando xG blend (cobertura: {len(team_xg_df)} partidos)")
+            dc_state = fit_dc(train_raw_full, asof_ts=train_end,
+                              use_xg=True, team_xg=team_xg_df, xg_blend=0.5)
+        else:
+            print("[train] team_xg.parquet vacio, DC usa goles puros")
+            dc_state = fit_dc(train_raw_full, asof_ts=train_end)
+    except Exception as e:
+        print(f"[train] DC con xG fallo ({e}); usando goles puros")
+        dc_state = fit_dc(train_raw_full, asof_ts=train_end)
     dc_state.to_json()
     elo_state = EloState()
     replay(train_raw_full, elo_state)

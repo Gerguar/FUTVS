@@ -125,14 +125,48 @@ def _unpack(d: dict, teams: list[str]) -> np.ndarray:
     return np.concatenate([a, b, [d["home_adv"], d["rho"]]])
 
 
+def _attach_xg(matches: pd.DataFrame, team_xg: pd.DataFrame) -> pd.DataFrame:
+    """
+    Mergea matches con team_xg por (date, home_slug, away_slug).
+    Devuelve matches con columnas extra home_xg/away_xg (NaN si no hay match).
+    """
+    if team_xg.empty:
+        m = matches.copy()
+        m["home_xg"] = float("nan")
+        m["away_xg"] = float("nan")
+        return m
+
+    m = matches.copy()
+    m["kickoff_date"] = pd.to_datetime(m["kickoff_ts_utc"], utc=True).dt.date
+    txg = team_xg.copy()
+    txg["match_date"] = pd.to_datetime(txg["match_date"]).dt.date
+
+    merged = m.merge(
+        txg[["match_date", "home_slug", "away_slug", "home_xg", "away_xg"]],
+        left_on=["kickoff_date", "home_team_id", "away_team_id"],
+        right_on=["match_date", "home_slug", "away_slug"],
+        how="left",
+    )
+    return merged.drop(columns=["match_date", "home_slug", "away_slug", "kickoff_date"],
+                       errors="ignore")
+
+
 def fit(matches: pd.DataFrame, asof_ts: pd.Timestamp | None = None,
-        xi: float | None = None) -> DixonColesState:
+        xi: float | None = None,
+        use_xg: bool = False,
+        team_xg: pd.DataFrame | None = None,
+        xg_blend: float = 0.5) -> DixonColesState:
     """
     Ajusta Dixon-Coles por MLE con ponderación temporal.
+
     matches debe contener: kickoff_ts_utc, home_team_id, away_team_id,
                            home_goals, away_goals, is_neutral.
-    asof_ts: ponderación temporal calculada relativa a este instante.
-             Si es None, usa el partido más reciente como referencia.
+
+    use_xg: si True, usa una mezcla de goles y xG como target del Poisson.
+            target = xg_blend * xG + (1 - xg_blend) * goles
+            Para partidos sin xG (UCL, etc.), usa solo goles (fallback automatico).
+    team_xg: DataFrame con xG por partido (output de ingest_xg.py).
+    xg_blend: peso de xG en la mezcla [0..1]. 0=solo goles, 1=solo xG.
     """
     df = matches.dropna(subset=["home_goals", "away_goals"]).copy()
     df["kickoff_ts_utc"] = pd.to_datetime(df["kickoff_ts_utc"], utc=True)
@@ -153,8 +187,29 @@ def fit(matches: pd.DataFrame, asof_ts: pd.Timestamp | None = None,
 
     home_idx = df["home_team_id"].map(idx).values
     away_idx = df["away_team_id"].map(idx).values
-    hg = df["home_goals"].astype(int).values
-    ag = df["away_goals"].astype(int).values
+    hg_raw = df["home_goals"].astype(float).values
+    ag_raw = df["away_goals"].astype(float).values
+
+    # Calcular target (goles puros o blend con xG)
+    if use_xg and team_xg is not None:
+        df_with_xg = _attach_xg(df, team_xg)
+        h_xg = pd.to_numeric(df_with_xg["home_xg"], errors="coerce").values
+        a_xg = pd.to_numeric(df_with_xg["away_xg"], errors="coerce").values
+        # Blend solo cuando xG esta disponible
+        has_xg = ~np.isnan(h_xg) & ~np.isnan(a_xg)
+        hg = np.where(has_xg, xg_blend * h_xg + (1 - xg_blend) * hg_raw, hg_raw)
+        ag = np.where(has_xg, xg_blend * a_xg + (1 - xg_blend) * ag_raw, ag_raw)
+        coverage = int(has_xg.sum())
+        print(f"[dc.fit] use_xg=True: {coverage}/{len(df)} partidos con xG "
+              f"(blend={xg_blend}, fallback a goles cuando NaN)")
+    else:
+        hg = hg_raw
+        ag = ag_raw
+
+    # Para la corrección tau (que mira casillas 0/1) usamos los goles enteros reales
+    hg_int = hg_raw.astype(int)
+    ag_int = ag_raw.astype(int)
+
     neutral = df.get("is_neutral", pd.Series([False] * len(df))).fillna(False).astype(bool).values
 
     x0 = np.concatenate([
@@ -163,6 +218,10 @@ def fit(matches: pd.DataFrame, asof_ts: pd.Timestamp | None = None,
         [0.25, -0.10],
     ])
 
+    # Pre-compute lgamma para targets continuos: lgamma(k+1) generaliza factorial
+    hg_lgamma = np.array([math.lgamma(k + 1) for k in hg])
+    ag_lgamma = np.array([math.lgamma(k + 1) for k in ag])
+
     def neg_loglik(params: np.ndarray) -> float:
         atk = params[:n]
         dfn = params[n:2 * n]
@@ -170,11 +229,11 @@ def fit(matches: pd.DataFrame, asof_ts: pd.Timestamp | None = None,
         rho = params[-1]
         lam = np.exp(atk[home_idx] - dfn[away_idx] + np.where(neutral, 0.0, ha))
         mu = np.exp(atk[away_idx] - dfn[home_idx])
-        ll_poiss = (hg * np.log(lam) - lam - np.array([math.lgamma(k + 1) for k in hg])
-                    + ag * np.log(mu) - mu - np.array([math.lgamma(k + 1) for k in ag]))
+        ll_poiss = (hg * np.log(lam) - lam - hg_lgamma
+                    + ag * np.log(mu) - mu - ag_lgamma)
         tau_vec = np.ones(len(df))
         for k in range(len(df)):
-            x, y = hg[k], ag[k]
+            x, y = hg_int[k], ag_int[k]
             if x <= 1 and y <= 1:
                 tau_vec[k] = _tau(x, y, lam[k], mu[k], rho)
         tau_safe = np.where(tau_vec > 1e-9, tau_vec, 1e-9)
