@@ -1,0 +1,49 @@
+name: deploy-hostinger
+
+# Auto-deploy de web/ a Hostinger via FTP.
+#
+# Se dispara cuando:
+#  - Push a main que toque archivos en web/
+#  - Manual (workflow_dispatch)
+#
+# Asi los commits del cron (que solo cambian data/) NO disparan deploy,
+# solo cambios reales del HTML/CSS/JS.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync web/ a Hostinger via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./web/
+          # En Hostinger el HTML del sitio queda en /nodejs/ segun lo que vimos
+          server-dir: ./nodejs/
+          protocol: ftp
+          port: 21
+          # No borra archivos extra en el servidor, solo sube los nuestros.
+          dangerous-clean-slate: false
+          # Excluye basura que no debe ir al hosting.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.DS_Store
+
+      - name: Resumen
+        run: |
+          echo "Deploy completado a https://futversus.com/"
+          echo "Archivos en web/ subidos a /nodejs/ del FTP."
