@@ -32,12 +32,16 @@ TEAM_XG_PATH = PATHS.matches.parent / "team_xg.parquet"
 
 
 def load_team_xg(path: Path = TEAM_XG_PATH) -> pd.DataFrame:
-    """Lee team_xg.parquet. Devuelve DF vacio si no existe."""
+    """Lee team_xg.parquet. Devuelve DF vacio si no existe (con log claro)."""
     if not path.exists():
+        print(f"[load_team_xg] archivo NO existe en {path}")
         return pd.DataFrame()
     try:
-        return pd.read_parquet(path)
-    except Exception:
+        df = pd.read_parquet(path)
+        print(f"[load_team_xg] cargado {len(df)} partidos desde {path}")
+        return df
+    except Exception as e:
+        print(f"[load_team_xg] error leyendo {path}: {type(e).__name__}: {e}")
         return pd.DataFrame()
 
 UNDERSTAT_LEAGUES = {

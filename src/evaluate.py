@@ -85,10 +85,13 @@ def main() -> None:
             print(f"[evaluate] entrenando Dixon-Coles (xG blend) — team_xg cobertura: {len(team_xg_df)} partidos...")
             dc_xg = fit_dc(train_df, asof_ts=cutoff, use_xg=True,
                            team_xg=team_xg_df, xg_blend=0.5)
+            print(f"[evaluate] DC-xG entrenado OK")
         else:
             print("[evaluate] team_xg.parquet vacio o ausente — saltamos DC-xG")
     except Exception as e:
+        import traceback
         print(f"[evaluate] DC-xG fallo: {type(e).__name__}: {e}")
+        traceback.print_exc()
 
     # Predecir todos los partidos de test
     print("[evaluate] prediciendo el bloque de test...")
