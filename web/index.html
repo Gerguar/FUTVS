@@ -1219,7 +1219,7 @@ function renderSidePlayers(containerId,headerId,players,matchId,side) {
     container.innerHTML = `<div class="loader" style="padding:1rem;color:var(--faint)">Sin jugadores cargados</div>`
     return
   }
-  const VISIBLE = 4
+  const VISIBLE = 1
   const restCount = Math.max(0, players.length - VISIBLE)
   const cards = players.map((p,i)=>{
     const isExtra = i >= VISIBLE
