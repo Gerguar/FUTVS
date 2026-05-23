@@ -1,6 +1,6 @@
 # FutPronostico — Documento de traspaso
 
-> Generado: 2026-05-19 18:00
+> Generado: 2026-05-23 19:46
 
 ## 1. Objetivo del proyecto
 
@@ -21,7 +21,8 @@ Todas bajo `proyectos.gerguar@gmail.com`.
 |---|---|---|
 | GitHub | https://github.com/Gerguar/FUTVS | Privado |
 | Supabase | https://supabase.com/dashboard/project/dyeouwqtebrvioesrbcf | OAuth via GitHub |
-| Netlify | https://futpronostico.netlify.app/ | OAuth via GitHub, conectado al repo |
+| Hostinger Business | https://futversus.com/ | Sitio de produccion actual. HTML servido desde /nodejs/ via FTP. SSL Let's Encrypt activo. |
+| Netlify (legacy) | https://futpronostico.netlify.app/ | Sitio viejo, deshabilitado/no usado. A borrar cuando se confirme. |
 | football-data.org | API free tier | Token en GH Secret |
 
 ### GitHub Secrets (Settings -> Secrets -> Actions)
@@ -30,6 +31,9 @@ Todas bajo `proyectos.gerguar@gmail.com`.
 FOOTBALL_DATA_TOKEN     ← del registro en football-data.org
 SUPABASE_URL            = https://dyeouwqtebrvioesrbcf.supabase.co
 SUPABASE_SERVICE_KEY    = (la service_role key del proyecto Supabase — bypasea RLS)
+FTP_HOST                = (hostname FTP de Hostinger, ej: ftp.futversus.com)
+FTP_USERNAME            = (usuario FTP de Hostinger, ej: u123456789)
+FTP_PASSWORD            = (password FTP)
 ```
 
 Service_role key actual:
@@ -189,13 +193,31 @@ fbref-stats.yml (cron miercoles 08:00 UTC + dispatch manual)
 
 ## 7. Decisiones tomadas (importantes)
 
-1. **Calibrador isotonico descartado** — Honest holdout disjoint mostro que empeora DC. DC ya viene bien calibrado de fabrica.
+1. **Calibrador isotonico descartado** — Honest holdout disjoint mostro que empeora DC (+0.034 log loss). DC ya viene bien calibrado de fabrica.
 2. **Slugs como ID universal** — Permite unificar football-data.org + football-data.co.uk.
 3. **football-data.co.uk para historico** — Free, sin auth, incluye odds de 5 bookmakers en CSVs.
 4. **The Odds API descartado** — Free tier (500 req/mes) insuficiente.
 5. **Modo on-demand removido** — Antes calculabamos probs para matchups hardcodeados. Ahora todos los partidos vienen de fixtures reales.
 6. **fbref bloqueado en GH Actions** — IPs de datacenter rechazadas. Migramos a Understat.
 7. **forma_reciente es VIEW** — Auto-calcula desde partidos. No escribirle.
+8. **EAFC ratings NO ayudan al modelo** — Probado experimentalmente: empeoran XGBoost por 0.001-0.010. Quedan en Supabase solo para UI.
+9. **xG en DC (blend 50%) es neutro** — Pegado a goles puros, no aporta significativamente.
+10. **xG rolling features en XGBoost SI ayudan (poco pero real)** — Mejor experimento medido: -0.002 log loss vs DC alone. Es el unico cambio que supero a DC en log loss.
+11. **Hostinger Business reemplazo a Netlify** — Migrado en mayo 2026. Deploy via GitHub Actions + FTP al folder /nodejs/ del hosting. Workflow path-filtered a 'web/**' para no disparar deploys en commits del cron.
+
+## 7b. Resultados experimentales clave (test set: 392 partidos, abril/mayo 2026)
+
+| Modelo | Log Loss | Brier | Accuracy |
+|---|---|---|---|
+| Mercado bookmakers | 0.9801 | — | 52.9% |
+| **XGBoost con xG rolling** (mejor nuestro) | **1.0091** | 0.6020 | 50.5% |
+| XGBoost sin xG | 1.0105 | 0.6022 | 50.8% |
+| DC alone (mejor accuracy) | 1.0112 | 0.6031 | 51.8% |
+| DC + xG blend 50% | 1.0111 | 0.6031 | 51.8% |
+| Prior historico | 1.0857 | — | 41.3% |
+| Random | 1.0986 | — | 41.3% |
+
+**Trade-off clave**: XGBoost + xG gana en log loss (mejor probabilidades calibradas) pero DC alone gana en accuracy (top-1). Para uso analitico priorizar log loss → XGBoost + xG es el mejor.
 
 ## 8. Estado al cierre de esta sesion
 
@@ -211,16 +233,36 @@ fbref-stats.yml (cron miercoles 08:00 UTC + dispatch manual)
 - mercado_historico y minutos_por_anio vacios (requieren Transfermarkt/fbref scraping)
 - 409 jugadores (11%) siguen en rating 70 por no matchear en EA FC 26 (juveniles, reservas, transferencias recientes)
 
-## 9. Roadmap propuesto
+## 9. Roadmap propuesto (estado al 2026-05-23)
+
+Las mejoras ya completadas estan tachadas. Las restantes:
 
 | Prioridad | Item | Costo | Notas |
 |---|---|---|---|
-| Alta | Fix bug HTTP 500 en player stats (dedupe en supabase_writer) | $0 | ~30 min de codigo |
-| Alta | Activar cron semanal del player-stats una vez que el bug este fixed | $0 | 1 linea de YAML |
-| Media | Agregar columna xg en estadisticas_jugador y persistirlo (Understat lo tiene) | $0 | SQL + 5 lineas |
-| Media | Mejorar rating de jugador con formula derivada (edad + pos + xG) | $0 | Mejora visual |
-| Baja | API-Football si queres lesiones + stats premium | $10/mes | +0.02 log loss |
+| Decision pendiente | Switchear produccion a XGBoost + xG (vs DC alone) | $0 | XGBoost gana en log loss (-0.002), DC gana en accuracy (+1.3pp). Trade-off entre probs calibradas vs aciertos top-1. |
+| Media | Sumar mas features de Understat (shots, key_passes, deep_completions) | $0 | Si xG aporto 0.0014, mas features Understat podrian sumar otro 0.005-0.010. ~2-3h |
+| Media | Ensemble DC + XGBoost+xG (50/50 blend) | $0 | Capturar lo mejor: probs calibradas + accuracy. ~1h. Mejora esperada 0.001-0.003. |
+| Media | UX HTML: ver pagina de modelo/transparencia con metricas honestas | $0 | Mostrar log loss, accuracy, calibracion. Sin esto, los usuarios no ven la calidad del modelo. |
+| Baja | API-Football si queres lesiones + stats premium | $10/mes | +0.02 log loss potencial |
 | Baja | football-data Tier Two | €10/mes | Cobertura EUL/EUCL |
+| Baja | Borrar sitio Netlify viejo (limpieza) | 5 min | futpronostico.netlify.app sigue activo pero no usado |
+
+### Cosas ya hechas en sprints pasados (cerradas)
+
+- ✅ Backfill 12.500 partidos (5 ligas top + UCL, 6 temporadas)
+- ✅ Modelo Dixon-Coles + Elo + XGBoost validado con backtest honesto
+- ✅ Schema Supabase completo: ligas, equipos, partidos, pronosticos, jugadores, estadisticas
+- ✅ Auto-sync de partidos proximos
+- ✅ Auto-actualizacion de resultados cuando se juegan
+- ✅ Auto-popular escudos, colores, pais, fundacion, estadio
+- ✅ Plantilles auto-actualizadas semanalmente (squads workflow)
+- ✅ Player stats semanal via Understat (1000+ jugadores con goles/asist)
+- ✅ Player ratings via EAFC 26 OVR (3300+ con rating real)
+- ✅ xG team-level via Understat (7156 partidos)
+- ✅ xG rolling features en XGBoost (mejora real medida)
+- ✅ Migracion Netlify → Hostinger (futversus.com con SSL)
+- ✅ Auto-deploy GitHub → Hostinger via FTP
+- ✅ Handover docs completos (carpeta handover/)
 
 ## 10. Comandos utiles (PowerShell desde C:\Users\facun\football-forecast)
 

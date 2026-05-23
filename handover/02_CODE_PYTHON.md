@@ -1707,6 +1707,197 @@ if __name__ == "__main__":
 
 ---
 
+## `src/ingest_xg.py`
+
+```python
+"""
+Ingest de xG team-level por partido desde Understat (via soccerdata).
+
+Para cada (liga, temporada) llama a `Understat.read_schedule()` o
+`read_team_match_stats()` y obtiene xG por partido. Mergea los slugs
+canonicos para emparejar con matches.parquet.
+
+Output:
+    data/team_xg.parquet con columnas:
+        match_date   (date)
+        home_slug
+        away_slug
+        home_xg
+        away_xg
+        home_goals
+        away_goals
+        league       (codigo interno: EPL/LL/SA/BL/L1)
+
+DC luego usa este parquet para reemplazar `home_goals/away_goals` por
+`home_xg/away_xg` cuando estan disponibles.
+"""
+from __future__ import annotations
+import argparse
+from pathlib import Path
+import pandas as pd
+
+from .config import PATHS
+from .team_normalize import canonical
+
+
+TEAM_XG_PATH = PATHS.matches.parent / "team_xg.parquet"
+
+
+def load_team_xg(path: Path = TEAM_XG_PATH) -> pd.DataFrame:
+    """Lee team_xg.parquet. Devuelve DF vacio si no existe (con log claro)."""
+    if not path.exists():
+        print(f"[load_team_xg] archivo NO existe en {path}")
+        return pd.DataFrame()
+    try:
+        df = pd.read_parquet(path)
+        print(f"[load_team_xg] cargado {len(df)} partidos desde {path}")
+        return df
+    except Exception as e:
+        print(f"[load_team_xg] error leyendo {path}: {type(e).__name__}: {e}")
+        return pd.DataFrame()
+
+UNDERSTAT_LEAGUES = {
+    "ENG-Premier League": "EPL",
+    "ESP-La Liga":        "LL",
+    "ITA-Serie A":        "SA",
+    "GER-Bundesliga":     "BL",
+    "FRA-Ligue 1":        "L1",
+}
+
+
+def _flatten(df: pd.DataFrame) -> pd.DataFrame:
+    """Aplana MultiIndex de columnas y resetea el index si es multi-level."""
+    if isinstance(df.columns, pd.MultiIndex):
+        df = df.copy()
+        df.columns = [
+            (c[1] if (isinstance(c, tuple) and c[1]) else c[0] if isinstance(c, tuple) else c)
+            for c in df.columns
+        ]
+    if df.index.nlevels > 1:
+        df = df.reset_index()
+    return df
+
+
+def _find_col(df: pd.DataFrame, candidates: list[str]) -> str | None:
+    for c in df.columns:
+        if str(c).lower().strip() in candidates:
+            return c
+    return None
+
+
+def fetch_league_schedule(league: str, seasons: list[str]) -> pd.DataFrame:
+    """Devuelve schedule de una liga con xG por partido."""
+    import soccerdata as sd
+    u = sd.Understat(leagues=league, seasons=seasons)
+    df = u.read_schedule()
+    df = _flatten(df)
+    print(f"  · raw shape: {df.shape}, columnas: {list(df.columns)[:20]}")
+    return df
+
+
+def normalize_schedule(df: pd.DataFrame, league_code: str) -> pd.DataFrame:
+    """Convierte el schedule de Understat a nuestro formato."""
+    if df.empty:
+        return pd.DataFrame()
+
+    # Buscar columnas relevantes con tolerancia a nombres distintos
+    home_col = _find_col(df, ["home_team", "home", "hometeam", "h_team"])
+    away_col = _find_col(df, ["away_team", "away", "awayteam", "a_team"])
+    home_xg_col = _find_col(df, ["home_xg", "xg_home", "h_xg", "xghome"])
+    away_xg_col = _find_col(df, ["away_xg", "xg_away", "a_xg", "xgaway"])
+    home_g_col = _find_col(df, ["home_goals", "goals_home", "h_goals", "h_g"])
+    away_g_col = _find_col(df, ["away_goals", "goals_away", "a_goals", "a_g"])
+    date_col = _find_col(df, ["date", "datetime", "match_date", "kickoff", "kickoff_ts"])
+
+    missing = [
+        n for n, v in [
+            ("home", home_col), ("away", away_col),
+            ("home_xg", home_xg_col), ("away_xg", away_xg_col),
+            ("date", date_col),
+        ] if v is None
+    ]
+    if missing:
+        print(f"  ! columnas faltantes: {missing}. Columnas disponibles: {list(df.columns)}")
+        return pd.DataFrame()
+
+    out = pd.DataFrame({
+        "match_date": pd.to_datetime(df[date_col], errors="coerce").dt.date,
+        "home_name": df[home_col].astype(str),
+        "away_name": df[away_col].astype(str),
+        "home_xg": pd.to_numeric(df[home_xg_col], errors="coerce"),
+        "away_xg": pd.to_numeric(df[away_xg_col], errors="coerce"),
+        "home_goals": pd.to_numeric(df[home_g_col], errors="coerce") if home_g_col else None,
+        "away_goals": pd.to_numeric(df[away_g_col], errors="coerce") if away_g_col else None,
+        "league": league_code,
+    })
+    out["home_slug"] = out["home_name"].map(canonical)
+    out["away_slug"] = out["away_name"].map(canonical)
+
+    # Filtrar partidos sin xG (no jugados o sin data)
+    out = out.dropna(subset=["home_xg", "away_xg", "match_date"])
+    out = out[(out["home_slug"] != "") & (out["away_slug"] != "")]
+
+    return out[["match_date", "home_slug", "away_slug", "home_name", "away_name",
+                "home_xg", "away_xg", "home_goals", "away_goals", "league"]]
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--seasons", default="2024,2023,2022,2021,2020",
+                    help="Anios de inicio separados por coma (Understat: 2024=2024-25)")
+    ap.add_argument("--leagues", default=None,
+                    help="CSV de league names. Default: top 5")
+    args = ap.parse_args()
+
+    seasons = [s.strip() for s in args.seasons.split(",") if s.strip()]
+    if args.leagues:
+        league_names = [s.strip() for s in args.leagues.split(",")]
+    else:
+        league_names = list(UNDERSTAT_LEAGUES.keys())
+
+    print(f"[xg] seasons={seasons} leagues={[UNDERSTAT_LEAGUES.get(l, l) for l in league_names]}")
+    all_rows: list[pd.DataFrame] = []
+    for league_name in league_names:
+        league_code = UNDERSTAT_LEAGUES.get(league_name, league_name)
+        print(f"\n[xg] === {league_code} ({league_name}) ===")
+        try:
+            raw = fetch_league_schedule(league_name, seasons)
+            normalized = normalize_schedule(raw, league_code)
+            if normalized.empty:
+                print(f"  ! sin filas usables para {league_code}")
+                continue
+            print(f"  + {len(normalized)} partidos con xG")
+            all_rows.append(normalized)
+        except Exception as e:
+            import traceback
+            print(f"  ! error fetching {league_code}: {type(e).__name__}: {e}")
+            traceback.print_exc()
+
+    if not all_rows:
+        print("\n[xg] no se obtuvo data. Salimos sin escribir parquet.")
+        return
+
+    final = pd.concat(all_rows, ignore_index=True)
+    # Deduplicar por (date, home_slug, away_slug)
+    final = final.drop_duplicates(subset=["match_date", "home_slug", "away_slug"], keep="last")
+    TEAM_XG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    final.to_parquet(TEAM_XG_PATH, index=False)
+    print(f"\n[xg] guardado: {TEAM_XG_PATH}  ({len(final)} partidos, "
+          f"{final['league'].value_counts().to_dict()})")
+
+    # Sanity: mostrar un sample
+    print("\n[xg] sample primeros 5:")
+    for _, r in final.head(5).iterrows():
+        print(f"  {r['match_date']}  {r['home_slug']:>20} {r['home_xg']:>4.2f}-{r['away_xg']:>4.2f} {r['away_slug']:<20}  {r['league']}")
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+---
+
 ## `src/player_ratings.py`
 
 ```python
@@ -2248,6 +2439,225 @@ if __name__ == "__main__":
 
 ---
 
+## `src/team_ratings.py`
+
+```python
+"""
+Calcula ratings agregados por equipo a partir de `jugadores.rating` en Supabase.
+
+Produce data/team_ratings.json con esta forma:
+
+    {
+      "real_madrid": {
+        "attack_score":  85.3,   # ofensiva (top mediocampistas atacantes + top delanteros)
+        "defense_score": 83.1,   # defensiva (top GK + top defensores + top mids defensivos)
+        "top_xi_avg":    84.2,   # promedio del top 14 (XI titular + sustitutos clave)
+        "n_players":     32
+      },
+      ...
+    }
+
+Los ratings son los OVR de EA FC 26 que ya cargamos via `player_ratings.py`.
+
+Heuristicas:
+- defense_score: peso 1*top_GK + 4*top_4_DEF + 3*top_3_MID_defensivos
+  (asumimos que los MID con rating menor son mas defensivos; tomamos los 3 mas bajos del top 6 de MED)
+- attack_score:  peso 3*top_3_MID_atacantes + 4*top_4_DEL
+- top_xi_avg:    promedio de los 14 con mayor rating sin importar posicion
+
+Estas heuristicas son simples pero capturan la idea de "calidad del XI" mejor que
+un promedio global, sin requerir lineups confirmadas.
+"""
+from __future__ import annotations
+import argparse
+import json
+from collections import defaultdict
+from pathlib import Path
+from typing import Iterable
+
+from .config import PATHS
+from .team_normalize import canonical
+from .supabase_writer import sb_get
+
+
+TEAM_RATINGS_PATH = PATHS.matches.parent / "team_ratings.json"
+VALID_POSITIONS = ("POR", "DEF", "MED", "DEL")
+
+
+def _mean(xs: Iterable[float]) -> float | None:
+    xs = list(xs)
+    if not xs:
+        return None
+    return sum(xs) / len(xs)
+
+
+def _paged_get(path: str, page: int = 1000) -> list[dict]:
+    out: list[dict] = []
+    sep = "&" if "?" in path else "?"
+    offset = 0
+    while True:
+        chunk = sb_get(f"{path}{sep}limit={page}&offset={offset}")
+        out.extend(chunk)
+        if len(chunk) < page:
+            return out
+        offset += page
+
+
+def compute_team_ratings() -> dict[str, dict]:
+    """Lee equipos y jugadores de Supabase y devuelve dict slug -> ratings agregados."""
+    # 1) equipos: id -> slug (canonical(nombre))
+    equipos = _paged_get("equipos?select=id,nombre")
+    id_to_slug = {int(e["id"]): canonical(e["nombre"]) for e in equipos}
+    print(f"[team-ratings] equipos en Supabase: {len(id_to_slug)}")
+
+    # 2) jugadores con rating (excluye nulos)
+    jugadores = _paged_get(
+        "jugadores?select=equipo_id,posicion,rating&rating=not.is.null"
+    )
+    print(f"[team-ratings] jugadores con rating: {len(jugadores)}")
+
+    # 3) Agrupamos por equipo y posicion
+    by_team: dict[int, dict[str, list[int]]] = defaultdict(
+        lambda: {pos: [] for pos in VALID_POSITIONS}
+    )
+    for j in jugadores:
+        eid = int(j["equipo_id"]) if j.get("equipo_id") else None
+        if eid is None:
+            continue
+        pos = (j.get("posicion") or "MED").upper()
+        if pos not in VALID_POSITIONS:
+            pos = "MED"
+        rating = j.get("rating")
+        if rating is None:
+            continue
+        by_team[eid][pos].append(int(rating))
+
+    # 4) Computamos agregados por equipo
+    result: dict[str, dict] = {}
+    for eid, by_pos in by_team.items():
+        slug = id_to_slug.get(eid)
+        if not slug:
+            continue
+
+        gks = sorted(by_pos["POR"], reverse=True)
+        defs = sorted(by_pos["DEF"], reverse=True)
+        mids = sorted(by_pos["MED"], reverse=True)
+        fwds = sorted(by_pos["DEL"], reverse=True)
+
+        # Top de cada posicion
+        top_gk = gks[0] if gks else None
+        top4_def = _mean(defs[:4])
+        top4_fwd = _mean(fwds[:4])
+
+        # MED split: los 3 con mayor rating son los "atacantes", los 3 con menor del top 6 los "defensivos".
+        mid_top6 = mids[:6]
+        n_mid = len(mid_top6)
+        if n_mid >= 6:
+            att_mids = mid_top6[:3]
+            def_mids = mid_top6[3:6]
+        elif n_mid >= 3:
+            half = n_mid // 2
+            att_mids = mid_top6[:half + (n_mid % 2)]
+            def_mids = mid_top6[half + (n_mid % 2):]
+        else:
+            att_mids = mid_top6
+            def_mids = mid_top6
+        top_att_mid = _mean(att_mids)
+        top_def_mid = _mean(def_mids)
+
+        # defense_score: pondera GK + DEF + MID defensivos
+        components = []
+        weights = []
+        if top_gk is not None:
+            components.append(top_gk); weights.append(1)
+        if top4_def is not None:
+            components.append(top4_def); weights.append(4)
+        if top_def_mid is not None:
+            components.append(top_def_mid); weights.append(3)
+        defense_score = (
+            sum(c * w for c, w in zip(components, weights)) / sum(weights)
+            if components else None
+        )
+
+        # attack_score: pondera MID atacantes + DEL
+        components = []
+        weights = []
+        if top_att_mid is not None:
+            components.append(top_att_mid); weights.append(3)
+        if top4_fwd is not None:
+            components.append(top4_fwd); weights.append(4)
+        attack_score = (
+            sum(c * w for c, w in zip(components, weights)) / sum(weights)
+            if components else None
+        )
+
+        # top_xi_avg: top 14 sin filtrar por posicion
+        all_ratings = sorted(
+            (r for plist in by_pos.values() for r in plist), reverse=True
+        )
+        top_xi_avg = _mean(all_ratings[:14])
+
+        result[slug] = {
+            "attack_score": round(attack_score, 2) if attack_score is not None else None,
+            "defense_score": round(defense_score, 2) if defense_score is not None else None,
+            "top_xi_avg": round(top_xi_avg, 2) if top_xi_avg is not None else None,
+            "n_players": sum(len(p) for p in by_pos.values()),
+        }
+    return result
+
+
+def save_team_ratings(data: dict, path: Path = TEAM_RATINGS_PATH) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True),
+        encoding="utf-8",
+    )
+
+
+def load_team_ratings(path: Path = TEAM_RATINGS_PATH) -> dict[str, dict]:
+    """Lee data/team_ratings.json. Devuelve {} si no existe (features default a NaN)."""
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--print-top", type=int, default=10,
+                    help="Cuantos equipos top mostrar al final")
+    args = ap.parse_args()
+
+    print("[team-ratings] consultando Supabase...")
+    data = compute_team_ratings()
+    print(f"[team-ratings] {len(data)} equipos calculados")
+    save_team_ratings(data)
+    print(f"[team-ratings] guardado en {TEAM_RATINGS_PATH}")
+
+    top = sorted(
+        data.items(),
+        key=lambda kv: (kv[1].get("top_xi_avg") or 0),
+        reverse=True,
+    )[: args.print_top]
+    print(f"\nTop {args.print_top} por XI avg:")
+    print(f"  {'slug':<22}  {'XI':>5}  {'ATK':>5}  {'DEF':>5}  n")
+    for slug, r in top:
+        xi = r.get("top_xi_avg") or 0
+        atk = r.get("attack_score") or 0
+        dfn = r.get("defense_score") or 0
+        n = r.get("n_players") or 0
+        print(f"  {slug:<22}  {xi:>5.1f}  {atk:>5.1f}  {dfn:>5.1f}  {n}")
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+---
+
 ## `src/elo.py`
 
 ```python
@@ -2540,14 +2950,52 @@ def _unpack(d: dict, teams: list[str]) -> np.ndarray:
     return np.concatenate([a, b, [d["home_adv"], d["rho"]]])
 
 
+def _attach_xg(matches: pd.DataFrame, team_xg: pd.DataFrame) -> pd.DataFrame:
+    """
+    Mergea matches con team_xg por (date, home_slug, away_slug).
+    Devuelve matches con columnas extra home_xg/away_xg (NaN si no hay match).
+    Fuerza float64 limpio para evitar problemas con pandas Nullable types.
+    """
+    if team_xg.empty:
+        m = matches.copy()
+        m["home_xg"] = np.nan
+        m["away_xg"] = np.nan
+        return m
+
+    m = matches.copy()
+    m["kickoff_date"] = pd.to_datetime(m["kickoff_ts_utc"], utc=True).dt.date
+    txg = team_xg.copy()
+    txg["match_date"] = pd.to_datetime(txg["match_date"]).dt.date
+
+    merged = m.merge(
+        txg[["match_date", "home_slug", "away_slug", "home_xg", "away_xg"]],
+        left_on=["kickoff_date", "home_team_id", "away_team_id"],
+        right_on=["match_date", "home_slug", "away_slug"],
+        how="left",
+    )
+    # Forzar float64 limpio: pd.NA (de Nullable types) -> np.nan
+    for col in ("home_xg", "away_xg"):
+        merged[col] = pd.to_numeric(merged[col], errors="coerce").astype("float64")
+    return merged.drop(columns=["match_date", "home_slug", "away_slug", "kickoff_date"],
+                       errors="ignore")
+
+
 def fit(matches: pd.DataFrame, asof_ts: pd.Timestamp | None = None,
-        xi: float | None = None) -> DixonColesState:
+        xi: float | None = None,
+        use_xg: bool = False,
+        team_xg: pd.DataFrame | None = None,
+        xg_blend: float = 0.5) -> DixonColesState:
     """
     Ajusta Dixon-Coles por MLE con ponderación temporal.
+
     matches debe contener: kickoff_ts_utc, home_team_id, away_team_id,
                            home_goals, away_goals, is_neutral.
-    asof_ts: ponderación temporal calculada relativa a este instante.
-             Si es None, usa el partido más reciente como referencia.
+
+    use_xg: si True, usa una mezcla de goles y xG como target del Poisson.
+            target = xg_blend * xG + (1 - xg_blend) * goles
+            Para partidos sin xG (UCL, etc.), usa solo goles (fallback automatico).
+    team_xg: DataFrame con xG por partido (output de ingest_xg.py).
+    xg_blend: peso de xG en la mezcla [0..1]. 0=solo goles, 1=solo xG.
     """
     df = matches.dropna(subset=["home_goals", "away_goals"]).copy()
     df["kickoff_ts_utc"] = pd.to_datetime(df["kickoff_ts_utc"], utc=True)
@@ -2568,8 +3016,33 @@ def fit(matches: pd.DataFrame, asof_ts: pd.Timestamp | None = None,
 
     home_idx = df["home_team_id"].map(idx).values
     away_idx = df["away_team_id"].map(idx).values
-    hg = df["home_goals"].astype(int).values
-    ag = df["away_goals"].astype(int).values
+    hg_raw = df["home_goals"].astype(float).values
+    ag_raw = df["away_goals"].astype(float).values
+
+    # Calcular target (goles puros o blend con xG)
+    if use_xg and team_xg is not None:
+        df_with_xg = _attach_xg(df, team_xg)
+        # to_numpy con dtype=float64 + na_value=np.nan limpia pd.NA -> np.nan
+        h_xg = df_with_xg["home_xg"].to_numpy(dtype="float64", na_value=np.nan)
+        a_xg = df_with_xg["away_xg"].to_numpy(dtype="float64", na_value=np.nan)
+        # Blend solo cuando xG esta disponible
+        has_xg = np.isfinite(h_xg) & np.isfinite(a_xg)
+        # Reemplazar NaN por 0 antes del calculo (se descarta por has_xg en np.where)
+        h_xg_safe = np.where(has_xg, h_xg, 0.0)
+        a_xg_safe = np.where(has_xg, a_xg, 0.0)
+        hg = np.where(has_xg, xg_blend * h_xg_safe + (1 - xg_blend) * hg_raw, hg_raw)
+        ag = np.where(has_xg, xg_blend * a_xg_safe + (1 - xg_blend) * ag_raw, ag_raw)
+        coverage = int(has_xg.sum())
+        print(f"[dc.fit] use_xg=True: {coverage}/{len(df)} partidos con xG "
+              f"(blend={xg_blend}, fallback a goles cuando NaN)")
+    else:
+        hg = hg_raw
+        ag = ag_raw
+
+    # Para la corrección tau (que mira casillas 0/1) usamos los goles enteros reales
+    hg_int = hg_raw.astype(int)
+    ag_int = ag_raw.astype(int)
+
     neutral = df.get("is_neutral", pd.Series([False] * len(df))).fillna(False).astype(bool).values
 
     x0 = np.concatenate([
@@ -2578,6 +3051,10 @@ def fit(matches: pd.DataFrame, asof_ts: pd.Timestamp | None = None,
         [0.25, -0.10],
     ])
 
+    # Pre-compute lgamma para targets continuos: lgamma(k+1) generaliza factorial
+    hg_lgamma = np.array([math.lgamma(k + 1) for k in hg])
+    ag_lgamma = np.array([math.lgamma(k + 1) for k in ag])
+
     def neg_loglik(params: np.ndarray) -> float:
         atk = params[:n]
         dfn = params[n:2 * n]
@@ -2585,11 +3062,11 @@ def fit(matches: pd.DataFrame, asof_ts: pd.Timestamp | None = None,
         rho = params[-1]
         lam = np.exp(atk[home_idx] - dfn[away_idx] + np.where(neutral, 0.0, ha))
         mu = np.exp(atk[away_idx] - dfn[home_idx])
-        ll_poiss = (hg * np.log(lam) - lam - np.array([math.lgamma(k + 1) for k in hg])
-                    + ag * np.log(mu) - mu - np.array([math.lgamma(k + 1) for k in ag]))
+        ll_poiss = (hg * np.log(lam) - lam - hg_lgamma
+                    + ag * np.log(mu) - mu - ag_lgamma)
         tau_vec = np.ones(len(df))
         for k in range(len(df)):
-            x, y = hg[k], ag[k]
+            x, y = hg_int[k], ag_int[k]
             if x <= 1 and y <= 1:
                 tau_vec[k] = _tau(x, y, lam[k], mu[k], rho)
         tau_safe = np.where(tau_vec > 1e-9, tau_vec, 1e-9)
@@ -2669,6 +3146,23 @@ from .config import LABEL_MAP, SNAPSHOTS
 from .elo import EloState, pre_match_diff, update_one
 from .dixon_coles import DixonColesState, pre_match_features
 from .data_ingest import devig_odds
+from .team_ratings import load_team_ratings
+
+
+def _ratings_for(team_ratings: dict, slug: str, prefix: str) -> dict:
+    """Devuelve features de EA FC rating para un equipo. NaN si no esta cargado."""
+    r = team_ratings.get(slug) if team_ratings else None
+    if not r:
+        return {
+            f"{prefix}_xi_rating": np.nan,
+            f"{prefix}_attack_rating": np.nan,
+            f"{prefix}_defense_rating": np.nan,
+        }
+    return {
+        f"{prefix}_xi_rating": r.get("top_xi_avg"),
+        f"{prefix}_attack_rating": r.get("attack_score"),
+        f"{prefix}_defense_rating": r.get("defense_score"),
+    }
 
 
 SNAPSHOT_OFFSETS = {
@@ -2688,8 +3182,23 @@ def label_from_score(home_goals: int | float, away_goals: int | float) -> str | 
     return "D"
 
 
-def _team_history_view(matches: pd.DataFrame) -> pd.DataFrame:
-    """Pivota la tabla match-centric a team-centric (dos filas por partido)."""
+def _team_xg_view(team_xg: pd.DataFrame) -> pd.DataFrame:
+    """Convierte team_xg.parquet (1 fila por partido) en team-centric (2 filas)."""
+    if team_xg is None or team_xg.empty:
+        return pd.DataFrame(columns=["match_date", "team_id", "xg_for", "xg_against"])
+    home = team_xg[["match_date", "home_slug", "home_xg", "away_xg"]].copy()
+    home.columns = ["match_date", "team_id", "xg_for", "xg_against"]
+    away = team_xg[["match_date", "away_slug", "away_xg", "home_xg"]].copy()
+    away.columns = ["match_date", "team_id", "xg_for", "xg_against"]
+    out = pd.concat([home, away], ignore_index=True)
+    out["match_date"] = pd.to_datetime(out["match_date"]).dt.date
+    return out
+
+
+def _team_history_view(matches: pd.DataFrame,
+                       team_xg: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Pivota la tabla match-centric a team-centric (dos filas por partido).
+    Si se pasa team_xg, mergea xG (xg_for, xg_against) por (date, team_id)."""
     home = matches.rename(columns={
         "home_team_id": "team_id", "away_team_id": "opp_id",
         "home_goals": "goals_for", "away_goals": "goals_against",
@@ -2700,25 +3209,50 @@ def _team_history_view(matches: pd.DataFrame) -> pd.DataFrame:
     }).assign(is_home=0)
     keep = ["match_id", "kickoff_ts_utc", "competition_code",
             "team_id", "opp_id", "goals_for", "goals_against", "is_home"]
-    return pd.concat([home[keep], away[keep]], ignore_index=True)
+    df = pd.concat([home[keep], away[keep]], ignore_index=True)
+
+    # Merge xG team-centric (si tenemos team_xg.parquet)
+    if team_xg is not None and not team_xg.empty:
+        tv_xg = _team_xg_view(team_xg)
+        df["match_date"] = pd.to_datetime(df["kickoff_ts_utc"], utc=True).dt.date
+        df = df.merge(tv_xg, on=["match_date", "team_id"], how="left")
+        df = df.drop(columns=["match_date"], errors="ignore")
+        # Forzar float64 limpio
+        for col in ("xg_for", "xg_against"):
+            df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")
+    else:
+        df["xg_for"] = np.nan
+        df["xg_against"] = np.nan
+    return df
 
 
 def _rolling_team_stats(team_view: pd.DataFrame,
                         windows: tuple[int, ...] = (3, 5, 10)) -> pd.DataFrame:
     """
-    Para cada partido del equipo, calcula media de goles a favor/contra
+    Para cada partido del equipo, calcula media de goles + xG a favor/contra
     en los últimos N partidos *previos*. EWMA con halflife=5 también.
     """
     df = team_view.sort_values(["team_id", "kickoff_ts_utc"]).copy()
     df["gd"] = df["goals_for"] - df["goals_against"]
+    has_xg = "xg_for" in df.columns and "xg_against" in df.columns
+    if has_xg:
+        df["xgd"] = df["xg_for"] - df["xg_against"]
     g = df.groupby("team_id", sort=False)
     for w in windows:
         df[f"gf_roll{w}"] = g["goals_for"].shift(1).rolling(w, min_periods=1).mean().reset_index(level=0, drop=True)
         df[f"ga_roll{w}"] = g["goals_against"].shift(1).rolling(w, min_periods=1).mean().reset_index(level=0, drop=True)
         df[f"gd_roll{w}"] = g["gd"].shift(1).rolling(w, min_periods=1).mean().reset_index(level=0, drop=True)
+        if has_xg:
+            df[f"xg_roll{w}"] = g["xg_for"].shift(1).rolling(w, min_periods=1).mean().reset_index(level=0, drop=True)
+            df[f"xga_roll{w}"] = g["xg_against"].shift(1).rolling(w, min_periods=1).mean().reset_index(level=0, drop=True)
+            df[f"xgd_roll{w}"] = g["xgd"].shift(1).rolling(w, min_periods=1).mean().reset_index(level=0, drop=True)
     df["gd_ewma5"] = g["gd"].shift(1).ewm(halflife=5, min_periods=1).mean().reset_index(level=0, drop=True)
     df["gd_ewma10"] = g["gd"].shift(1).ewm(halflife=10, min_periods=1).mean().reset_index(level=0, drop=True)
     df["momentum"] = df["gd_ewma5"] - df["gd_ewma10"]
+    if has_xg:
+        df["xgd_ewma5"] = g["xgd"].shift(1).ewm(halflife=5, min_periods=1).mean().reset_index(level=0, drop=True)
+        df["xgd_ewma10"] = g["xgd"].shift(1).ewm(halflife=10, min_periods=1).mean().reset_index(level=0, drop=True)
+        df["xg_momentum"] = df["xgd_ewma5"] - df["xgd_ewma10"]
     return df
 
 
@@ -2750,14 +3284,16 @@ def _rest_and_congestion(team_view: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def build_team_features(matches: pd.DataFrame) -> pd.DataFrame:
+def build_team_features(matches: pd.DataFrame,
+                        team_xg: pd.DataFrame | None = None) -> pd.DataFrame:
     """
     Devuelve una tabla con todas las features team-match-level calculadas
     estrictamente con info previa al partido (shift(1) + ventanas rolling).
+    Si se pasa team_xg, suma features de xG rolling.
     """
     matches = matches.copy()
     matches["kickoff_ts_utc"] = pd.to_datetime(matches["kickoff_ts_utc"], utc=True)
-    tv = _team_history_view(matches)
+    tv = _team_history_view(matches, team_xg=team_xg)
     tv = _rolling_team_stats(tv)
     tv = _rest_and_congestion(tv)
     return tv
@@ -2802,12 +3338,17 @@ class FeatureBuilder:
         m["kickoff_ts_utc"] = pd.to_datetime(m["kickoff_ts_utc"], utc=True)
         m = m.sort_values("kickoff_ts_utc").reset_index(drop=True)
 
-        team_feats = build_team_features(m)
+        # Cargar team_xg para sumar features de xG rolling
+        from .ingest_xg import load_team_xg
+        team_xg_df = load_team_xg()
+
+        team_feats = build_team_features(m, team_xg=team_xg_df)
         team_feats_h = team_feats[team_feats["is_home"] == 1].add_prefix("home_")
         team_feats_a = team_feats[team_feats["is_home"] == 0].add_prefix("away_")
         team_feats_h = team_feats_h.rename(columns={"home_match_id": "match_id"})
         team_feats_a = team_feats_a.rename(columns={"away_match_id": "match_id"})
 
+        team_ratings = load_team_ratings()
         elo_state = EloState()
         rows = []
         for _, row in m.iterrows():
@@ -2819,6 +3360,8 @@ class FeatureBuilder:
             elo_feats = pre_match_diff(elo_state, home, away, is_neutral=neutral)
             dc_feats = pre_match_features(dc_state, home, away, is_neutral=neutral)
             mkt_feats = _odds_to_features(row)
+            rating_h = _ratings_for(team_ratings, home, "home")
+            rating_a = _ratings_for(team_ratings, away, "away")
 
             label = label_from_score(row.get("home_goals"), row.get("away_goals"))
 
@@ -2833,6 +3376,8 @@ class FeatureBuilder:
                 **elo_feats,
                 **dc_feats,
                 **mkt_feats,
+                **rating_h,
+                **rating_a,
                 "label": label,
             }
             rows.append(feat)
@@ -2853,6 +3398,16 @@ class FeatureBuilder:
         out["gd5_diff"] = out.get("home_gd_roll5") - out.get("away_gd_roll5")
         out["momentum_diff"] = out.get("home_momentum") - out.get("away_momentum")
 
+        # Ratings EA FC: diferencial XI + match-up por posicion
+        out["xi_rating_diff"] = out.get("home_xi_rating") - out.get("away_xi_rating")
+        # Local ataca contra defensa visitante (y viceversa)
+        out["home_attack_vs_away_defense"] = out.get("home_attack_rating") - out.get("away_defense_rating")
+        out["away_attack_vs_home_defense"] = out.get("away_attack_rating") - out.get("home_defense_rating")
+
+        # xG rolling diff (5 partidos): diferencia de calidad de juego reciente
+        if "home_xgd_roll5" in out.columns and "away_xgd_roll5" in out.columns:
+            out["xgd5_diff"] = out["home_xgd_roll5"] - out["away_xgd_roll5"]
+            out["xg_momentum_diff"] = out.get("home_xg_momentum") - out.get("away_xg_momentum")
         return out
 
     def build_inference_row(self,
@@ -2875,12 +3430,17 @@ class FeatureBuilder:
                 return {}
             r = sub.sort_values("kickoff_ts_utc").iloc[-1]
             return {k: r[k] for k in r.index if k.startswith(("gf_", "ga_", "gd_",
+                                                               "xg_", "xga_", "xgd_",
                                                                "rest_", "matches_last_",
                                                                "fatigue_", "momentum"))}
 
         elo_feats = pre_match_diff(elo_state, home, away, is_neutral=is_neutral)
         dc_feats = pre_match_features(dc_state, home, away, is_neutral=is_neutral)
         mkt_feats = _odds_to_features(pd.Series(odds_row or {}))
+
+        team_ratings = load_team_ratings()
+        rating_h = _ratings_for(team_ratings, home, "home")
+        rating_a = _ratings_for(team_ratings, away, "away")
 
         h = {f"home_{k}": v for k, v in latest(home).items()}
         a = {f"away_{k}": v for k, v in latest(away).items()}
@@ -2894,6 +3454,8 @@ class FeatureBuilder:
             **elo_feats,
             **dc_feats,
             **mkt_feats,
+            **rating_h,
+            **rating_a,
             **h, **a,
         }
         row["rest_diff"] = (h.get("home_rest_days") or 0) - (a.get("away_rest_days") or 0)
@@ -2901,6 +3463,13 @@ class FeatureBuilder:
         row["fatigue_diff"] = (h.get("home_fatigue_idx") or 0) - (a.get("away_fatigue_idx") or 0)
         row["gd5_diff"] = (h.get("home_gd_roll5") or 0) - (a.get("away_gd_roll5") or 0)
         row["momentum_diff"] = (h.get("home_momentum") or 0) - (a.get("away_momentum") or 0)
+
+        h_xi = rating_h.get("home_xi_rating"); a_xi = rating_a.get("away_xi_rating")
+        h_atk = rating_h.get("home_attack_rating"); a_atk = rating_a.get("away_attack_rating")
+        h_def = rating_h.get("home_defense_rating"); a_def = rating_a.get("away_defense_rating")
+        row["xi_rating_diff"] = (h_xi - a_xi) if (h_xi is not None and a_xi is not None) else np.nan
+        row["home_attack_vs_away_defense"] = (h_atk - a_def) if (h_atk is not None and a_def is not None) else np.nan
+        row["away_attack_vs_home_defense"] = (a_atk - h_def) if (a_atk is not None and h_def is not None) else np.nan
         return row
 
 
@@ -2919,6 +3488,16 @@ def feature_columns() -> list[str]:
         "home_fatigue_idx", "away_fatigue_idx",
         "home_momentum", "away_momentum",
         "rest_diff", "congestion_diff", "fatigue_diff", "gd5_diff", "momentum_diff",
+        # Ratings EA FC 26 (top XI agregado, ataque/defensa por posicion)
+        "home_xi_rating", "away_xi_rating", "xi_rating_diff",
+        "home_attack_rating", "home_defense_rating",
+        "away_attack_rating", "away_defense_rating",
+        "home_attack_vs_away_defense", "away_attack_vs_home_defense",
+        # xG rolling (Understat team-level) — calidad de juego reciente
+        "home_xg_roll5", "home_xga_roll5", "home_xgd_roll5",
+        "away_xg_roll5", "away_xga_roll5", "away_xgd_roll5",
+        "home_xg_momentum", "away_xg_momentum",
+        "xgd5_diff", "xg_momentum_diff",
     ]
 
 ```
@@ -3089,20 +3668,42 @@ def main() -> None:
     valid_end = now - pd.Timedelta(days=BACKTEST.test_window_days)
     train_end = valid_end - pd.Timedelta(days=BACKTEST.valid_window_days)
 
-    train_raw = finished[finished["kickoff_ts_utc"] < train_end]
-    if len(train_raw) < BACKTEST.min_train_matches:
-        raise RuntimeError(f"Pocos partidos para entrenar: {len(train_raw)}")
+    # Para DC + Elo entrenamos con TODO el historico (mas data = mejores ratings).
+    train_raw_full = finished[finished["kickoff_ts_utc"] < train_end]
+    if len(train_raw_full) < BACKTEST.min_train_matches:
+        raise RuntimeError(f"Pocos partidos para entrenar DC/Elo: {len(train_raw_full)}")
 
-    print(f"[train] {len(train_raw)} partidos hasta {train_end.date()}")
-    dc_state = fit_dc(train_raw, asof_ts=train_end)
+    print(f"[train] DC+Elo: {len(train_raw_full)} partidos hasta {train_end.date()}")
+    # Intentamos entrenar DC con xG si team_xg.parquet existe.
+    try:
+        from .ingest_xg import load_team_xg
+        team_xg_df = load_team_xg()
+        if not team_xg_df.empty:
+            print(f"[train] usando xG blend (cobertura: {len(team_xg_df)} partidos)")
+            dc_state = fit_dc(train_raw_full, asof_ts=train_end,
+                              use_xg=True, team_xg=team_xg_df, xg_blend=0.5)
+        else:
+            print("[train] team_xg.parquet vacio, DC usa goles puros")
+            dc_state = fit_dc(train_raw_full, asof_ts=train_end)
+    except Exception as e:
+        print(f"[train] DC con xG fallo ({e}); usando goles puros")
+        dc_state = fit_dc(train_raw_full, asof_ts=train_end)
     dc_state.to_json()
     elo_state = EloState()
-    replay(train_raw, elo_state)
+    replay(train_raw_full, elo_state)
     elo_state.to_json()
+
+    # Para XGBoost (que usa features de rating EA FC) filtramos a las ultimas
+    # 2 temporadas para minimizar lookahead bias (EA ratings actuales aplicados
+    # a partidos viejos seria contaminacion).
+    xgb_train_from = pd.Timestamp("2024-07-01", tz="UTC")
+    print(f"[train] XGBoost: usa partidos desde {xgb_train_from.date()}")
 
     fb = FeatureBuilder()
     full_feat = fb.build_training_table(finished, dc_state, elo_state)
     full_feat = full_feat.dropna(subset=["label"])
+    full_feat = full_feat[full_feat["kickoff_ts_utc"] >= xgb_train_from]
+    print(f"[train] features post-filtro: {len(full_feat)} partidos")
 
     train_feat = full_feat[full_feat["kickoff_ts_utc"] < train_end]
     valid_feat = full_feat[(full_feat["kickoff_ts_utc"] >= train_end) &
@@ -3610,8 +4211,25 @@ def main() -> None:
         return
 
     # Entrenar DC SOLO con datos previos al cutoff (no leakage)
-    print("[evaluate] entrenando Dixon-Coles con el train...")
+    print("[evaluate] entrenando Dixon-Coles (GOLES) con el train...")
     dc = fit_dc(train_df, asof_ts=cutoff)
+
+    # Tambien entrenamos un DC con xG si tenemos team_xg.parquet
+    dc_xg = None
+    try:
+        from .ingest_xg import load_team_xg
+        team_xg_df = load_team_xg()
+        if not team_xg_df.empty:
+            print(f"[evaluate] entrenando Dixon-Coles (xG blend) — team_xg cobertura: {len(team_xg_df)} partidos...")
+            dc_xg = fit_dc(train_df, asof_ts=cutoff, use_xg=True,
+                           team_xg=team_xg_df, xg_blend=0.5)
+            print(f"[evaluate] DC-xG entrenado OK")
+        else:
+            print("[evaluate] team_xg.parquet vacio o ausente — saltamos DC-xG")
+    except Exception as e:
+        import traceback
+        print(f"[evaluate] DC-xG fallo: {type(e).__name__}: {e}")
+        traceback.print_exc()
 
     # Predecir todos los partidos de test
     print("[evaluate] prediciendo el bloque de test...")
@@ -3641,6 +4259,25 @@ def main() -> None:
     br = multi_brier(y, proba)
     acc = accuracy_top1(y, proba)
     cal = calibration_per_class(y, proba, n_bins=8)
+
+    # Métricas del modelo DC entrenado con xG blend (si esta disponible)
+    ll_dcxg = None; br_dcxg = None; acc_dcxg = None
+    if dc_xg is not None:
+        proba_dcxg_rows = []
+        y_dcxg = []
+        for _, m in test_df.iterrows():
+            h, a = m["home_team_id"], m["away_team_id"]
+            if h not in dc_xg.attack or a not in dc_xg.attack:
+                continue
+            p = dc_xg.probs_1x2(h, a, is_neutral=bool(m.get("is_neutral", False)))
+            proba_dcxg_rows.append([p["H"], p["D"], p["A"]])
+            y_dcxg.append(label_to_idx(int(m["home_goals"]), int(m["away_goals"])))
+        if proba_dcxg_rows:
+            proba_dcxg = np.array(proba_dcxg_rows)
+            y_dcxg_arr = np.array(y_dcxg)
+            ll_dcxg = multi_log_loss(y_dcxg_arr, proba_dcxg)
+            br_dcxg = multi_brier(y_dcxg_arr, proba_dcxg)
+            acc_dcxg = accuracy_top1(y_dcxg_arr, proba_dcxg)
 
     # Métricas del modelo DC + isotonic calibration HONESTO (sin data leakage):
     # entrenamos un calibrador independiente con datos PREVIOS al test,
@@ -3737,6 +4374,107 @@ def main() -> None:
     # Distribución real para contexto
     real = pd.Series(y).value_counts(normalize=True).sort_index()
 
+    # ====== A/B/C test: XGBoost SIN ratings vs XGBoost CON ratings vs DC ======
+    # Entrenamos 2 XGBoost desde cero (con los mismos splits) — uno usando todas
+    # las features incluyendo EAFC ratings, otro excluyendo solo las de rating.
+    # Asi aislamos el efecto exacto de las EAFC ratings.
+    ll_xgb_no_rat = None; br_xgb_no_rat = None; acc_xgb_no_rat = None; n_xgb_test = 0
+    ll_xgb_rat = None;    br_xgb_rat = None;    acc_xgb_rat = None
+    n_train_xgb = 0; n_features_no_rat = 0; n_features_rat = 0
+    try:
+        from .features import FeatureBuilder, feature_columns
+        from .elo import EloState
+        from xgboost import XGBClassifier
+        from .config import XGB
+
+        print("\n[evaluate] A/B/C test: entrenando XGBoost con y sin EAFC ratings...")
+        fb_eval = FeatureBuilder()
+        elo_dummy = EloState()  # build_training_table arma Elo internamente
+        feat_all = fb_eval.build_training_table(df, dc, elo_dummy)
+        feat_all = feat_all.dropna(subset=["label"])
+
+        # Filtro de XGBoost a ultimas 2 temporadas (igual que train.py)
+        xgb_filter = pd.Timestamp("2024-07-01", tz="UTC")
+        feat_xgb = feat_all[feat_all["kickoff_ts_utc"] >= xgb_filter]
+
+        # Splits: train hasta cutoff-60d, valid 60d, test 30d
+        valid_cutoff = cutoff - pd.Timedelta(days=60)
+        xgb_train = feat_xgb[feat_xgb["kickoff_ts_utc"] < valid_cutoff]
+        xgb_valid = feat_xgb[(feat_xgb["kickoff_ts_utc"] >= valid_cutoff) &
+                              (feat_xgb["kickoff_ts_utc"] < cutoff)]
+        xgb_test = feat_xgb[feat_xgb["kickoff_ts_utc"] >= cutoff]
+
+        n_train_xgb = len(xgb_train)
+        n_xgb_test = len(xgb_test)
+        print(f"[evaluate] XGBoost splits: train={n_train_xgb} valid={len(xgb_valid)} test={n_xgb_test}")
+
+        if n_train_xgb >= 500 and len(xgb_valid) >= 30 and n_xgb_test >= 30:
+            all_features = feature_columns()
+            RATING_FEATURES = {
+                "home_xi_rating", "away_xi_rating", "xi_rating_diff",
+                "home_attack_rating", "home_defense_rating",
+                "away_attack_rating", "away_defense_rating",
+                "home_attack_vs_away_defense", "away_attack_vs_home_defense",
+            }
+            features_rat = all_features
+            features_no_rat = [f for f in all_features if f not in RATING_FEATURES]
+            n_features_rat = len(features_rat)
+            n_features_no_rat = len(features_no_rat)
+
+            def _fit_xgb_subset(train_df, valid_df, feats):
+                X_tr = train_df[feats].astype(float)
+                y_tr = train_df["label"].map(LABEL_MAP).astype(int).values
+                X_va = valid_df[feats].astype(float)
+                y_va = valid_df["label"].map(LABEL_MAP).astype(int).values
+                clf = XGBClassifier(
+                    objective=XGB.objective, eval_metric=XGB.eval_metric,
+                    max_depth=XGB.max_depth, learning_rate=XGB.learning_rate,
+                    n_estimators=XGB.n_estimators, subsample=XGB.subsample,
+                    colsample_bytree=XGB.colsample_bytree, reg_lambda=XGB.reg_lambda,
+                    num_class=XGB.num_class, early_stopping_rounds=XGB.early_stopping_rounds,
+                    tree_method="hist", n_jobs=-1, verbosity=0,
+                )
+                clf.fit(X_tr, y_tr, eval_set=[(X_va, y_va)], verbose=False)
+                return clf
+
+            y_te = xgb_test["label"].map(LABEL_MAP).astype(int).values
+
+            # Lista de features de xG rolling para A/B
+            XG_FEATURES = {
+                "home_xg_roll5", "home_xga_roll5", "home_xgd_roll5",
+                "away_xg_roll5", "away_xga_roll5", "away_xgd_roll5",
+                "home_xg_momentum", "away_xg_momentum",
+                "xgd5_diff", "xg_momentum_diff",
+            }
+            features_no_rat_no_xg = [f for f in features_no_rat if f not in XG_FEATURES]
+            features_no_rat_with_xg = features_no_rat  # incluye xG (esta en feature_columns)
+
+            # A) XGBoost SIN EAFC ratings SIN xG features (baseline)
+            print(f"[evaluate] A) XGBoost SIN ratings SIN xG ({len(features_no_rat_no_xg)} features)...")
+            clf_no = _fit_xgb_subset(xgb_train, xgb_valid, features_no_rat_no_xg)
+            proba_no = clf_no.predict_proba(xgb_test[features_no_rat_no_xg].astype(float))
+            ll_xgb_no_rat = multi_log_loss(y_te, proba_no)
+            br_xgb_no_rat = multi_brier(y_te, proba_no)
+            acc_xgb_no_rat = accuracy_top1(y_te, proba_no)
+
+            # B) XGBoost SIN EAFC ratings CON xG features
+            print(f"[evaluate] B) XGBoost SIN ratings CON xG ({len(features_no_rat_with_xg)} features)...")
+            clf_yes = _fit_xgb_subset(xgb_train, xgb_valid, features_no_rat_with_xg)
+            proba_yes = clf_yes.predict_proba(xgb_test[features_no_rat_with_xg].astype(float))
+            ll_xgb_rat = multi_log_loss(y_te, proba_yes)
+            br_xgb_rat = multi_brier(y_te, proba_yes)
+            acc_xgb_rat = accuracy_top1(y_te, proba_yes)
+            n_features_no_rat = len(features_no_rat_no_xg)
+            n_features_rat = len(features_no_rat_with_xg)
+
+            print(f"[evaluate] A/B test completado sobre {n_xgb_test} partidos test")
+        else:
+            print(f"[evaluate] insuficiente data para A/B test")
+    except Exception as e:
+        import traceback
+        print(f"[evaluate] A/B test fallo: {type(e).__name__}: {e}")
+        traceback.print_exc()
+
     # ===== REPORTE =====
     print("=" * 70)
     print("RESULTADOS")
@@ -3752,6 +4490,11 @@ def main() -> None:
     if ll_mkt is not None:
         print(f"{f'Mercado bookmakers (n={mkt_n})':<35} {ll_mkt:>10.4f} {'':>10} {acc_mkt:>10.1%}")
     print(f"{'Dixon-Coles crudo (full training)':<35} {ll:>10.4f} {br:>10.4f} {acc:>10.1%}")
+    if ll_dcxg is not None:
+        delta_xg = ll_dcxg - ll
+        tag = (f"  vs DC: {delta_xg:+.4f}")
+        marker = " GANA xG" if delta_xg < -0.001 else (" pierde" if delta_xg > 0.001 else " empate")
+        print(f"{'Dixon-Coles + xG (blend 50%)':<35} {ll_dcxg:>10.4f} {br_dcxg:>10.4f} {acc_dcxg:>10.1%}{tag}{marker}")
     if ll_baseline is not None:
         print(f"{'  -DC crudo (training reducido)':<35} {ll_baseline:>10.4f}      ...      ... (referencia)")
     if ll_dccal is not None:
@@ -3759,6 +4502,27 @@ def main() -> None:
         marker = (f"  <- gana {-delta:.4f} sobre su DC base" if delta and delta < 0
                   else f"  <- empeora {delta:.4f} sobre su DC base" if delta else "")
         print(f"{'DC + isotonic (calib HONESTO)':<35} {ll_dccal:>10.4f} {br_dccal:>10.4f} {acc_dccal:>10.1%}{marker}")
+    print()
+    print("--- A/B/C test (XGBoost entrenado desde cero en este eval) ---")
+    if ll_xgb_no_rat is not None:
+        delta_no = ll_xgb_no_rat - ll
+        tag_no = (f"  vs DC: {delta_no:+.4f}")
+        print(f"{'A) XGBoost SIN xG features':<35} {ll_xgb_no_rat:>10.4f} {br_xgb_no_rat:>10.4f} {acc_xgb_no_rat:>10.1%}{tag_no}")
+    if ll_xgb_rat is not None:
+        delta_yes = ll_xgb_rat - ll
+        tag_yes = (f"  vs DC: {delta_yes:+.4f}")
+        print(f"{'B) XGBoost CON xG features':<35} {ll_xgb_rat:>10.4f} {br_xgb_rat:>10.4f} {acc_xgb_rat:>10.1%}{tag_yes}")
+    if ll_xgb_no_rat is not None and ll_xgb_rat is not None:
+        delta_ab = ll_xgb_rat - ll_xgb_no_rat
+        if delta_ab < -0.001:
+            verdict = f"CON-xG GANA por {-delta_ab:.4f}"
+        elif delta_ab > 0.001:
+            verdict = f"SIN-xG GANA por {delta_ab:.4f}"
+        else:
+            verdict = "empate practico (diferencia < 0.001)"
+        print(f"     ==> Efecto de xG rolling: {verdict}")
+        print(f"     ==> Splits: train={n_train_xgb} test={n_xgb_test}  "
+              f"features: sin xG={n_features_no_rat} con xG={n_features_rat}")
     print()
 
     print("Calibración por clase:")

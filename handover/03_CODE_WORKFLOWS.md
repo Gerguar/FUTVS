@@ -253,6 +253,8 @@ on:
 jobs:
   fbref:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -278,6 +280,27 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python -m src.player_ratings --prefer-eafc
+
+      - name: Refrescar team_ratings.json
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.team_ratings
+
+      - name: Refrescar team_xg.parquet (xG por partido para DC)
+        run: python -m src.ingest_xg --seasons 2024,2023,2022,2021,2020
+
+      - name: Commit team_ratings.json + team_xg.parquet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/team_ratings.json data/team_xg.parquet || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh team_ratings + team_xg $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          else
+            echo "no changes"
+          fi
 
 ```
 
@@ -309,6 +332,61 @@ jobs:
 
 ```
 
+### `.github/workflows/deploy-hostinger.yml`
+
+```yaml
+name: deploy-hostinger
+
+# Auto-deploy de web/ a Hostinger via FTP.
+#
+# Se dispara cuando:
+#  - Push a main que toque archivos en web/
+#  - Manual (workflow_dispatch)
+#
+# Asi los commits del cron (que solo cambian data/) NO disparan deploy,
+# solo cambios reales del HTML/CSS/JS.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync web/ a Hostinger via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./web/
+          # En Hostinger el HTML del sitio queda en /nodejs/ segun lo que vimos
+          server-dir: ./nodejs/
+          protocol: ftp
+          port: 21
+          # No borra archivos extra en el servidor, solo sube los nuestros.
+          dangerous-clean-slate: false
+          # Excluye basura que no debe ir al hosting.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.DS_Store
+
+      - name: Resumen
+        run: |
+          echo "Deploy completado a https://futversus.com/"
+          echo "Archivos en web/ subidos a /nodejs/ del FTP."
+
+```
+
 ## Configuracion del repo
 
 ### `requirements.txt`
@@ -335,6 +413,10 @@ rapidfuzz>=3.5
 [build]
   publish = "web"
   command = ""
+  # Skip deploy si el commit no toca archivos de web/ (lee Netlify automaticamente).
+  # Asi los commits del cron de GitHub Actions que solo actualizan data/ no gastan
+  # deploys de Netlify.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- web/"
 
 [[headers]]
   for = "/predictions.json"
