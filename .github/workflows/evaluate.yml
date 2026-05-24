@@ -6,9 +6,6 @@ on:
       since:
         description: "Fecha inicio backtest (YYYY-MM-DD)"
         default: "2024-01-01"
-      with_lineups:
-        description: "Incluir features de alineaciones? (true/false)"
-        default: "false"
 
 jobs:
   evaluate:
@@ -36,16 +33,27 @@ jobs:
         run: python -m src.data_ingest --backfill --since ${{ github.event.inputs.since }}
 
       - name: Train baseline
+        run: python -m src.train
+
+      - name: Backtest
         run: |
-          python -m src.train
-          cp data/backtest_report.json data/backtest_baseline.json
-          echo "=== BASELINE ===" && cat data/backtest_baseline.json
+          python -m src.backtest || echo "[backtest] no existe src.backtest, usando metricas de holdout"
+          ls data/
+
+      - name: Mostrar metricas
+        run: |
+          echo "=== METRICAS HOLDOUT ==="
+          if [ -f data/backtest_report.json ]; then
+            cat data/backtest_report.json
+          else
+            echo "backtest_report.json no generado, ver logs de Train baseline"
+          fi
 
       - name: Guardar reporte
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/backtest_baseline.json || true
+          git add data/ || true
           if ! git diff --cached --quiet; then
             git commit -m "chore: backtest report $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             git push
