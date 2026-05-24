@@ -831,7 +831,7 @@ button,a{touch-action:manipulation}
       <div id="side-players-home"></div>
     </div>
     <div class="detail-main">
-      <div class="d-card"><div class="d-card-title">📊 Métricas clave</div><div class="metrics-row" id="detail-metrics"></div></div>
+      <div class="d-card"><div class="d-card-title" id="detail-metrics-title">📊 Estadísticas de la temporada</div><div class="metrics-row" id="detail-metrics"></div></div>
       <div class="d-card"><div class="d-card-title">🔍 ¿Cómo se llegó a esta probabilidad?</div><div class="factor-grid" id="detail-factors"></div></div>
       <div class="d-card">
         <div class="d-card-title">📈 Últimos 5 partidos</div>
@@ -915,12 +915,18 @@ function formatDate(iso) {
 }
 
 // Temporada europea: arranca julio del año N y termina junio del N+1.
-// Devuelve string tipo "2025/26".
-function currentSeason() {
+function seasonStartYear() {
   const d = new Date()
-  const y = d.getFullYear()
-  const startYear = d.getMonth() + 1 >= 7 ? y : y - 1
-  return `${startYear}/${String(startYear + 1).slice(2)}`
+  return d.getMonth() + 1 >= 7 ? d.getFullYear() : d.getFullYear() - 1
+}
+// "2025/26" para mostrar al usuario.
+function currentSeason() {
+  const y = seasonStartYear()
+  return `${y}/${String(y + 1).slice(2)}`
+}
+// "2025" para queries a Supabase (campo `temporada` guardado asi).
+function currentSeasonShort() {
+  return String(seasonStartYear())
 }
 
 // Llena los placeholders de temporada y año del copyright. Se ejecuta al cargar.
@@ -1080,6 +1086,48 @@ async function loadMatches() {
   }
 }
 
+// ── STATS DE EQUIPO POR TEMPORADA (para el detalle del partido) ──
+// Trae todos los partidos finalizados del equipo en la temporada actual y
+// agrega: goles a favor, goles en contra, partidos jugados, V/E/D, %.
+async function loadTeamSeasonStats(equipoId, temporadaShort) {
+  try {
+    const rows = await sb(
+      `partidos?select=equipo_local_id,equipo_visitante_id,goles_local,goles_visitante` +
+      `&estado=eq.finalizado&temporada=eq.${encodeURIComponent(temporadaShort)}` +
+      `&or=(equipo_local_id.eq.${equipoId},equipo_visitante_id.eq.${equipoId})`
+    )
+    let gf = 0, gc = 0, w = 0, d = 0, l = 0
+    for (const r of rows) {
+      if (r.goles_local == null || r.goles_visitante == null) continue
+      const isHome = r.equipo_local_id === equipoId
+      const gp = isHome ? r.goles_local : r.goles_visitante
+      const gr = isHome ? r.goles_visitante : r.goles_local
+      gf += gp; gc += gr
+      if (gp > gr) w++
+      else if (gp < gr) l++
+      else d++
+    }
+    const n = w + d + l
+    return {
+      gf, gc, played: n, w, d, l,
+      pctW: n ? Math.round(w/n*100) : 0,
+      pctD: n ? Math.round(d/n*100) : 0,
+      pctL: n ? Math.round(l/n*100) : 0,
+    }
+  } catch (e) {
+    console.error('Error stats temporada equipo', equipoId, e)
+    return { gf: 0, gc: 0, played: 0, w: 0, d: 0, l: 0, pctW: 0, pctD: 0, pctL: 0 }
+  }
+}
+
+// Rating promedio del XI titular (top 11 por rating).
+function xiRating(players) {
+  if (!players || !players.length) return 0
+  const top11 = [...players].sort((a,b) => (b.rating||0) - (a.rating||0)).slice(0, 11)
+  const sum = top11.reduce((s,p) => s + (p.rating||0), 0)
+  return Math.round(sum / top11.length)
+}
+
 // ── STATS DE ACIERTO DEL MODELO (sidebar izquierda en home) ──
 // Trae TODOS los partidos finalizados con sus pronosticos y resultados.
 // Clasifica: acertado (top-1 == real), ajustado (no acertado pero diff
@@ -1127,14 +1175,22 @@ async function loadMatchDetail(m) {
       `jugadores?select=*,estadisticas_jugador(*),mercado_historico(*),minutos_por_anio(*)` +
       `&equipo_id=eq.${equipoId}&order=rating.desc`
 
-    const [homePlayers, awayPlayers, formaData] = await Promise.all([
+    const temporada = currentSeasonShort()
+    const [homePlayers, awayPlayers, formaData, homeSeason, awaySeason] = await Promise.all([
       sb(playerQuery(m.home.id)),
       sb(playerQuery(m.away.id)),
-      sb(`forma_reciente?equipo_id=in.(${m.home.id},${m.away.id})`)
+      sb(`forma_reciente?equipo_id=in.(${m.home.id},${m.away.id})`),
+      loadTeamSeasonStats(m.home.id, temporada),
+      loadTeamSeasonStats(m.away.id, temporada),
     ])
 
     m.home.players = homePlayers.map(transformJugador)
     m.away.players = awayPlayers.map(transformJugador)
+    // Stats reales de la temporada actual (para la seccion "Estadisticas")
+    m.home.seasonStats = homeSeason
+    m.away.seasonStats = awaySeason
+    m.home.xiRating = xiRating(m.home.players)
+    m.away.xiRating = xiRating(m.away.players)
 
     // Calcular stats del equipo desde jugadores
     const sumG = ps => ps.reduce((a,p)=>a+(p.stats.goles||0), 0)
@@ -1318,24 +1374,61 @@ function renderBanner(m) {
 }
 
 function renderDetailBody(m) {
-  // Mini stats banner
-  const mstatHtml = (stats, col) =>
-    [['GOLES',stats.goles],['RECIBIDOS',stats.recibidos],['POSESIÓN',stats.posesion],['REMATES',stats.remates]]
-    .map(([k,v])=>`<div class="db-mstat"><span class="db-mstat-k">${k}</span><span class="db-mstat-v" style="color:${col}">${v}</span></div>`).join('')
-  document.getElementById('db-stats-home').innerHTML = mstatHtml(m.home.stats,'#22c55e')
-  document.getElementById('db-stats-away').innerHTML = mstatHtml(m.away.stats,'#ef4444')
+  // Mini stats banner — stats reales de la temporada (consistente con la seccion de abajo).
+  const miniStat = (season, rating, col) =>
+    [['GF', season.gf],
+     ['GC', season.gc],
+     ['RAT', rating],
+     ['V%', `${season.pctW}%`]]
+    .map(([k,v]) => `<div class="db-mstat"><span class="db-mstat-k">${k}</span><span class="db-mstat-v" style="color:${col}">${v}</span></div>`).join('')
+  document.getElementById('db-stats-home').innerHTML = miniStat(m.home.seasonStats || {gf:0,gc:0,pctW:0}, m.home.xiRating || 0, '#22c55e')
+  document.getElementById('db-stats-away').innerHTML = miniStat(m.away.seasonStats || {gf:0,gc:0,pctW:0}, m.away.xiRating || 0, '#ef4444')
 
   // Players side panels
   renderSidePlayers('side-players-home','side-header-home',m.home.players,m.id,'home')
   renderSidePlayers('side-players-away','side-header-away',m.away.players,m.id,'away')
 
-  // Metrics
-  const mCfg=[{k:'goles',lbl:'GOLES MARCADOS'},{k:'recibidos',lbl:'GOLES RECIBIDOS'},{k:'posesion',lbl:'POSESIÓN'},{k:'remates',lbl:'REMATES'}]
-  document.getElementById('detail-metrics').innerHTML = mCfg.map(mc=>{
-    const va=m.home.stats[mc.k], vb=m.away.stats[mc.k]
-    const aWins=parseFloat(va)>=parseFloat(vb)
-    const pct=Math.round(parseFloat(va)/(parseFloat(va)+parseFloat(vb)||1)*100)
-    return `<div class="m-tile"><div class="m-tile-lbl"><span>${mc.lbl}</span><span class="m-winner-badge ${aWins?'m-wb-a':'m-wb-b'}">${aWins?m.home.abbr:m.away.abbr} ▲</span></div><div class="m-vals"><span class="m-va">${va}</span><span class="m-sep">vs</span><span class="m-vb">${vb}</span></div><div class="m-minibar"><div class="m-minifill" style="width:${pct}%"></div></div></div>`
+  // Metrics — stats REALES del equipo en la temporada actual.
+  const seasonH = m.home.seasonStats || {gf:0,gc:0,played:0,pctW:0,pctD:0,pctL:0}
+  const seasonA = m.away.seasonStats || {gf:0,gc:0,played:0,pctW:0,pctD:0,pctL:0}
+  const ratH = m.home.xiRating || 0
+  const ratA = m.away.xiRating || 0
+  // Subtitulo del card con la temporada y partidos jugados.
+  const titleEl = document.getElementById('detail-metrics-title')
+  if (titleEl) {
+    const minPlayed = Math.min(seasonH.played, seasonA.played)
+    titleEl.innerHTML = `📊 Estadísticas de la temporada ${currentSeason()} <span style="opacity:.6;font-size:.85em;margin-left:6px">(${minPlayed}+ PJ)</span>`
+  }
+  // Cada tile: 'higher'/'lower' decide quien gana (para goles_contra menos es mejor).
+  const tiles = [
+    { lbl: 'GOLES A FAVOR',   va: seasonH.gf,   vb: seasonA.gf,   bias: 'higher' },
+    { lbl: 'GOLES EN CONTRA', va: seasonH.gc,   vb: seasonA.gc,   bias: 'lower'  },
+    { lbl: 'RATING XI',       va: ratH,         vb: ratA,         bias: 'higher' },
+    { lbl: 'V/E/D %',         va: `${seasonH.pctW}/${seasonH.pctD}/${seasonH.pctL}`,
+                              vb: `${seasonA.pctW}/${seasonA.pctD}/${seasonA.pctL}`,
+                              compareBy: seasonH.pctW - seasonA.pctW, bias: 'custom' }
+  ]
+  document.getElementById('detail-metrics').innerHTML = tiles.map(t => {
+    let aWins
+    if (t.bias === 'higher') aWins = parseFloat(t.va) >= parseFloat(t.vb)
+    else if (t.bias === 'lower') aWins = parseFloat(t.va) <= parseFloat(t.vb)
+    else aWins = t.compareBy >= 0
+    // Mini barra: peso proporcional (para 'lower', invertir).
+    let pct = 50
+    if (t.bias === 'higher') {
+      const tot = parseFloat(t.va) + parseFloat(t.vb)
+      pct = tot > 0 ? Math.round(parseFloat(t.va) / tot * 100) : 50
+    } else if (t.bias === 'lower') {
+      const tot = parseFloat(t.va) + parseFloat(t.vb)
+      pct = tot > 0 ? Math.round(parseFloat(t.vb) / tot * 100) : 50
+    } else {
+      pct = Math.max(0, Math.min(100, 50 + (t.compareBy || 0) / 2))
+    }
+    return `<div class="m-tile">
+      <div class="m-tile-lbl"><span>${t.lbl}</span><span class="m-winner-badge ${aWins?'m-wb-a':'m-wb-b'}">${aWins?m.home.abbr:m.away.abbr} ▲</span></div>
+      <div class="m-vals"><span class="m-va">${t.va}</span><span class="m-sep">vs</span><span class="m-vb">${t.vb}</span></div>
+      <div class="m-minibar"><div class="m-minifill" style="width:${pct}%"></div></div>
+    </div>`
   }).join('')
 
   // Factors
