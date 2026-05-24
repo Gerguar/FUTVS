@@ -82,7 +82,7 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .team-name-card{font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vs-col{font-family:'JetBrains Mono',monospace;color:var(--border2);font-size:.75rem;font-weight:700;letter-spacing:2px}
 .card-meta{font-size:.75rem;color:var(--muted);text-align:center;font-family:'JetBrains Mono',monospace}
-.mini-bar{height:7px;border-radius:4px;background:var(--surface2);display:flex;overflow:hidden;width:100%}
+.mini-bar{height:12px;border-radius:5px;background:var(--surface2);display:flex;overflow:hidden;width:100%}
 .mini-seg{height:100%}
 .mini-probs{display:flex;justify-content:space-between;width:100%;font-size:.72rem;font-family:'JetBrains Mono',monospace;font-weight:700}
 .back-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.82rem;font-family:'JetBrains Mono',monospace;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
@@ -1249,11 +1249,6 @@ function matchCardHtml(m) {
         <div class="mini-seg" style="background:var(--amber);width:${m.prob.draw}%"></div>
         <div class="mini-seg" style="background:var(--red);width:${m.prob.away}%"></div>
       </div>
-      <div class="mini-probs">
-        <span style="color:var(--green)">${m.prob.home}%</span>
-        <span style="color:var(--amber)">${m.prob.draw}%</span>
-        <span style="color:var(--red)">${m.prob.away}%</span>
-      </div>
       ${scoreRow}
     </div>`
 }
@@ -1381,8 +1376,8 @@ function renderDetailBody(m) {
      ['RAT', rating],
      ['V%', `${season.pctW}%`]]
     .map(([k,v]) => `<div class="db-mstat"><span class="db-mstat-k">${k}</span><span class="db-mstat-v" style="color:${col}">${v}</span></div>`).join('')
-  document.getElementById('db-stats-home').innerHTML = miniStat(m.home.seasonStats || {gf:0,gc:0,pctW:0}, m.home.xiRating || 0, '#22c55e')
-  document.getElementById('db-stats-away').innerHTML = miniStat(m.away.seasonStats || {gf:0,gc:0,pctW:0}, m.away.xiRating || 0, '#ef4444')
+  document.getElementById('db-stats-home').innerHTML = miniStat(m.home.seasonStats || {gf:0,gc:0,pctW:0}, m.home.xiRating || 0, '#6fb285')
+  document.getElementById('db-stats-away').innerHTML = miniStat(m.away.seasonStats || {gf:0,gc:0,pctW:0}, m.away.xiRating || 0, '#c66e6e')
 
   // Players side panels
   renderSidePlayers('side-players-home','side-header-home',m.home.players,m.id,'home')
