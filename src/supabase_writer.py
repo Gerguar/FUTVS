@@ -172,6 +172,18 @@ def sb_patch(path: str, body: dict, prefer: str = "return=minimal") -> Any:
         return json.loads(raw) if raw else None
 
 
+def sb_delete(path: str) -> Any:
+    """DELETE en Supabase REST. El path debe incluir el filtro (ej: 'partidos?id=eq.42')."""
+    req = urllib.request.Request(
+        f"{_sb_url()}/rest/v1/{path}",
+        headers=_headers({"Prefer": "return=minimal"}),
+        method="DELETE",
+    )
+    with urllib.request.urlopen(req, timeout=30) as r:
+        raw = r.read()
+        return json.loads(raw) if raw else None
+
+
 # ───────── Lookup de partidos ─────────
 
 def _normalize(name: str | None) -> str:

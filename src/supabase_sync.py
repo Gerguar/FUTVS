@@ -27,7 +27,7 @@ import pandas as pd
 
 from .config import PATHS
 from .team_normalize import canonical
-from .supabase_writer import (sb_get, sb_post, sb_patch,
+from .supabase_writer import (sb_get, sb_post, sb_patch, sb_delete,
                               LEAGUE_ALIAS, SUPABASE_TO_SLUG)
 
 
@@ -301,45 +301,109 @@ class SupabaseSync:
             print(f"  ! error creando equipo {slug}: {e}")
             return None
 
-    def find_partido_id(self, home_id: int, away_id: int,
-                        fecha_iso: str) -> int | None:
+    # Ventana ±DUP_WINDOW_DAYS para detectar duplicados (un mismo enfrentamiento
+    # home-away no se repite en <10 dias salvo copa con doble partido, pero ahi
+    # se invierte local-visitante y son entradas distintas).
+    DUP_WINDOW_DAYS = 10
+    # Tolerancia (segundos) antes de pisar la fecha de un partido existente.
+    # 1 hora absorbe desfases por timezone parsing sin enmascarar errores reales
+    # (Serie A los carga a 13:00 cuando son 16:00 o 18:45 -> diff > 1h).
+    FECHA_UPDATE_THRESHOLD_S = 3600
+
+    def find_partidos_for_teams(self, home_id: int, away_id: int,
+                                fecha_iso: str) -> list[dict]:
+        """Devuelve todos los partidos con (home_id, away_id) dentro de ±DUP_WINDOW_DAYS."""
         fecha_dt = pd.to_datetime(fecha_iso, utc=True)
-        lo = (fecha_dt - timedelta(hours=6)).isoformat()
-        hi = (fecha_dt + timedelta(hours=6)).isoformat()
+        lo = (fecha_dt - timedelta(days=self.DUP_WINDOW_DAYS)).isoformat()
+        hi = (fecha_dt + timedelta(days=self.DUP_WINDOW_DAYS)).isoformat()
         q = urllib.parse.urlencode({
-            "select": "id",
+            "select": "id,fecha,estado",
             "equipo_local_id": f"eq.{home_id}",
             "equipo_visitante_id": f"eq.{away_id}",
             "fecha": f"gte.{lo}",
         })
-        rows = sb_get(f"partidos?{q}&fecha=lte.{urllib.parse.quote(hi)}")
-        return int(rows[0]["id"]) if rows else None
+        return sb_get(f"partidos?{q}&fecha=lte.{urllib.parse.quote(hi)}")
 
     def upsert_partido(self, home_id: int, away_id: int, fecha_iso: str,
                        liga_id: int, temporada: str,
                        dry_run: bool) -> tuple[int | None, bool]:
-        """Devuelve (partido_id, created_bool)."""
-        existing = self.find_partido_id(home_id, away_id, fecha_iso)
-        if existing:
-            return existing, False
-        payload = {
-            "equipo_local_id": home_id,
-            "equipo_visitante_id": away_id,
-            "fecha": fecha_iso,
-            "liga_id": liga_id,
-            "temporada": temporada or "2025/26",
-            "estado": "programado",
-        }
-        if dry_run:
-            print(f"  [dry-run] crear partido: {home_id} vs {away_id} @ {fecha_iso[:16]}")
-            return None, True
-        try:
-            res = sb_post("partidos", [payload], prefer="return=representation")
-            new_id = int(res[0]["id"])
-            return new_id, True
-        except Exception as e:
-            print(f"  ! error creando partido: {e}")
-            return None, False
+        """
+        Garantiza que en Supabase exista UN solo registro para (home, away) cerca
+        de fecha_iso, con la fecha correcta. Detecta y limpia duplicados.
+
+        Devuelve (partido_id, created_bool).
+        """
+        fecha_dt = pd.to_datetime(fecha_iso, utc=True)
+        candidatos = self.find_partidos_for_teams(home_id, away_id, fecha_iso)
+
+        if not candidatos:
+            # Guard: no creamos partidos pasados que no estaban en Supabase. El
+            # frontend solo muestra programados; los pasados sin pronostico se
+            # archivarian como 'finalizado sin goles' (ruido).
+            if fecha_dt < pd.Timestamp.now(tz="UTC") - pd.Timedelta(hours=2):
+                return None, False
+            payload = {
+                "equipo_local_id": home_id,
+                "equipo_visitante_id": away_id,
+                "fecha": fecha_iso,
+                "liga_id": liga_id,
+                "temporada": temporada or "2025/26",
+                "estado": "programado",
+            }
+            if dry_run:
+                print(f"  [dry-run] crear partido: {home_id} vs {away_id} @ {fecha_iso[:16]}")
+                return None, True
+            try:
+                res = sb_post("partidos", [payload], prefer="return=representation")
+                return int(res[0]["id"]), True
+            except Exception as e:
+                print(f"  ! error creando partido: {e}")
+                return None, False
+
+        # Hay 1+ candidatos. Tomar el mas cercano como canonico, borrar el resto.
+        # No tocar canonicos en estado=finalizado (preservar resultados ya cargados).
+        candidatos.sort(
+            key=lambda r: abs((pd.to_datetime(r["fecha"], utc=True) - fecha_dt).total_seconds())
+        )
+        canonico = candidatos[0]
+        canonico_id = int(canonico["id"])
+        canonico_fecha = pd.to_datetime(canonico["fecha"], utc=True)
+        duplicados = candidatos[1:]
+
+        # Borrar duplicados (junto con sus pronosticos por FK)
+        for dup in duplicados:
+            dup_id = int(dup["id"])
+            if dry_run:
+                print(f"  [dry-run] borrar duplicado partido id={dup_id} "
+                      f"(fecha={dup['fecha'][:16]}, conservo id={canonico_id})")
+                continue
+            try:
+                sb_delete(f"pronosticos?partido_id=eq.{dup_id}")
+                sb_delete(f"partidos?id=eq.{dup_id}")
+                print(f"  + duplicado borrado: partido id={dup_id} "
+                      f"(fecha={dup['fecha'][:16]}, queda id={canonico_id})")
+            except Exception as e:
+                print(f"  ! error borrando duplicado {dup_id}: {e}")
+
+        # Corregir fecha del canonico si difiere mas que el threshold.
+        # Saltear si esta finalizado (no pisar resultados/fechas historicas).
+        if canonico.get("estado") != "finalizado":
+            diff_s = abs((canonico_fecha - fecha_dt).total_seconds())
+            if diff_s > self.FECHA_UPDATE_THRESHOLD_S:
+                if dry_run:
+                    print(f"  [dry-run] update fecha partido {canonico_id}: "
+                          f"{canonico_fecha.strftime('%Y-%m-%d %H:%M')} -> "
+                          f"{fecha_dt.strftime('%Y-%m-%d %H:%M')}")
+                else:
+                    try:
+                        sb_patch(f"partidos?id=eq.{canonico_id}", {"fecha": fecha_iso})
+                        print(f"  + fecha corregida partido {canonico_id}: "
+                              f"{canonico_fecha.strftime('%Y-%m-%d %H:%M')} -> "
+                              f"{fecha_dt.strftime('%Y-%m-%d %H:%M')}")
+                    except Exception as e:
+                        print(f"  ! error update fecha {canonico_id}: {e}")
+
+        return canonico_id, False
 
     def archive_past_partidos(self, dry_run: bool) -> int:
         """Marca como finalizado los partidos `programado` con fecha pasada."""
@@ -424,8 +488,12 @@ def sync_upcoming(horizon_days: int = 14, dry_run: bool = False,
     now = pd.Timestamp.now(tz="UTC")
     end = now + pd.Timedelta(days=horizon_days)
 
-    valid_status = df["status"].isin(["SCHEDULED", "TIMED"])
-    in_window = (df["kickoff_ts_utc"] >= now - pd.Timedelta(hours=2)) & \
+    # Ventana: incluir los ultimos 7 dias hacia atras tambien, para que el upsert
+    # detecte y limpie duplicados/desfases de fecha en partidos recientes que ya
+    # se jugaron (su contraparte real esta en parquet con fecha correcta, los
+    # huerfanos en Supabase con fecha mal cargada se borran via upsert_partido).
+    valid_status = df["status"].isin(["SCHEDULED", "TIMED", "FINISHED", "IN_PLAY", "PAUSED"])
+    in_window = (df["kickoff_ts_utc"] >= now - pd.Timedelta(days=7)) & \
                  (df["kickoff_ts_utc"] <= end)
     has_teams = df["home_team_id"].notna() & df["away_team_id"].notna()
     upcoming = df[valid_status & in_window & has_teams].copy()
