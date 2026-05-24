@@ -1,0 +1,54 @@
+name: evaluate
+
+on:
+  workflow_dispatch:
+    inputs:
+      since:
+        description: "Fecha inicio backtest (YYYY-MM-DD)"
+        default: "2024-01-01"
+      with_lineups:
+        description: "Incluir features de alineaciones? (true/false)"
+        default: "false"
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Ingest historico
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+          THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
+        run: python -m src.data_ingest --backfill --since ${{ github.event.inputs.since }}
+
+      - name: Train baseline
+        run: |
+          python -m src.train
+          cp data/backtest_report.json data/backtest_baseline.json
+          echo "=== BASELINE ===" && cat data/backtest_baseline.json
+
+      - name: Guardar reporte
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/backtest_baseline.json || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: backtest report $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          else
+            echo "no changes"
+          fi
