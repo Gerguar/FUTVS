@@ -1,0 +1,98 @@
+name: smart-sync (resultados, trigger por kickoff+120min)
+
+# Estrategia:
+# - Cron cada 30 min.
+# - Job 'check' (~15s, sin instalar deps Python): pregunta a Supabase si hay
+#   partidos con estado='programado' Y fecha < (now - 120 min). Si los hay,
+#   significa que ya deberian estar finalizados segun nuestra heuristica de
+#   "kickoff + 120 min" (90 min juego + 15 entretiempo + add time + buffer
+#   para que football-data.org marque FINISHED).
+# - Job 'sync' (~3 min): solo corre si 'check' encontro candidatos. Hace
+#   data_ingest + supabase_sync para refrescar el parquet y propagar los
+#   FINISHED a Supabase.
+# - Si en este intento football-data.org aun no marco FINISHED (caso comun
+#   con batches de La Liga), el siguiente cron en 30 min vuelve a intentar.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      needs_sync: ${{ steps.check.outputs.needs_sync }}
+      pending_count: ${{ steps.check.outputs.pending_count }}
+    steps:
+      - id: check
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          set -euo pipefail
+          # Cutoff = now - 120 min en formato ISO UTC.
+          CUTOFF=$(date -u -d "-120 minutes" +%Y-%m-%dT%H:%M:%S)
+          URL="${SUPABASE_URL}/rest/v1/partidos?select=id&estado=eq.programado&fecha=lt.${CUTOFF}"
+          # head: si Prefer=count=exact, devuelve el Content-Range que nos da el total.
+          COUNT_HDR=$(curl -sI "$URL" \
+                          -H "apikey: $SUPABASE_SERVICE_KEY" \
+                          -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+                          -H "Prefer: count=exact" \
+                          -H "Range: 0-0" \
+                       | grep -i content-range | tr -d '\r' | awk -F'/' '{print $2}')
+          COUNT=${COUNT_HDR:-0}
+          echo "Encontrados $COUNT partidos en estado=programado con kickoff < $CUTOFF"
+          if [ "$COUNT" -gt 0 ]; then
+            echo "needs_sync=true" >> "$GITHUB_OUTPUT"
+            echo "pending_count=$COUNT" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs_sync=false" >> "$GITHUB_OUTPUT"
+            echo "pending_count=0" >> "$GITHUB_OUTPUT"
+          fi
+
+  sync:
+    needs: check
+    if: needs.check.outputs.needs_sync == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Ingest fixtures + resultados frescos (football-data.org)
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+        run: python -m src.data_ingest --days-ahead 14 --skip-couk
+
+      - name: Sync a Supabase (crea/actualiza partidos + cierra finalizados)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.supabase_sync --horizon 14
+
+      - name: Commit parquet actualizado (si hubo cambios)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/matches.parquet || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: smart-sync $(date -u +%Y-%m-%dT%H:%M:%SZ) (${{ needs.check.outputs.pending_count }} pendientes)"
+            git push
+          else
+            echo "no changes"
+          fi
+
+      - name: Resumen
+        run: |
+          echo "Pendientes detectados antes del sync: ${{ needs.check.outputs.pending_count }}"
+          echo "(Si quedan en 'programado' tras este sync, football-data.org todavia"
+          echo " no marco FINISHED. Proximo intento en 30 min.)"

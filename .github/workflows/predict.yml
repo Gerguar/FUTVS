@@ -2,8 +2,9 @@ name: predict
 
 on:
   schedule:
-    # Cada 6 horas
-    - cron: "0 */6 * * *"
+    # Cada 12 horas (00:00 y 12:00 UTC). El sync de resultados finos lo
+    # maneja smart-sync.yml cada 30 min con trigger "kickoff + 120 min".
+    - cron: "0 */12 * * *"
     # Reentreno semanal completo: domingos 00:00 UTC
     - cron: "0 0 * * 0"
   workflow_dispatch: {}
