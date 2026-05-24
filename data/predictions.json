@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-24T05:33:10.467320+00:00",
+  "generated_at_utc": "2026-05-24T09:12:00.688324+00:00",
   "model": {
     "trained_at": "2026-05-24T05:08:42.420043+00:00",
     "method": "DixonColes+Elo+XGBoost(isotonic)",
@@ -32,14 +32,14 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3238,
-        "draw": 0.3292,
-        "away": 0.347
+        "home": 0.3138,
+        "draw": 0.3428,
+        "away": 0.3434
       },
       "market_probabilities": {
-        "home": 0.3519,
-        "draw": 0.2842,
-        "away": 0.3639
+        "home": 0.344,
+        "draw": 0.2864,
+        "away": 0.3695
       },
       "scoreline_top": [
         {
@@ -96,9 +96,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.5122,
-        "draw": 0.2318,
-        "away": 0.256
+        "home": 0.4901,
+        "draw": 0.2523,
+        "away": 0.2576
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -156,9 +156,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.4151,
-        "draw": 0.2918,
-        "away": 0.2931
+        "home": 0.4334,
+        "draw": 0.2793,
+        "away": 0.2873
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -216,9 +216,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.371,
-        "draw": 0.2901,
-        "away": 0.3389
+        "home": 0.3329,
+        "draw": 0.2886,
+        "away": 0.3786
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -276,14 +276,14 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.5607,
-        "draw": 0.2085,
-        "away": 0.2308
+        "home": 0.5509,
+        "draw": 0.2129,
+        "away": 0.2362
       },
       "market_probabilities": {
-        "home": 0.5243,
-        "draw": 0.2299,
-        "away": 0.2457
+        "home": 0.5174,
+        "draw": 0.2332,
+        "away": 0.2493
       },
       "scoreline_top": [
         {
@@ -340,9 +340,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3383,
-        "draw": 0.273,
-        "away": 0.3887
+        "home": 0.3406,
+        "draw": 0.2724,
+        "away": 0.3871
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -400,9 +400,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.4783,
-        "draw": 0.2601,
-        "away": 0.2616
+        "home": 0.4759,
+        "draw": 0.2632,
+        "away": 0.2609
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -460,14 +460,14 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.1919,
-        "draw": 0.2908,
-        "away": 0.5173
+        "home": 0.1915,
+        "draw": 0.2992,
+        "away": 0.5093
       },
       "market_probabilities": {
-        "home": 0.227,
-        "draw": 0.2405,
-        "away": 0.5326
+        "home": 0.2576,
+        "draw": 0.2655,
+        "away": 0.4769
       },
       "scoreline_top": [
         {
@@ -524,9 +524,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.4499,
-        "draw": 0.2874,
-        "away": 0.2626
+        "home": 0.4524,
+        "draw": 0.283,
+        "away": 0.2645
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -584,14 +584,14 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.2635,
-        "draw": 0.3011,
-        "away": 0.4354
+        "home": 0.2575,
+        "draw": 0.2778,
+        "away": 0.4647
       },
       "market_probabilities": {
-        "home": 0.2667,
-        "draw": 0.261,
-        "away": 0.4723
+        "home": 0.2728,
+        "draw": 0.2609,
+        "away": 0.4663
       },
       "scoreline_top": [
         {
@@ -648,9 +648,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.4186,
-        "draw": 0.2962,
-        "away": 0.2851
+        "home": 0.4105,
+        "draw": 0.304,
+        "away": 0.2855
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -708,14 +708,14 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.6354,
-        "draw": 0.2291,
-        "away": 0.1355
+        "home": 0.6296,
+        "draw": 0.2357,
+        "away": 0.1347
       },
       "market_probabilities": {
-        "home": 0.6403,
-        "draw": 0.2224,
-        "away": 0.1373
+        "home": 0.6344,
+        "draw": 0.2238,
+        "away": 0.1418
       },
       "scoreline_top": [
         {
@@ -772,14 +772,14 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3001,
-        "draw": 0.3061,
-        "away": 0.3937
+        "home": 0.2786,
+        "draw": 0.292,
+        "away": 0.4294
       },
       "market_probabilities": {
-        "home": 0.5416,
-        "draw": 0.2678,
-        "away": 0.1906
+        "home": 0.5275,
+        "draw": 0.2768,
+        "away": 0.1957
       },
       "scoreline_top": [
         {
@@ -818,190 +818,6 @@
       }
     },
     {
-      "match_id": "fd-537186",
-      "kickoff_ts_utc": "2026-05-24T18:45:00+00:00",
-      "competition": {
-        "code": "SA",
-        "name": "Serie A"
-      },
-      "home": {
-        "id": "ac_milan",
-        "name": "Milan"
-      },
-      "away": {
-        "id": "cagliari",
-        "name": "Cagliari"
-      },
-      "venue": null,
-      "is_neutral": false,
-      "snapshot": "24h",
-      "probabilities": {
-        "home": 0.6223,
-        "draw": 0.2153,
-        "away": 0.1623
-      },
-      "market_probabilities": null,
-      "scoreline_top": [
-        {
-          "score": "2-0",
-          "p": 0.1337
-        },
-        {
-          "score": "1-0",
-          "p": 0.1278
-        },
-        {
-          "score": "1-1",
-          "p": 0.0994
-        },
-        {
-          "score": "2-1",
-          "p": 0.0943
-        },
-        {
-          "score": "3-0",
-          "p": 0.0895
-        }
-      ],
-      "expected_goals": {
-        "home": 2.01,
-        "away": 0.71
-      },
-      "derived": {
-        "p_over_2_5": 0.5094,
-        "p_btts": 0.4435
-      },
-      "ratings": {
-        "elo_home": 1745.7,
-        "elo_away": 1454.4,
-        "elo_diff": 291.3
-      }
-    },
-    {
-      "match_id": "fd-537188",
-      "kickoff_ts_utc": "2026-05-24T18:45:00+00:00",
-      "competition": {
-        "code": "SA",
-        "name": "Serie A"
-      },
-      "home": {
-        "id": "torino",
-        "name": "Torino"
-      },
-      "away": {
-        "id": "juventus",
-        "name": "Juventus"
-      },
-      "venue": null,
-      "is_neutral": false,
-      "snapshot": "24h",
-      "probabilities": {
-        "home": 0.1919,
-        "draw": 0.2381,
-        "away": 0.57
-      },
-      "market_probabilities": {
-        "home": 0.1263,
-        "draw": 0.2058,
-        "away": 0.668
-      },
-      "scoreline_top": [
-        {
-          "score": "0-2",
-          "p": 0.1115
-        },
-        {
-          "score": "0-1",
-          "p": 0.101
-        },
-        {
-          "score": "1-1",
-          "p": 0.0995
-        },
-        {
-          "score": "1-2",
-          "p": 0.0987
-        },
-        {
-          "score": "0-3",
-          "p": 0.0779
-        }
-      ],
-      "expected_goals": {
-        "home": 0.88,
-        "away": 2.1
-      },
-      "derived": {
-        "p_over_2_5": 0.5724,
-        "p_btts": 0.5204
-      },
-      "ratings": {
-        "elo_home": 1431.3,
-        "elo_away": 1660.5,
-        "elo_diff": -229.2
-      }
-    },
-    {
-      "match_id": "fd-537189",
-      "kickoff_ts_utc": "2026-05-24T18:45:00+00:00",
-      "competition": {
-        "code": "SA",
-        "name": "Serie A"
-      },
-      "home": {
-        "id": "verona",
-        "name": "Verona"
-      },
-      "away": {
-        "id": "roma",
-        "name": "Roma"
-      },
-      "venue": null,
-      "is_neutral": false,
-      "snapshot": "24h",
-      "probabilities": {
-        "home": 0.1765,
-        "draw": 0.2262,
-        "away": 0.5973
-      },
-      "market_probabilities": null,
-      "scoreline_top": [
-        {
-          "score": "0-1",
-          "p": 0.1751
-        },
-        {
-          "score": "0-2",
-          "p": 0.1589
-        },
-        {
-          "score": "0-0",
-          "p": 0.1079
-        },
-        {
-          "score": "1-1",
-          "p": 0.0987
-        },
-        {
-          "score": "0-3",
-          "p": 0.0933
-        }
-      ],
-      "expected_goals": {
-        "home": 0.52,
-        "away": 1.76
-      },
-      "derived": {
-        "p_over_2_5": 0.398,
-        "p_btts": 0.3397
-      },
-      "ratings": {
-        "elo_home": 1323.5,
-        "elo_away": 1698.3,
-        "elo_diff": -374.9
-      }
-    },
-    {
       "match_id": "fd-537193",
       "kickoff_ts_utc": "2026-05-24T18:45:00+00:00",
       "competition": {
@@ -1020,9 +836,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.1698,
-        "draw": 0.2559,
-        "away": 0.5744
+        "home": 0.1714,
+        "draw": 0.2541,
+        "away": 0.5745
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1062,6 +878,190 @@
       }
     },
     {
+      "match_id": "fd-537189",
+      "kickoff_ts_utc": "2026-05-24T18:45:00+00:00",
+      "competition": {
+        "code": "SA",
+        "name": "Serie A"
+      },
+      "home": {
+        "id": "verona",
+        "name": "Verona"
+      },
+      "away": {
+        "id": "roma",
+        "name": "Roma"
+      },
+      "venue": null,
+      "is_neutral": false,
+      "snapshot": "24h",
+      "probabilities": {
+        "home": 0.1783,
+        "draw": 0.2239,
+        "away": 0.5978
+      },
+      "market_probabilities": null,
+      "scoreline_top": [
+        {
+          "score": "0-1",
+          "p": 0.1751
+        },
+        {
+          "score": "0-2",
+          "p": 0.1589
+        },
+        {
+          "score": "0-0",
+          "p": 0.1079
+        },
+        {
+          "score": "1-1",
+          "p": 0.0987
+        },
+        {
+          "score": "0-3",
+          "p": 0.0933
+        }
+      ],
+      "expected_goals": {
+        "home": 0.52,
+        "away": 1.76
+      },
+      "derived": {
+        "p_over_2_5": 0.398,
+        "p_btts": 0.3397
+      },
+      "ratings": {
+        "elo_home": 1323.5,
+        "elo_away": 1698.3,
+        "elo_diff": -374.9
+      }
+    },
+    {
+      "match_id": "fd-537188",
+      "kickoff_ts_utc": "2026-05-24T18:45:00+00:00",
+      "competition": {
+        "code": "SA",
+        "name": "Serie A"
+      },
+      "home": {
+        "id": "torino",
+        "name": "Torino"
+      },
+      "away": {
+        "id": "juventus",
+        "name": "Juventus"
+      },
+      "venue": null,
+      "is_neutral": false,
+      "snapshot": "24h",
+      "probabilities": {
+        "home": 0.1835,
+        "draw": 0.2529,
+        "away": 0.5636
+      },
+      "market_probabilities": {
+        "home": 0.1539,
+        "draw": 0.2244,
+        "away": 0.6218
+      },
+      "scoreline_top": [
+        {
+          "score": "0-2",
+          "p": 0.1115
+        },
+        {
+          "score": "0-1",
+          "p": 0.101
+        },
+        {
+          "score": "1-1",
+          "p": 0.0995
+        },
+        {
+          "score": "1-2",
+          "p": 0.0987
+        },
+        {
+          "score": "0-3",
+          "p": 0.0779
+        }
+      ],
+      "expected_goals": {
+        "home": 0.88,
+        "away": 2.1
+      },
+      "derived": {
+        "p_over_2_5": 0.5724,
+        "p_btts": 0.5204
+      },
+      "ratings": {
+        "elo_home": 1431.3,
+        "elo_away": 1660.5,
+        "elo_diff": -229.2
+      }
+    },
+    {
+      "match_id": "fd-537186",
+      "kickoff_ts_utc": "2026-05-24T18:45:00+00:00",
+      "competition": {
+        "code": "SA",
+        "name": "Serie A"
+      },
+      "home": {
+        "id": "ac_milan",
+        "name": "Milan"
+      },
+      "away": {
+        "id": "cagliari",
+        "name": "Cagliari"
+      },
+      "venue": null,
+      "is_neutral": false,
+      "snapshot": "24h",
+      "probabilities": {
+        "home": 0.6157,
+        "draw": 0.2221,
+        "away": 0.1622
+      },
+      "market_probabilities": null,
+      "scoreline_top": [
+        {
+          "score": "2-0",
+          "p": 0.1337
+        },
+        {
+          "score": "1-0",
+          "p": 0.1278
+        },
+        {
+          "score": "1-1",
+          "p": 0.0994
+        },
+        {
+          "score": "2-1",
+          "p": 0.0943
+        },
+        {
+          "score": "3-0",
+          "p": 0.0895
+        }
+      ],
+      "expected_goals": {
+        "home": 2.01,
+        "away": 0.71
+      },
+      "derived": {
+        "p_over_2_5": 0.5094,
+        "p_btts": 0.4435
+      },
+      "ratings": {
+        "elo_home": 1745.7,
+        "elo_away": 1454.4,
+        "elo_diff": 291.3
+      }
+    },
+    {
       "match_id": "fd-544588",
       "kickoff_ts_utc": "2026-05-24T19:00:00+00:00",
       "competition": {
@@ -1080,9 +1080,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3748,
-        "draw": 0.2705,
-        "away": 0.3547
+        "home": 0.3927,
+        "draw": 0.2608,
+        "away": 0.3465
       },
       "market_probabilities": null,
       "scoreline_top": [
@@ -1140,9 +1140,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3155,
-        "draw": 0.2374,
-        "away": 0.4472
+        "home": 0.3064,
+        "draw": 0.2436,
+        "away": 0.45
       },
       "market_probabilities": null,
       "scoreline_top": [
