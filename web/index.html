@@ -63,6 +63,14 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
   .stat-fl-lbl{font-size:.5rem}
   .home-main .matches-grid{grid-template-columns:1fr;padding:.5rem 0 2rem}
 }
+/* Mobile: ocultar el WIN PROB grande del banner del detalle (la barra del
+   centro ya tiene los % por segmento, no necesitamos duplicar). Y reajusto
+   el grid de cada .db-team de 3 columnas a 2 para que el nombre del equipo
+   tome el espacio que liberamos. */
+@media(max-width:760px){
+  .db-team-winprob{display:none}
+  .db-team{grid-template-columns:46px minmax(0,1fr)!important}
+}
 .match-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1rem;cursor:pointer;transition:all .22s;display:flex;flex-direction:column;align-items:center;gap:.6rem}
 .match-card:hover{border-color:var(--green);transform:translateY(-3px);background:var(--surface2)}
 .match-card-finished{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.25)}
@@ -766,7 +774,7 @@ button,a{touch-action:manipulation}
       <img class="db-crest" id="db-crest-home" src="" alt="" onerror="this.style.display='none';document.getElementById('db-crest-home-fb').style.display='flex'">
       <div class="db-crest-fb" id="db-crest-home-fb"></div>
       <div class="db-team-name" id="db-name-home"></div>
-      <div style="text-align:center"><div class="db-rating" id="db-rating-home" style="color:var(--green)"></div><div class="db-rating-lbl">WIN PROB</div></div>
+      <div class="db-team-winprob" style="text-align:center"><div class="db-rating" id="db-rating-home" style="color:var(--green)"></div><div class="db-rating-lbl">WIN PROB</div></div>
       <div class="db-mini-stats" id="db-stats-home"></div>
     </div>
     <div class="db-center">
@@ -795,7 +803,7 @@ button,a{touch-action:manipulation}
       <img class="db-crest" id="db-crest-away" src="" alt="" onerror="this.style.display='none';document.getElementById('db-crest-away-fb').style.display='flex'">
       <div class="db-crest-fb" id="db-crest-away-fb"></div>
       <div class="db-team-name" id="db-name-away"></div>
-      <div style="text-align:center"><div class="db-rating" id="db-rating-away" style="color:var(--red)"></div><div class="db-rating-lbl">WIN PROB</div></div>
+      <div class="db-team-winprob" style="text-align:center"><div class="db-rating" id="db-rating-away" style="color:var(--red)"></div><div class="db-rating-lbl">WIN PROB</div></div>
       <div class="db-mini-stats" id="db-stats-away"></div>
     </div>
   </div>
