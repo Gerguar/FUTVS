@@ -33,6 +33,36 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .filter-btn{padding:7px 18px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.82rem;font-weight:700;transition:all .2s;font-family:'Inter',sans-serif}
 .filter-btn.active,.filter-btn:hover{background:var(--green);border-color:var(--green);color:#080a0c}
 .matches-grid{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 3rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;position:relative;z-index:1;width:100%}
+/* Layout del home con sidebar flotante a la izquierda */
+.home-main{max-width:1380px;margin:0 auto;display:grid;grid-template-columns:160px 1fr;gap:1.6rem;padding:.5rem 1.5rem 0;position:relative;z-index:1}
+.home-main .matches-grid{max-width:none;padding:.5rem 0 3rem;margin:0;grid-template-columns:repeat(3,1fr)}
+.stats-sidebar{display:flex;flex-direction:column;gap:1.8rem;position:sticky;top:88px;align-self:start;padding-top:.4rem}
+.stat-fl{padding:0;text-align:left}
+.stat-fl-num{font-family:'JetBrains Mono',monospace;font-size:2.8rem;font-weight:900;line-height:1}
+.stat-fl-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--faint);letter-spacing:1.8px;text-transform:uppercase;margin-top:6px}
+.stat-fl-sub{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--faint);letter-spacing:1.2px;margin-top:2px;opacity:.55}
+.stat-fl.ok .stat-fl-num{color:var(--green)}
+.stat-fl.tight .stat-fl-num{color:var(--amber)}
+.stat-fl.miss .stat-fl-num{color:var(--red)}
+@media(max-width:1000px){
+  .home-main{grid-template-columns:130px 1fr;gap:1rem}
+  .stat-fl-num{font-size:2.2rem}
+  .home-main .matches-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:760px){
+  .home-main{grid-template-columns:1fr;padding:.4rem 1rem 0;gap:.4rem}
+  .stats-sidebar{flex-direction:row;justify-content:space-around;position:static;padding:.7rem .5rem;background:rgba(20,24,32,.4);border:1px solid var(--border);border-radius:14px;gap:.4rem}
+  .stat-fl{text-align:center;flex:1;min-width:0}
+  .stat-fl-num{font-size:1.7rem}
+  .stat-fl-lbl{font-size:.55rem;letter-spacing:1.2px;margin-top:3px}
+  .stat-fl-sub{display:none}
+  .home-main .matches-grid{padding:.6rem 0 2rem}
+}
+@media(max-width:540px){
+  .stat-fl-num{font-size:1.45rem}
+  .stat-fl-lbl{font-size:.5rem}
+  .home-main .matches-grid{grid-template-columns:1fr;padding:.5rem 0 2rem}
+}
 .match-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1rem;cursor:pointer;transition:all .22s;display:flex;flex-direction:column;align-items:center;gap:.6rem}
 .match-card:hover{border-color:var(--green);transform:translateY(-3px);background:var(--surface2)}
 .match-card-finished{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.25)}
@@ -645,8 +675,27 @@ button,a{touch-action:manipulation}
     <button class="filter-btn" onclick="filterMatches('premier',this)">Premier League</button>
     <button class="filter-btn" onclick="filterMatches('seriea',this)">Serie A</button>
   </div>
-  <div class="matches-grid" id="matches-container">
-    <div class="loader"><div class="loader-spin"></div>CARGANDO PARTIDOS...</div>
+  <div class="home-main">
+    <aside class="stats-sidebar">
+      <div class="stat-fl ok">
+        <div class="stat-fl-num" id="stat-acertados">—</div>
+        <div class="stat-fl-lbl">Acertados</div>
+        <div class="stat-fl-sub" id="stat-acertados-sub"></div>
+      </div>
+      <div class="stat-fl tight">
+        <div class="stat-fl-num" id="stat-ajustados">—</div>
+        <div class="stat-fl-lbl">Ajustados</div>
+        <div class="stat-fl-sub">diff ≤ 10pp</div>
+      </div>
+      <div class="stat-fl miss">
+        <div class="stat-fl-num" id="stat-fallidos">—</div>
+        <div class="stat-fl-lbl">No acertados</div>
+        <div class="stat-fl-sub" id="stat-fallidos-sub"></div>
+      </div>
+    </aside>
+    <div class="matches-grid" id="matches-container">
+      <div class="loader"><div class="loader-spin"></div>CARGANDO PARTIDOS...</div>
+    </div>
   </div>
   <!-- CTA -->
   <div style="position:relative;z-index:1;background:var(--surface);border-top:1px solid var(--border);padding:5rem 2rem 5.5rem;text-align:center">
@@ -1027,6 +1076,46 @@ async function loadMatches() {
   } catch(e) {
     showError(e.message)
     console.error(e)
+  }
+}
+
+// ── STATS DE ACIERTO DEL MODELO (sidebar izquierda en home) ──
+// Trae TODOS los partidos finalizados con sus pronosticos y resultados.
+// Clasifica: acertado (top-1 == real), ajustado (no acertado pero diff
+// top-1 vs 2do <= 10pp), no acertado (todo el resto).
+async function loadAccuracyStats() {
+  try {
+    const data = await sb(
+      'partidos?select=goles_local,goles_visitante,' +
+      'pronosticos(prob_local,prob_empate,prob_visitante)' +
+      '&estado=eq.finalizado&goles_local=not.is.null&goles_visitante=not.is.null'
+    )
+    let ok = 0, tight = 0, miss = 0, withoutPron = 0
+    for (const p of data) {
+      const pr = Array.isArray(p.pronosticos) ? p.pronosticos[0] : p.pronosticos
+      if (!pr) { withoutPron++; continue }
+      const probs = [pr.prob_local || 0, pr.prob_empate || 0, pr.prob_visitante || 0]  // [H, D, A]
+      // Index del top-1 y del 2do (orden descendente)
+      const idxSorted = probs.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0])
+      const top1 = idxSorted[0][1]
+      const diff = idxSorted[0][0] - idxSorted[1][0]
+      // Resultado real: 0=H, 1=D, 2=A
+      const real = p.goles_local > p.goles_visitante ? 0 : (p.goles_local < p.goles_visitante ? 2 : 1)
+      if (top1 === real) ok++
+      else if (diff <= 10) tight++
+      else miss++
+    }
+    const total = ok + tight + miss
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v }
+    set('stat-acertados', ok)
+    set('stat-ajustados', tight)
+    set('stat-fallidos', miss)
+    // Subtitulos con %
+    const pct = n => total ? `${Math.round(n/total*100)}% de ${total}` : ''
+    set('stat-acertados-sub', pct(ok))
+    set('stat-fallidos-sub', pct(miss))
+  } catch(e) {
+    console.error('Error stats:', e)
   }
 }
 
@@ -1449,6 +1538,7 @@ try {
     showError('⚙️ Configurá SB_URL y SB_KEY con tus datos de Supabase')
   } else {
     loadMatches()
+    loadAccuracyStats()
   }
 } catch(e) {
   console.error('Error de inicio:', e)
