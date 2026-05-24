@@ -35,6 +35,16 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .matches-grid{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 3rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;position:relative;z-index:1;width:100%}
 .match-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1rem;cursor:pointer;transition:all .22s;display:flex;flex-direction:column;align-items:center;gap:.6rem}
 .match-card:hover{border-color:var(--green);transform:translateY(-3px);background:var(--surface2)}
+.match-card-finished{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.25)}
+.match-card-finished:hover{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.45);transform:translateY(-3px)}
+.match-score-row{display:flex;align-items:center;justify-content:center;gap:10px;font-family:'JetBrains Mono',monospace;width:100%}
+.match-score-lbl{font-size:.6rem;color:var(--red);font-weight:800;letter-spacing:1.5px}
+.match-score-val{font-size:1rem;font-weight:900;color:var(--text);background:rgba(239,68,68,.14);padding:3px 12px;border-radius:6px;border:1px solid rgba(239,68,68,.3)}
+.matches-divider{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:14px 6px 6px;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--red);letter-spacing:1.5px;text-transform:uppercase;font-weight:800}
+.matches-divider::before,.matches-divider::after{content:'';flex:1;height:1px;background:rgba(239,68,68,.22)}
+/* Banner de detalle: franja superior con FINAL + marcador */
+.detail-final-strip{background:rgba(239,68,68,.08);border-bottom:1px solid rgba(239,68,68,.28);padding:.65rem 1rem;text-align:center;display:flex;align-items:center;justify-content:center;gap:14px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;font-weight:800;font-size:.78rem;color:var(--red);position:relative;z-index:2}
+.detail-final-strip-score{font-size:1.1rem;color:var(--text);background:rgba(239,68,68,.18);padding:4px 14px;border-radius:8px;border:1px solid rgba(239,68,68,.4)}
 .league-badge{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--green);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-align:center}
 .teams-col{display:flex;flex-direction:column;align-items:center;gap:.5rem;width:100%}
 .team-row{display:flex;align-items:center;gap:.7rem;width:100%;padding:0 .3rem}
@@ -697,6 +707,10 @@ button,a{touch-action:manipulation}
   <div style="padding:1.2rem 1.5rem .5rem;position:relative;z-index:1">
     <button class="back-btn" onclick="showPage('home')">← Inicio</button>
   </div>
+  <div id="detail-final-strip" class="detail-final-strip" style="display:none">
+    <span>● FINAL</span>
+    <span class="detail-final-strip-score" id="detail-final-strip-score"></span>
+  </div>
   <div class="detail-banner">
     <div class="db-glow-green"></div><div class="db-glow-red"></div><div class="db-scan"></div>
     <div class="db-team db-team-left">
@@ -953,24 +967,32 @@ function transformJugador(j) {
 // ── CARGAR PARTIDOS ──
 async function loadMatches() {
   try {
+    // Trae programados + finalizados de ultimos 7 dias (filtro PostgREST or).
+    const sevenDaysAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString().slice(0,10)
+    const filterClause = `or=(estado.eq.programado,and(estado.eq.finalizado,fecha.gte.${sevenDaysAgo}))`
     const data = await sb(
-      'partidos?select=id,fecha,' +
+      'partidos?select=id,fecha,estado,goles_local,goles_visitante,' +
       'equipo_local:equipo_local_id(id,nombre,abreviacion,escudo_url,color_prim,color_sec),' +
       'equipo_visitante:equipo_visitante_id(id,nombre,abreviacion,escudo_url,color_prim,color_sec),' +
       'liga:liga_id(nombre),' +
       'pronosticos(prob_local,prob_empate,prob_visitante,factor_localidad,factor_forma,factor_h2h,factor_tabla,factor_bajas,factor_goles,notas)' +
-      '&estado=eq.programado&order=fecha'
+      `&${filterClause}&order=fecha`
     )
     matches = data.map(p => {
       // PostgREST devuelve `pronosticos` como objeto cuando hay un unique
       // index sobre partido_id (1-a-1) y como array cuando no. Soporto ambos.
       const pronRaw = p.pronosticos
       const pron = Array.isArray(pronRaw) ? pronRaw[0] : pronRaw
+      const isFinished = p.estado === 'finalizado'
       return {
         id: p.id,
         league: (p.liga?.nombre||'').toUpperCase(),
         leagueKey: LEAGUE_KEYS[p.liga?.nombre] || 'other',
         date: formatDate(p.fecha), time: formatTime(p.fecha),
+        status: p.estado,
+        score: isFinished && p.goles_local != null && p.goles_visitante != null
+          ? { home: p.goles_local, away: p.goles_visitante }
+          : null,
         home: transformEquipo(p.equipo_local),
         away: transformEquipo(p.equipo_visitante),
         prob: {
@@ -1034,15 +1056,14 @@ async function loadMatchDetail(m) {
 }
 
 // ── RENDER MATCHES ──
-function renderMatches(filter) {
-  const c = document.getElementById('matches-container')
-  const list = filter==='all' ? matches : matches.filter(m=>m.leagueKey===filter)
-  if (!list.length) {
-    c.innerHTML = `<div class="loader" style="color:var(--faint)">No hay partidos disponibles</div>`
-    return
-  }
-  c.innerHTML = list.map(m=>`
-    <div class="match-card" onclick="showDetail(${m.id})">
+function matchCardHtml(m) {
+  const finished = m.status === 'finalizado'
+  const cardClass = finished ? 'match-card match-card-finished' : 'match-card'
+  const scoreRow = finished && m.score
+    ? `<div class="match-score-row"><span class="match-score-lbl">RESULTADO</span><span class="match-score-val">${m.score.home} - ${m.score.away}</span></div>`
+    : ''
+  return `
+    <div class="${cardClass}" onclick="showDetail(${m.id})">
       <div class="league-badge">${m.league}</div>
       <div class="teams-col">
         <div class="team-row">
@@ -1068,7 +1089,26 @@ function renderMatches(filter) {
         <span style="color:var(--amber)">${m.prob.draw}%</span>
         <span style="color:var(--red)">${m.prob.away}%</span>
       </div>
-    </div>`).join('')
+      ${scoreRow}
+    </div>`
+}
+
+function renderMatches(filter) {
+  const c = document.getElementById('matches-container')
+  const list = filter==='all' ? matches : matches.filter(m=>m.leagueKey===filter)
+  if (!list.length) {
+    c.innerHTML = `<div class="loader" style="color:var(--faint)">No hay partidos disponibles</div>`
+    return
+  }
+  const upcoming = list.filter(m => m.status !== 'finalizado')
+  // Finalizados ordenados del mas reciente al mas viejo.
+  const finished = list.filter(m => m.status === 'finalizado').sort((a,b)=> b.id - a.id)
+  let html = upcoming.map(matchCardHtml).join('')
+  if (finished.length) {
+    html += `<div class="matches-divider">Finalizados (últimos 7 días) · ${finished.length}</div>`
+    html += finished.map(matchCardHtml).join('')
+  }
+  c.innerHTML = html
 }
 
 function filterMatches(key,btn) {
@@ -1132,6 +1172,16 @@ function renderBanner(m) {
   document.getElementById('db-date').textContent = `${m.date} · ${m.time} HS`
   document.getElementById('dpl-home').textContent = m.home.name.toUpperCase()
   document.getElementById('dpl-away').textContent = m.away.name.toUpperCase()
+
+  // Franja "FINAL · marcador" si el partido esta finalizado.
+  const finalStrip = document.getElementById('detail-final-strip')
+  const finalScore = document.getElementById('detail-final-strip-score')
+  if (m.status === 'finalizado' && m.score) {
+    finalScore.textContent = `${m.home.name} ${m.score.home} - ${m.score.away} ${m.away.name}`
+    finalStrip.style.display = 'flex'
+  } else {
+    finalStrip.style.display = 'none'
+  }
 
   const setTeam = (imgId,fbId,nameId,ratingId,statsId,team,isHome) => {
     const img=document.getElementById(imgId); img.src=team.crest; img.style.display='block'
