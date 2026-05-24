@@ -624,7 +624,7 @@ button,a{touch-action:manipulation}
     <a href="#" onclick="currentMatch&&showPage('detail');return false">Partido</a>
     <a href="#">Estadísticas</a>
   </div>
-  <div class="live-badge"><div class="live-dot"></div>Temporada 2024/25</div>
+  <div class="live-badge"><div class="live-dot"></div>Temporada <span id="current-season">…</span></div>
 </nav>
 
 <!-- HOME -->
@@ -695,7 +695,7 @@ button,a{touch-action:manipulation}
         </div>
       </div>
       <div style="border-top:1px solid var(--border);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem">
-        <div style="font-size:.75rem;color:var(--faint);font-family:'JetBrains Mono',monospace">© 2025 FutVS · Datos con fines informativos · Temporada 2024/25</div>
+        <div style="font-size:.75rem;color:var(--faint);font-family:'JetBrains Mono',monospace">© <span id="current-year">…</span> FutVS · Datos con fines informativos · Temporada <span id="current-season-footer">…</span></div>
         <div style="font-size:.75rem;color:var(--faint)">Los pronósticos son estimaciones estadísticas, no garantías de resultado.</div>
       </div>
     </div>
@@ -864,6 +864,25 @@ function formatDate(iso) {
   const months= ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC']
   return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`
 }
+
+// Temporada europea: arranca julio del año N y termina junio del N+1.
+// Devuelve string tipo "2025/26".
+function currentSeason() {
+  const d = new Date()
+  const y = d.getFullYear()
+  const startYear = d.getMonth() + 1 >= 7 ? y : y - 1
+  return `${startYear}/${String(startYear + 1).slice(2)}`
+}
+
+// Llena los placeholders de temporada y año del copyright. Se ejecuta al cargar.
+;(function fillDynamicLabels(){
+  const season = currentSeason()
+  const seasonEls = [document.getElementById('current-season'),
+                     document.getElementById('current-season-footer')]
+  seasonEls.forEach(el => { if (el) el.textContent = season })
+  const yearEl = document.getElementById('current-year')
+  if (yearEl) yearEl.textContent = new Date().getFullYear()
+})()
 function formatTime(iso) {
   const d = new Date(iso)
   return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
