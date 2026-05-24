@@ -107,6 +107,7 @@ class Paths:
 class APIKeys:
     football_data: str | None = field(default_factory=lambda: os.getenv("FOOTBALL_DATA_TOKEN"))
     the_odds_api: str | None = field(default_factory=lambda: os.getenv("THE_ODDS_API_KEY"))
+    apifootball: str | None = field(default_factory=lambda: os.getenv("APIFOOTBALL_KEY"))
 
 
 ELO = EloConfig()

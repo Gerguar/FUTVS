@@ -351,6 +351,43 @@ class FeatureBuilder:
         row["away_attack_vs_home_defense"] = (a_atk - h_def) if (a_atk is not None and h_def is not None) else np.nan
         return row
 
+def add_lineup_features(df: pd.DataFrame, lineups: dict) -> pd.DataFrame:
+    """
+    Agrega columnas de alineacion al DataFrame.
+    lineups: { match_id -> {"home": {...}, "away": {...}} }
+    Columnas nuevas:
+      home_formation, away_formation,
+      home_has_lineup, away_has_lineup,
+      home_coach, away_coach
+    """
+    df = df.copy()
+    df["home_formation"] = df["match_id"].map(
+        lambda mid: lineups.get(mid, {}).get("home", {}).get("formation")
+    )
+    df["away_formation"] = df["match_id"].map(
+        lambda mid: lineups.get(mid, {}).get("away", {}).get("formation")
+    )
+    df["home_has_lineup"] = df["home_formation"].notna().astype(int)
+    df["away_has_lineup"] = df["away_formation"].notna().astype(int)
+    df["home_coach"] = df["match_id"].map(
+        lambda mid: lineups.get(mid, {}).get("home", {}).get("coach")
+    )
+    df["away_coach"] = df["match_id"].map(
+        lambda mid: lineups.get(mid, {}).get("away", {}).get("coach")
+    )
+    def _formation_defenders(f):
+        if not f:
+            return None
+        try:
+            return int(str(f).split("-")[0])
+        except Exception:
+            return None
+    df["home_formation_def"] = df["home_formation"].map(_formation_defenders)
+    df["away_formation_def"] = df["away_formation"].map(_formation_defenders)
+    df["formation_def_diff"] = (
+        df["home_formation_def"].fillna(4) - df["away_formation_def"].fillna(4)
+    )
+    return df
 
 def feature_columns() -> list[str]:
     """Columnas que entran al modelo (orden estable)."""
@@ -377,4 +414,8 @@ def feature_columns() -> list[str]:
         "away_xg_roll5", "away_xga_roll5", "away_xgd_roll5",
         "home_xg_momentum", "away_xg_momentum",
         "xgd5_diff", "xg_momentum_diff",
+        # Alineaciones (disponibles ~60min antes del kickoff)
+        "home_has_lineup", "away_has_lineup",
+        "home_formation_def", "away_formation_def",
+        "formation_def_diff",
     ]
