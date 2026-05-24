@@ -1057,6 +1057,7 @@ async function loadMatches() {
         league: (p.liga?.nombre||'').toUpperCase(),
         leagueKey: LEAGUE_KEYS[p.liga?.nombre] || 'other',
         date: formatDate(p.fecha), time: formatTime(p.fecha),
+        kickoffIso: p.fecha,
         status: p.estado,
         score: isFinished && p.goles_local != null && p.goles_visitante != null
           ? { home: p.goles_local, away: p.goles_visitante }
@@ -1209,8 +1210,9 @@ function renderMatches(filter) {
     return
   }
   const upcoming = list.filter(m => m.status !== 'finalizado')
-  // Finalizados ordenados del mas reciente al mas viejo.
-  const finished = list.filter(m => m.status === 'finalizado').sort((a,b)=> b.id - a.id)
+  // Finalizados ordenados por fecha del partido descendente (mas reciente primero).
+  const finished = list.filter(m => m.status === 'finalizado')
+    .sort((a,b) => new Date(b.kickoffIso) - new Date(a.kickoffIso))
   let html = upcoming.map(matchCardHtml).join('')
   if (finished.length) {
     html += `<div class="matches-divider">Finalizados (últimos 7 días) · ${finished.length}</div>`
