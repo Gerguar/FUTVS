@@ -784,11 +784,6 @@ button,a{touch-action:manipulation}
           <div class="db-seg" id="dps-draw" style="background:var(--amber);width:0%"></div>
           <div class="db-seg" id="dps-away" style="background:var(--red);width:0%"></div>
         </div>
-        <div class="db-prob-vals">
-          <span class="db-pval" id="dpv-home" style="color:var(--green)"></span>
-          <span class="db-pval" id="dpv-draw" style="color:var(--amber)"></span>
-          <span class="db-pval" id="dpv-away" style="color:var(--red)"></span>
-        </div>
       </div>
       <div style="width:100%;display:flex;justify-content:flex-start">
         <button onclick="toggleChart()" id="chart-toggle-btn" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);color:var(--green);padding:6px 14px;border-radius:8px;font-size:.68rem;font-weight:700;cursor:pointer;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;display:inline-flex;align-items:center;gap:6px">
@@ -1249,6 +1244,11 @@ function matchCardHtml(m) {
         <div class="mini-seg" style="background:var(--amber);width:${m.prob.draw}%"></div>
         <div class="mini-seg" style="background:var(--red);width:${m.prob.away}%"></div>
       </div>
+      <div class="mini-probs">
+        <span style="color:var(--green)">${m.prob.home}%</span>
+        <span style="color:var(--amber)">${m.prob.draw}%</span>
+        <span style="color:var(--red)">${m.prob.away}%</span>
+      </div>
       ${scoreRow}
     </div>`
 }
@@ -1357,13 +1357,11 @@ function renderBanner(m) {
   ;['home','draw','away'].forEach(k=>{
     document.getElementById('dps-'+k).style.width='0%'
     document.getElementById('dps-'+k).textContent=''
-    document.getElementById('dpv-'+k).textContent=''
   })
   setTimeout(()=>{
     ;['home','draw','away'].forEach(k=>{
       document.getElementById('dps-'+k).style.width=m.prob[k]+'%'
       document.getElementById('dps-'+k).textContent=m.prob[k]+'%'
-      document.getElementById('dpv-'+k).textContent=m.prob[k]+'%'
     })
   },150)
 }
