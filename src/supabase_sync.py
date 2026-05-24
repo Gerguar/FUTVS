@@ -428,22 +428,33 @@ class SupabaseSync:
 
 def sync_finished_results(sync: "SupabaseSync", dry_run: bool = False) -> dict:
     """
-    Actualiza partidos en Supabase que estaban 'programado' pero ahora
-    estan finalizados en matches.parquet. Setea goles_local, goles_visitante
-    y estado='finalizado'.
+    Sincroniza marcadores reales desde matches.parquet hacia Supabase.
+
+    Comportamiento:
+    - SOLO usa partidos del parquet con status=FINISHED (evita capturar scorelines
+      parciales de partidos IN_PLAY/PAUSED).
+    - Procesa tanto programados como ya-finalizados en Supabase: si un finalizado
+      tiene goles distintos a los del parquet (ej. cargado mal en una corrida
+      anterior con score parcial), lo corrige.
     """
     df = pd.read_parquet(PATHS.matches)
     df["kickoff_ts_utc"] = pd.to_datetime(df["kickoff_ts_utc"], utc=True)
-    # Mapa: (slug_h, slug_a, fecha_iso[:10]) -> (home_goals, away_goals)
-    finished = df[df["home_goals"].notna() & df["away_goals"].notna()].copy()
+    # Solo FINISHED (no IN_PLAY/PAUSED/TIMED). Ese es el unico estado donde
+    # los goles son definitivos.
+    finished = df[(df["status"] == "FINISHED") &
+                   df["home_goals"].notna() &
+                   df["away_goals"].notna()].copy()
     results_map: dict[tuple, tuple] = {}
     for _, m in finished.iterrows():
         key = (m["home_team_id"], m["away_team_id"], m["kickoff_ts_utc"].strftime("%Y-%m-%d"))
         results_map[key] = (int(m["home_goals"]), int(m["away_goals"]))
 
-    # Partidos en Supabase aun programado
-    rows = sb_get("partidos?select=id,fecha,equipo_local_id,equipo_visitante_id&estado=eq.programado")
-    stats = {"updated": 0, "still_pending": 0, "errors": 0}
+    # Procesar AMBOS estados: programado (para marcar como finalizado) y
+    # finalizado (para corregir goles incorrectos cargados previamente).
+    rows = sb_get("partidos?select=id,fecha,estado,goles_local,goles_visitante,"
+                   "equipo_local_id,equipo_visitante_id"
+                   "&or=(estado.eq.programado,estado.eq.finalizado)")
+    stats = {"updated": 0, "corrected": 0, "no_change": 0, "still_pending": 0, "errors": 0}
 
     for p in rows:
         eq_h = int(p["equipo_local_id"])
@@ -456,21 +467,39 @@ def sync_finished_results(sync: "SupabaseSync", dry_run: bool = False) -> dict:
         fecha_iso = p["fecha"][:10]
         result = results_map.get((slug_h, slug_a, fecha_iso))
         if not result:
-            stats["still_pending"] += 1
+            if p["estado"] == "programado":
+                stats["still_pending"] += 1
             continue
         gl, gv = result
-        if dry_run:
-            print(f"  [dry-run] partido id={p['id']}: {slug_h} {gl}-{gv} {slug_a} -> finalizado")
-            stats["updated"] += 1
+
+        # Skip si ya esta finalizado con los goles correctos.
+        if (p["estado"] == "finalizado"
+                and p.get("goles_local") == gl
+                and p.get("goles_visitante") == gv):
+            stats["no_change"] += 1
             continue
-        try:
-            sb_patch(f"partidos?id=eq.{p['id']}",
-                     {"goles_local": gl, "goles_visitante": gv, "estado": "finalizado"})
-            print(f"  + partido {p['id']}: {slug_h} {gl}-{gv} {slug_a}  -> finalizado")
+
+        is_correction = (p["estado"] == "finalizado")
+        prefix = "[correccion]" if is_correction else "[finalizar]"
+        descr = (f"{slug_h} {p.get('goles_local')}-{p.get('goles_visitante')} {slug_a} "
+                 f"-> {gl}-{gv}") if is_correction else (
+                 f"{slug_h} {gl}-{gv} {slug_a}")
+        if dry_run:
+            print(f"  [dry-run] {prefix} partido id={p['id']}: {descr}")
+        else:
+            try:
+                sb_patch(f"partidos?id=eq.{p['id']}",
+                         {"goles_local": gl, "goles_visitante": gv,
+                          "estado": "finalizado"})
+                print(f"  + {prefix} partido {p['id']}: {descr}")
+            except Exception as e:
+                print(f"  ! error update partido {p['id']}: {e}")
+                stats["errors"] += 1
+                continue
+        if is_correction:
+            stats["corrected"] += 1
+        else:
             stats["updated"] += 1
-        except Exception as e:
-            print(f"  ! error update partido {p['id']}: {e}")
-            stats["errors"] += 1
     return stats
 
 
