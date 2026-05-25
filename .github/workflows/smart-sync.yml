@@ -79,6 +79,13 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python -m src.supabase_sync --horizon 14
 
+      - name: Ingest stats de partidos recien finalizados (API-Football)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        run: python -m src.ingest_match_stats || echo "[stats] fallo no critico, sigue el sync"
+
       - name: Commit parquet actualizado (si hubo cambios)
         run: |
           git config user.name "github-actions[bot]"
