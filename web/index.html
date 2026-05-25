@@ -835,7 +835,7 @@ button,a{touch-action:manipulation}
     </div>
     <div class="detail-main">
       <div class="d-card"><div class="d-card-title" id="detail-metrics-title">📊 Estadísticas de la temporada</div><div class="metrics-row" id="detail-metrics"></div></div>
-      <div class="d-card"><div class="d-card-title">🔍 ¿Cómo se llegó a esta probabilidad?</div><div class="factor-grid" id="detail-factors"></div></div>
+      <div class="d-card" id="detail-factors-card"><div class="d-card-title">🔍 ¿Cómo se llegó a esta probabilidad?</div><div class="factor-grid" id="detail-factors"></div></div>
       <div class="d-card">
         <div class="d-card-title">📈 Últimos 5 partidos</div>
         <div class="stats-2col">
@@ -1403,20 +1403,29 @@ function renderDetailBody(m) {
   const titleEl = document.getElementById('detail-metrics-title')
   const ms = m.matchStats
 
+  // Toggle de la card "¿Como se llego a esta probabilidad?": se oculta cuando
+  // el partido ya termino (no aporta ver factores predichos cuando ya sabemos el resultado).
+  const factorsCard = document.getElementById('detail-factors-card')
+  if (factorsCard) {
+    factorsCard.style.display = (m.status === 'finalizado' && ms) ? 'none' : ''
+  }
+
   if (m.status === 'finalizado' && ms) {
     // === MODO PARTIDO ===
     if (titleEl) titleEl.innerHTML = `📊 Estadísticas del partido`
+    // Orden de la lista pedido por Facu: remates, remates_arco, posesion, pases,
+    // precision, faltas, amarillas, rojas, offsides, corners.
     const tiles = [
-      { lbl: 'POSESIÓN',          va: ms.home_posesion,     vb: ms.away_posesion,     unit: '%', bias: 'higher' },
       { lbl: 'REMATES',           va: ms.home_remates,      vb: ms.away_remates,      bias: 'higher' },
       { lbl: 'REMATES AL ARCO',   va: ms.home_remates_arco, vb: ms.away_remates_arco, bias: 'higher' },
+      { lbl: 'POSESIÓN',          va: ms.home_posesion,     vb: ms.away_posesion,     unit: '%', bias: 'higher' },
       { lbl: 'PASES',             va: ms.home_pases,        vb: ms.away_pases,        bias: 'higher' },
       { lbl: 'PRECISIÓN PASES',   va: ms.home_pases_pct,    vb: ms.away_pases_pct,    unit: '%', bias: 'higher' },
-      { lbl: 'TIROS DE ESQUINA',  va: ms.home_corners,      vb: ms.away_corners,      bias: 'higher' },
       { lbl: 'FALTAS',            va: ms.home_faltas,       vb: ms.away_faltas,       bias: 'lower' },
-      { lbl: 'OFFSIDES',          va: ms.home_offsides,     vb: ms.away_offsides,     bias: 'lower' },
       { lbl: 'AMARILLAS',         va: ms.home_amarillas,    vb: ms.away_amarillas,    bias: 'lower' },
       { lbl: 'ROJAS',             va: ms.home_rojas || 0,   vb: ms.away_rojas || 0,   bias: 'lower' },
+      { lbl: 'POSICIÓN ADELANTADA',va: ms.home_offsides,    vb: ms.away_offsides,     bias: 'lower' },
+      { lbl: 'TIROS DE ESQUINA',  va: ms.home_corners,      vb: ms.away_corners,      bias: 'higher' },
     ]
     document.getElementById('detail-metrics').innerHTML = tiles.map(t => {
       const va = t.va == null ? '-' : t.va
