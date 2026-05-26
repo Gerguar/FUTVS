@@ -1621,6 +1621,106 @@ function buildLineChart(m){
 }
 
 function setChartMetric(metric,btn){currentMetric=metric;document.querySelectorAll('.chart-metric-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');if(currentMatch)buildLineChart(currentMatch)}
+// ── HEATMAP DE ZONAS DE INFLUENCIA POR POSICIÓN ──
+function drawPlayerHeatmap(canvasId,pos,col){
+  const canvas=document.getElementById(canvasId)
+  if(!canvas)return
+  const PW=canvas.width,PH=canvas.height
+  const PX=20,PY=14,PW2=PW-40,PH2=PH-28
+  const COLS=16,ROWS=22
+  const CW=PW2/COLS,CH=PH2/ROWS
+  const profiles={
+    POR:(c,r)=>{
+      const rowN=r/ROWS,dist=Math.abs(c-COLS/2+.5)/(COLS/2)
+      if(rowN<.15)return(1-rowN/.15*.3)*(1-dist*.6)
+      if(rowN<.28)return(.7-(rowN-.15)/.13*.45)*(1-dist*.8)
+      if(rowN<.42)return(.25-(rowN-.28)/.14*.2)*(1-dist)
+      return 0
+    },
+    DEF:(c,r)=>{
+      const rowN=r/ROWS,dist=Math.abs(c-COLS/2+.5)/(COLS/2)
+      if(rowN<.12)return .15*(1-dist*.5)
+      if(rowN<.35){const t=(rowN-.12)/.23;const peak=rowN<.25?t/.57:1-(t-.57)/.43;return Math.min(1,peak*.85*(dist>.4?1.2:1)*(1-dist*.1))}
+      if(rowN<.55)return(.55-(rowN-.35)/.2*.4)*(1-dist*.3)
+      return Math.max(0,.08*(1-(rowN-.55)/.45))
+    },
+    DEL:(c,r)=>{
+      const rowN=r/ROWS,dist=Math.abs(c-COLS/2+.5)/(COLS/2)
+      if(rowN>.92)return(.4+(rowN-.92)/.08*.3)*(1-dist*.5)
+      if(rowN>.72)return Math.min(1,(rowN-.72)/.2*1.1)*(1-dist*.45)
+      if(rowN>.55)return(rowN-.55)/.17*.55*(1-dist*.6)
+      if(rowN>.38)return Math.max(0,.2*(rowN-.38)/.17*(1-dist))
+      return 0
+    },
+    MED:(c,r)=>{
+      const rowN=r/ROWS,dist=Math.abs(c-COLS/2+.5)/(COLS/2)
+      if(rowN<.1||rowN>.9)return Math.max(0,.1-dist*.1)
+      const base=Math.max(0,1-Math.abs(rowN-.5)/.38)
+      return Math.min(1,base*.9*(dist<.3?1.15:1)*(dist>.65?.5:1))
+    },
+    LD:(c,r)=>{
+      const colN=c/COLS,rowN=r/ROWS,rightI=Math.max(0,(colN-.60)/.40),isRight=colN>.60
+      if(rowN>.72)return(isRight?.95*rightI:Math.max(0,.35-colN*.4))*(.7+(rowN-.72)/.28*.3)
+      if(rowN>.52)return isRight?(.55+(rowN-.52)/.20*.4)*rightI:Math.max(0,.2-colN*.3)
+      if(rowN>.35)return isRight?(.25+(rowN-.35)/.17*.2)*rightI*.85:0
+      if(rowN>.18)return isRight?rightI*.3*(rowN-.18)/.17:0
+      return isRight&&colN>.80?rightI*.12*((.18-rowN)/.18):0
+    },
+    LI:(c,r)=>{
+      const colN=c/COLS,rowN=r/ROWS,leftI=Math.max(0,(.40-colN)/.40),isLeft=colN<.40
+      if(rowN>.72)return(isLeft?.95*leftI:Math.max(0,.35-(1-colN)*.4))*(.7+(rowN-.72)/.28*.3)
+      if(rowN>.52)return isLeft?(.55+(rowN-.52)/.20*.4)*leftI:Math.max(0,.2-(1-colN)*.3)
+      if(rowN>.35)return isLeft?(.25+(rowN-.35)/.17*.2)*leftI*.85:0
+      if(rowN>.18)return isLeft?leftI*.3*(rowN-.18)/.17:0
+      return isLeft&&colN<.20?leftI*.12*((.18-rowN)/.18):0
+    }
+  }
+  const posMap={
+    'POR':'POR','GK':'POR',
+    'DEF':'DEF','CB':'DEF','DC':'DEF','CAR':'DEF',
+    'LD':'LD','RB':'LD','RD':'LD','LAD':'LD',
+    'LI':'LI','LB':'LI','LW':'LI','LAI':'LI',
+    'MED':'MED','MC':'MED','MF':'MED','CM':'MED','DM':'MED','AM':'MED','MCO':'MED','MDC':'MED',
+    'DEL':'DEL','FW':'DEL','ST':'DEL','CF':'DEL','SS':'DEL','EI':'DEL','ED':'DEL'
+  }
+  const profileKey=posMap[(pos||'').toUpperCase()]||'MED'
+  const fn=profiles[profileKey]
+  const ctx=canvas.getContext('2d')
+  ctx.clearRect(0,0,PW,PH)
+  for(let i=0;i<9;i++){ctx.fillStyle=i%2===0?'#0d1f0d':'#0a1a0a';ctx.fillRect(PX,PY+i*(PH2/9),PW2,PH2/9)}
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const v=fn(c,r);if(v<.015)continue
+      const x=PX+c*CW+CW/2,y=PY+r*CH+CH/2
+      const alpha=Math.min(.78,v*.85+.06)
+      const stops=[[.01,[10,20,50]],[.15,[10,60,120]],[.3,[10,120,180]],[.48,[20,180,160]],[.63,[180,210,30]],[.78,[230,130,10]],[.9,[220,50,10]],[1,[200,10,10]]]
+      let lo=stops[0],hi=stops[stops.length-1]
+      for(let i=0;i<stops.length-1;i++){if(v>=stops[i][0]&&v<=stops[i+1][0]){lo=stops[i];hi=stops[i+1];break}}
+      const t=(v-lo[0])/(hi[0]-lo[0]+.0001)
+      const rgb=lo[1].map((a,i)=>Math.round(a+(hi[1][i]-a)*t))
+      const g=ctx.createRadialGradient(x,y,0,x,y,Math.max(CW,CH)*.82)
+      g.addColorStop(0,`rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`)
+      g.addColorStop(1,`rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`)
+      ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x,y,CW*.82,CH*.82,0,0,Math.PI*2);ctx.fill()
+    }
+  }
+  ctx.strokeStyle='#1e4a1e';ctx.lineWidth=.8
+  ctx.strokeRect(PX,PY,PW2,PH2)
+  ctx.beginPath();ctx.moveTo(PX,PY+PH2/2);ctx.lineTo(PX+PW2,PY+PH2/2);ctx.stroke()
+  ctx.beginPath();ctx.arc(PX+PW2/2,PY+PH2/2,PH2*.09,0,Math.PI*2);ctx.stroke()
+  const paW=PW2*.52,paH=PH2*.22,paX=PX+(PW2-paW)/2
+  ctx.strokeRect(paX,PY,paW,paH);ctx.strokeRect(paX,PY+PH2-paH,paW,paH)
+  const saW=PW2*.26,saH=PH2*.10,saX=PX+(PW2-saW)/2
+  ctx.strokeRect(saX,PY,saW,saH);ctx.strokeRect(saX,PY+PH2-saH,saW,saH)
+  ctx.fillStyle='#1e4a1e'
+  ctx.fillRect(PX+(PW2-PW2*.13)/2,PY-5,PW2*.13,5)
+  ctx.fillRect(PX+(PW2-PW2*.13)/2,PY+PH2,PW2*.13,5)
+  const labelMap={POR:'portero · área propia',DEF:'defensa central · zona baja',DEL:'delantero · área rival',MED:'mediocampista · zona media',LD:'lateral derecho · banda derecha',LI:'lateral izquierdo · banda izquierda'}
+  ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(PX+2,PY+PH2-17,PW2-4,15)
+  ctx.fillStyle=col||'#22c55e';ctx.font='9px monospace';ctx.textAlign='center'
+  ctx.fillText((labelMap[profileKey]||profileKey).toUpperCase(),PX+PW2/2,PY+PH2-6)
+}
+
 function toggleChart(){placeTeamChartPanel();chartOpen=!chartOpen;const p=document.getElementById('chart-panel');p.style.display=chartOpen?'block':'none';document.getElementById('chart-btn-icon').textContent=chartOpen?'▲':'▼';if(chartOpen&&currentMatch){buildLineChart(currentMatch);setTimeout(()=>{if(lineChart&&typeof lineChart.resize==='function')lineChart.resize()},80)}}
 
 // ── PLAYER PAGE ──
@@ -1649,6 +1749,11 @@ function showPlayer(matchId,playerIdx,side){
     <div class="form-row-full"><div class="pstat-title" style="margin-bottom:0">Forma reciente — ${team.name}</div><div class="form-dots-big">${team.form.map(r=>`<div class="fdot-big ${r==='W'?'fdot-w':r==='D'?'fdot-d':'fdot-l'}">${r==='W'?'V':r==='D'?'E':'D'}</div>`).join('')}</div></div>
     ${p.market?.length?`<div class="pstat-card" style="grid-column:1/-1"><div class="pstat-title">💰 Evolución del valor de mercado</div><div class="player-chart-box player-market-chart"><canvas id="marketChart"></canvas></div><div class="min-strip">${p.market.map(d=>`<div class="min-chip"><span class="min-chip-yr">${d.y} · ${d.club}</span><span class="min-chip-val" style="color:${col}">€${d.v}M</span></div>`).join('')}</div></div>`:''}
     ${mby.length?`<div class="pstat-card" style="grid-column:1/-1"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem"><div class="pstat-title" style="margin-bottom:0">⏱️ Minutos por temporada</div><div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:900;color:${col}">${totalMin.toLocaleString()} min TOTAL</div></div><div class="chart-tabs"><button class="chart-tab active" id="tab-annual" onclick="switchMinTab('annual','${col}')">Por año</button><button class="chart-tab" id="tab-accum" onclick="switchMinTab('accum','${col}')">Acumulado</button></div><div class="player-chart-box player-minutes-chart"><canvas id="minutesChart"></canvas></div><div class="min-strip">${mby.map(d=>`<div class="min-chip"><span class="min-chip-yr">${d.y}</span><span class="min-chip-val" style="color:${col}">${d.m.toLocaleString()}'</span></div>`).join('')}</div></div>`:''}
+    <div class="form-row-full" style="flex-direction:column;gap:.6rem">
+      <div class="pstat-title" style="margin-bottom:0">🗺️ Zonas de influencia</div>
+      <canvas id="player-heatmap" width="540" height="320" style="width:100%;border-radius:6px;display:block;background:#0a1a0a"></canvas>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">zonas típicas según posición · modelo heurístico</div>
+    </div>
   `
 
   showPage('player')
@@ -1663,6 +1768,7 @@ function showPlayer(matchId,playerIdx,side){
       }
     }
     if(mby.length) buildMinutesChart(mby,mbyAcc,col,'annual')
+    drawPlayerHeatmap('player-heatmap',p.pos,col)
   },50)
 }
 
