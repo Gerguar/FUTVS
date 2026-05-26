@@ -1050,6 +1050,7 @@ function transformJugador(j) {
       minutos: s.minutos||0, amarillas: s.amarillas||0, rojas: s.rojas||0,
       paradas: s.paradas_pct||'-', pasos: s.pases_pct||'-',
       duelosGanados: s.duelos_ganados||'-', intercep: s.intercep_p90||0,
+      xg: s.xg||0, xa: s.xa||0, shots: s.shots||0, npxg: s.npxg||0, key_passes: s.key_passes||0,
       notas: j.notas||''
     }
   }
@@ -1625,8 +1626,13 @@ function setChartMetric(metric,btn){currentMetric=metric;document.querySelectorA
 function drawPlayerHeatmap(canvasId,pos,col){
   const canvas=document.getElementById(canvasId)
   if(!canvas)return
-  const PW=canvas.width,PH=canvas.height
-  const PX=18,PY=12,PW2=PW-36,PH2=PH-24
+  const dpr=window.devicePixelRatio||1
+  const rect=canvas.getBoundingClientRect()
+  const PW=Math.round((rect.width||540)*dpr),PH=Math.round((canvas.offsetHeight||320)*dpr)
+  canvas.width=PW;canvas.height=PH
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr)
+  const RPW=PW/dpr,RPH=PH/dpr
+  const PX=18,PY=12,PW2=RPW-36,PH2=RPH-24
   const COLS=28,ROWS=40
   const CW=PW2/COLS,CH=PH2/ROWS
   const GAP=1
@@ -1718,10 +1724,15 @@ function drawPlayerHeatmap(canvasId,pos,col){
 function drawPlayerRadar(canvasId,stats,pos,col){
   const canvas=document.getElementById(canvasId)
   if(!canvas)return
-  const W=canvas.width,H=canvas.height
+  const dpr=window.devicePixelRatio||1
+  const rect=canvas.getBoundingClientRect()
+  const W=Math.round((rect.width||540)*dpr),H=Math.round((canvas.offsetHeight||400)*dpr)
+  canvas.width=W;canvas.height=H
   const ctx=canvas.getContext('2d')
-  ctx.clearRect(0,0,W,H)
-  const cx=W/2,cy=H/2+8,maxR=Math.min(W,H)*.34,RINGS=5
+  ctx.scale(dpr,dpr)
+  const CW=W/dpr,CH=H/dpr
+  ctx.clearRect(0,0,CW,CH)
+  const cx=CW/2,cy=CH/2+8,maxR=Math.min(CW,CH)*.34,RINGS=5
   const hex=(col||'#22c55e').replace('#','')
   const cr=parseInt(hex.slice(0,2),16),cg=parseInt(hex.slice(2,4),16),cb=parseInt(hex.slice(4,6),16)
   const posMap={'POR':'POR','GK':'POR','DEF':'DEF','CB':'DEF','DC':'DEF','CAR':'DEF','LD':'DEF','RB':'DEF','LI':'DEF','LB':'DEF','MED':'MED','MC':'MED','MF':'MED','CM':'MED','DM':'MED','AM':'MED','MCO':'MED','MDC':'MED','DEL':'DEL','FW':'DEL','ST':'DEL','CF':'DEL','SS':'DEL','EI':'DEL','ED':'DEL'}
