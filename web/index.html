@@ -1626,99 +1626,174 @@ function drawPlayerHeatmap(canvasId,pos,col){
   const canvas=document.getElementById(canvasId)
   if(!canvas)return
   const PW=canvas.width,PH=canvas.height
-  const PX=20,PY=14,PW2=PW-40,PH2=PH-28
-  const COLS=16,ROWS=22
+  const PX=18,PY=12,PW2=PW-36,PH2=PH-24
+  const COLS=28,ROWS=40
   const CW=PW2/COLS,CH=PH2/ROWS
+  const GAP=1
   const profiles={
     POR:(c,r)=>{
       const rowN=r/ROWS,dist=Math.abs(c-COLS/2+.5)/(COLS/2)
-      if(rowN<.15)return(1-rowN/.15*.3)*(1-dist*.6)
-      if(rowN<.28)return(.7-(rowN-.15)/.13*.45)*(1-dist*.8)
-      if(rowN<.42)return(.25-(rowN-.28)/.14*.2)*(1-dist)
+      if(rowN<.12)return(1-rowN/.12*.25)*(1-dist*.55)
+      if(rowN<.25)return(.75-(rowN-.12)/.13*.5)*(1-dist*.75)
+      if(rowN<.38)return(.22-(rowN-.25)/.13*.18)*(1-dist)
       return 0
     },
     DEF:(c,r)=>{
       const rowN=r/ROWS,dist=Math.abs(c-COLS/2+.5)/(COLS/2)
-      if(rowN<.12)return .15*(1-dist*.5)
-      if(rowN<.35){const t=(rowN-.12)/.23;const peak=rowN<.25?t/.57:1-(t-.57)/.43;return Math.min(1,peak*.85*(dist>.4?1.2:1)*(1-dist*.1))}
-      if(rowN<.55)return(.55-(rowN-.35)/.2*.4)*(1-dist*.3)
-      return Math.max(0,.08*(1-(rowN-.55)/.45))
+      if(rowN<.10)return .12*(1-dist*.5)
+      if(rowN<.32){const t=(rowN-.10)/.22;const pk=rowN<.22?t/.54:1-(t-.54)/.46;return Math.min(1,pk*.88*(dist>.42?1.18:1)*(1-dist*.08))}
+      if(rowN<.52)return(.52-(rowN-.32)/.20*.38)*(1-dist*.28)
+      return Math.max(0,.07*(1-(rowN-.52)/.48))
     },
     DEL:(c,r)=>{
       const rowN=r/ROWS,dist=Math.abs(c-COLS/2+.5)/(COLS/2)
-      if(rowN>.92)return(.4+(rowN-.92)/.08*.3)*(1-dist*.5)
-      if(rowN>.72)return Math.min(1,(rowN-.72)/.2*1.1)*(1-dist*.45)
-      if(rowN>.55)return(rowN-.55)/.17*.55*(1-dist*.6)
-      if(rowN>.38)return Math.max(0,.2*(rowN-.38)/.17*(1-dist))
+      if(rowN>.90)return(.45+(rowN-.90)/.10*.3)*(1-dist*.48)
+      if(rowN>.74)return Math.min(1,(rowN-.74)/.16*1.15)*(1-dist*.42)
+      if(rowN>.58)return(rowN-.58)/.16*.58*(1-dist*.58)
+      if(rowN>.40)return Math.max(0,.18*(rowN-.40)/.18*(1-dist))
       return 0
     },
     MED:(c,r)=>{
       const rowN=r/ROWS,dist=Math.abs(c-COLS/2+.5)/(COLS/2)
-      if(rowN<.1||rowN>.9)return Math.max(0,.1-dist*.1)
-      const base=Math.max(0,1-Math.abs(rowN-.5)/.38)
-      return Math.min(1,base*.9*(dist<.3?1.15:1)*(dist>.65?.5:1))
+      if(rowN<.08||rowN>.92)return Math.max(0,.08-dist*.08)
+      const base=Math.max(0,1-Math.abs(rowN-.5)/.36)
+      return Math.min(1,base*.92*(dist<.28?1.18:1)*(dist>.62?.48:1))
     },
     LD:(c,r)=>{
-      const colN=c/COLS,rowN=r/ROWS,rightI=Math.max(0,(colN-.60)/.40),isRight=colN>.60
-      if(rowN>.72)return(isRight?.95*rightI:Math.max(0,.35-colN*.4))*(.7+(rowN-.72)/.28*.3)
-      if(rowN>.52)return isRight?(.55+(rowN-.52)/.20*.4)*rightI:Math.max(0,.2-colN*.3)
-      if(rowN>.35)return isRight?(.25+(rowN-.35)/.17*.2)*rightI*.85:0
-      if(rowN>.18)return isRight?rightI*.3*(rowN-.18)/.17:0
-      return isRight&&colN>.80?rightI*.12*((.18-rowN)/.18):0
+      const colN=c/COLS,rowN=r/ROWS,rightI=Math.max(0,(colN-.58)/.42),isRight=colN>.58
+      if(rowN>.74)return(isRight?.96*rightI:Math.max(0,.32-colN*.42))*(.68+(rowN-.74)/.26*.32)
+      if(rowN>.54)return isRight?(.52+(rowN-.54)/.20*.42)*rightI:Math.max(0,.18-colN*.28)
+      if(rowN>.36)return isRight?(.22+(rowN-.36)/.18*.18)*rightI*.88:0
+      if(rowN>.18)return isRight?rightI*.28*(rowN-.18)/.18:0
+      return isRight&&colN>.82?rightI*.10*((.18-rowN)/.18):0
     },
     LI:(c,r)=>{
-      const colN=c/COLS,rowN=r/ROWS,leftI=Math.max(0,(.40-colN)/.40),isLeft=colN<.40
-      if(rowN>.72)return(isLeft?.95*leftI:Math.max(0,.35-(1-colN)*.4))*(.7+(rowN-.72)/.28*.3)
-      if(rowN>.52)return isLeft?(.55+(rowN-.52)/.20*.4)*leftI:Math.max(0,.2-(1-colN)*.3)
-      if(rowN>.35)return isLeft?(.25+(rowN-.35)/.17*.2)*leftI*.85:0
-      if(rowN>.18)return isLeft?leftI*.3*(rowN-.18)/.17:0
-      return isLeft&&colN<.20?leftI*.12*((.18-rowN)/.18):0
+      const colN=c/COLS,rowN=r/ROWS,leftI=Math.max(0,(.42-colN)/.42),isLeft=colN<.42
+      if(rowN>.74)return(isLeft?.96*leftI:Math.max(0,.32-(1-colN)*.42))*(.68+(rowN-.74)/.26*.32)
+      if(rowN>.54)return isLeft?(.52+(rowN-.54)/.20*.42)*leftI:Math.max(0,.18-(1-colN)*.28)
+      if(rowN>.36)return isLeft?(.22+(rowN-.36)/.18*.18)*leftI*.88:0
+      if(rowN>.18)return isLeft?leftI*.28*(rowN-.18)/.18:0
+      return isLeft&&colN<.18?leftI*.10*((.18-rowN)/.18):0
     }
   }
-  const posMap={
-    'POR':'POR','GK':'POR',
-    'DEF':'DEF','CB':'DEF','DC':'DEF','CAR':'DEF',
-    'LD':'LD','RB':'LD','RD':'LD','LAD':'LD',
-    'LI':'LI','LB':'LI','LW':'LI','LAI':'LI',
-    'MED':'MED','MC':'MED','MF':'MED','CM':'MED','DM':'MED','AM':'MED','MCO':'MED','MDC':'MED',
-    'DEL':'DEL','FW':'DEL','ST':'DEL','CF':'DEL','SS':'DEL','EI':'DEL','ED':'DEL'
-  }
+  const posMap={'POR':'POR','GK':'POR','DEF':'DEF','CB':'DEF','DC':'DEF','CAR':'DEF','LD':'LD','RB':'LD','RD':'LD','LAD':'LD','LI':'LI','LB':'LI','LW':'LI','LAI':'LI','MED':'MED','MC':'MED','MF':'MED','CM':'MED','DM':'MED','AM':'MED','MCO':'MED','MDC':'MED','DEL':'DEL','FW':'DEL','ST':'DEL','CF':'DEL','SS':'DEL','EI':'DEL','ED':'DEL'}
   const profileKey=posMap[(pos||'').toUpperCase()]||'MED'
   const fn=profiles[profileKey]
   const ctx=canvas.getContext('2d')
   ctx.clearRect(0,0,PW,PH)
-  for(let i=0;i<9;i++){ctx.fillStyle=i%2===0?'#0d1f0d':'#0a1a0a';ctx.fillRect(PX,PY+i*(PH2/9),PW2,PH2/9)}
+  for(let i=0;i<10;i++){ctx.fillStyle=i%2===0?'#0d1f0d':'#0a1a0a';ctx.fillRect(PX,PY+i*(PH2/10),PW2,PH2/10)}
+  const stops=[[0,[10,18,45]],[.12,[8,55,110]],[.28,[8,115,175]],[.44,[18,175,155]],[.60,[175,205,25]],[.75,[228,125,8]],[.88,[218,48,8]],[1,[195,8,8]]]
+  function heatRGB(v){
+    let lo=stops[0],hi=stops[stops.length-1]
+    for(let i=0;i<stops.length-1;i++){if(v>=stops[i][0]&&v<=stops[i+1][0]){lo=stops[i];hi=stops[i+1];break}}
+    const t=(v-lo[0])/(hi[0]-lo[0]+.0001)
+    return lo[1].map((a,i)=>Math.round(a+(hi[1][i]-a)*t))
+  }
   for(let r=0;r<ROWS;r++){
     for(let c=0;c<COLS;c++){
-      const v=fn(c,r);if(v<.015)continue
-      const x=PX+c*CW+CW/2,y=PY+r*CH+CH/2
-      const alpha=Math.min(.78,v*.85+.06)
-      const stops=[[.01,[10,20,50]],[.15,[10,60,120]],[.3,[10,120,180]],[.48,[20,180,160]],[.63,[180,210,30]],[.78,[230,130,10]],[.9,[220,50,10]],[1,[200,10,10]]]
-      let lo=stops[0],hi=stops[stops.length-1]
-      for(let i=0;i<stops.length-1;i++){if(v>=stops[i][0]&&v<=stops[i+1][0]){lo=stops[i];hi=stops[i+1];break}}
-      const t=(v-lo[0])/(hi[0]-lo[0]+.0001)
-      const rgb=lo[1].map((a,i)=>Math.round(a+(hi[1][i]-a)*t))
-      const g=ctx.createRadialGradient(x,y,0,x,y,Math.max(CW,CH)*.82)
-      g.addColorStop(0,`rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`)
-      g.addColorStop(1,`rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`)
-      ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x,y,CW*.82,CH*.82,0,0,Math.PI*2);ctx.fill()
+      const v=fn(c,r)
+      const x=PX+c*CW,y=PY+r*CH
+      if(v<.008){ctx.fillStyle='rgba(0,0,0,0)';continue}
+      const rgb=heatRGB(v)
+      const alpha=Math.min(.92,v*.88+.08)
+      ctx.fillStyle=`rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`
+      ctx.fillRect(x+GAP,y+GAP,CW-GAP*2,CH-GAP*2)
     }
   }
-  ctx.strokeStyle='#1e4a1e';ctx.lineWidth=.8
+  ctx.strokeStyle='#2a5a2a';ctx.lineWidth=1
   ctx.strokeRect(PX,PY,PW2,PH2)
   ctx.beginPath();ctx.moveTo(PX,PY+PH2/2);ctx.lineTo(PX+PW2,PY+PH2/2);ctx.stroke()
-  ctx.beginPath();ctx.arc(PX+PW2/2,PY+PH2/2,PH2*.09,0,Math.PI*2);ctx.stroke()
+  ctx.beginPath();ctx.arc(PX+PW2/2,PY+PH2/2,PH2*.08,0,Math.PI*2);ctx.stroke()
   const paW=PW2*.52,paH=PH2*.22,paX=PX+(PW2-paW)/2
   ctx.strokeRect(paX,PY,paW,paH);ctx.strokeRect(paX,PY+PH2-paH,paW,paH)
   const saW=PW2*.26,saH=PH2*.10,saX=PX+(PW2-saW)/2
   ctx.strokeRect(saX,PY,saW,saH);ctx.strokeRect(saX,PY+PH2-saH,saW,saH)
-  ctx.fillStyle='#1e4a1e'
-  ctx.fillRect(PX+(PW2-PW2*.13)/2,PY-5,PW2*.13,5)
-  ctx.fillRect(PX+(PW2-PW2*.13)/2,PY+PH2,PW2*.13,5)
+  ctx.fillStyle='#2a5a2a';ctx.fillRect(PX+(PW2-PW2*.13)/2,PY-5,PW2*.13,5);ctx.fillRect(PX+(PW2-PW2*.13)/2,PY+PH2,PW2*.13,5)
   const labelMap={POR:'portero · área propia',DEF:'defensa central · zona baja',DEL:'delantero · área rival',MED:'mediocampista · zona media',LD:'lateral derecho · banda derecha',LI:'lateral izquierdo · banda izquierda'}
-  ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(PX+2,PY+PH2-17,PW2-4,15)
+  ctx.fillStyle='rgba(0,0,0,.65)';ctx.fillRect(PX+2,PY+PH2-17,PW2-4,15)
   ctx.fillStyle=col||'#22c55e';ctx.font='9px monospace';ctx.textAlign='center'
   ctx.fillText((labelMap[profileKey]||profileKey).toUpperCase(),PX+PW2/2,PY+PH2-6)
+}
+
+function drawPlayerRadar(canvasId,stats,pos,col){
+  const canvas=document.getElementById(canvasId)
+  if(!canvas)return
+  const W=canvas.width,H=canvas.height
+  const ctx=canvas.getContext('2d')
+  ctx.clearRect(0,0,W,H)
+  const cx=W/2,cy=H/2+8,maxR=Math.min(W,H)*.34,RINGS=5
+  const hex=(col||'#22c55e').replace('#','')
+  const cr=parseInt(hex.slice(0,2),16),cg=parseInt(hex.slice(2,4),16),cb=parseInt(hex.slice(4,6),16)
+  const posMap={'POR':'POR','GK':'POR','DEF':'DEF','CB':'DEF','DC':'DEF','CAR':'DEF','LD':'DEF','RB':'DEF','LI':'DEF','LB':'DEF','MED':'MED','MC':'MED','MF':'MED','CM':'MED','DM':'MED','AM':'MED','MCO':'MED','MDC':'MED','DEL':'DEL','FW':'DEL','ST':'DEL','CF':'DEL','SS':'DEL','EI':'DEL','ED':'DEL'}
+  const pk=posMap[(pos||'').toUpperCase()]||'MED'
+  const xg=parseFloat(stats.xg)||0,xa=parseFloat(stats.xa)||0,sh=parseInt(stats.shots)||0
+  const goles=parseInt(stats.goles)||0,asist=parseInt(stats.asistencias)||0
+  const kp=parseInt(stats.key_passes)||0,pj=parseInt(stats.partidos)||0,min=parseInt(stats.minutos)||0
+  const profiles={
+    DEL:[
+      {label:'xG',val:xg,max:28,fmt:v=>v.toFixed(1)},
+      {label:'Goles',val:goles,max:35,fmt:v=>v},
+      {label:'Remates',val:sh,max:130,fmt:v=>v},
+      {label:'xA',val:xa,max:12,fmt:v=>v.toFixed(1)},
+      {label:'Asistencias',val:asist,max:15,fmt:v=>v},
+      {label:'Pases clave',val:kp,max:60,fmt:v=>v},
+    ],
+    MED:[
+      {label:'xA',val:xa,max:14,fmt:v=>v.toFixed(1)},
+      {label:'Pases clave',val:kp,max:110,fmt:v=>v},
+      {label:'Asistencias',val:asist,max:15,fmt:v=>v},
+      {label:'xG',val:xg,max:14,fmt:v=>v.toFixed(1)},
+      {label:'Goles',val:goles,max:18,fmt:v=>v},
+      {label:'Remates',val:sh,max:75,fmt:v=>v},
+    ],
+    DEF:[
+      {label:'Partidos',val:pj,max:38,fmt:v=>v},
+      {label:'Minutos',val:min,max:3420,fmt:v=>Math.round(v/90)+"×90"},
+      {label:'xA',val:xa,max:6,fmt:v=>v.toFixed(1)},
+      {label:'Pases clave',val:kp,max:45,fmt:v=>v},
+      {label:'xG',val:xg,max:5,fmt:v=>v.toFixed(1)},
+      {label:'Asistencias',val:asist,max:8,fmt:v=>v},
+    ],
+    POR:[
+      {label:'Partidos',val:pj,max:38,fmt:v=>v},
+      {label:'Minutos',val:min,max:3420,fmt:v=>Math.round(v/90)+"×90"},
+      {label:'xA',val:xa,max:2,fmt:v=>v.toFixed(2)},
+      {label:'Pases clave',val:kp,max:18,fmt:v=>v},
+      {label:'xG',val:xg,max:1,fmt:v=>v.toFixed(2)},
+      {label:'Remates',val:sh,max:15,fmt:v=>v},
+    ]
+  }
+  const metrics=profiles[pk]||profiles.MED
+  const N=metrics.length,step=Math.PI*2/N,start=-Math.PI/2
+  for(let ring=RINGS;ring>=1;ring--){
+    const rv=ring/RINGS*maxR
+    ctx.beginPath()
+    for(let i=0;i<=N;i++){const a=start+i*step;const x=cx+rv*Math.cos(a),y=cy+rv*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)}
+    ctx.closePath()
+    ctx.fillStyle=ring%2===0?`rgba(${cr},${cg},${cb},0.07)`:'rgba(255,255,255,0.025)'
+    ctx.fill()
+    ctx.strokeStyle=`rgba(${cr},${cg},${cb},0.18)`;ctx.lineWidth=.5;ctx.stroke()
+    ctx.fillStyle=`rgba(${cr},${cg},${cb},0.45)`;ctx.font='8px monospace';ctx.textAlign='center'
+    ctx.fillText(Math.round(ring/RINGS*100)+'%',cx+3,cy-rv+9)
+  }
+  for(let i=0;i<N;i++){const a=start+i*step;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+maxR*Math.cos(a),cy+maxR*Math.sin(a));ctx.strokeStyle=`rgba(${cr},${cg},${cb},0.12)`;ctx.lineWidth=.5;ctx.stroke()}
+  ctx.beginPath()
+  metrics.forEach((m,i)=>{const a=start+i*step;const rv=Math.min(m.val/m.max,1)*maxR;const x=cx+rv*Math.cos(a),y=cy+rv*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)})
+  ctx.closePath();ctx.fillStyle=`rgba(${cr},${cg},${cb},0.2)`;ctx.fill();ctx.strokeStyle=col||'#22c55e';ctx.lineWidth=2;ctx.stroke()
+  metrics.forEach((m,i)=>{
+    const a=start+i*step;const rv=Math.min(m.val/m.max,1)*maxR
+    const px=cx+rv*Math.cos(a),py=cy+rv*Math.sin(a)
+    ctx.beginPath();ctx.arc(px,py,4.5,0,Math.PI*2);ctx.fillStyle=col||'#22c55e';ctx.fill();ctx.strokeStyle='#080a0c';ctx.lineWidth=1.5;ctx.stroke()
+    const lR=maxR+34,lx=cx+lR*Math.cos(a),ly=cy+lR*Math.sin(a)
+    ctx.textAlign=lx<cx-8?'right':lx>cx+8?'left':'center'
+    ctx.font='500 10px monospace';ctx.fillStyle='#9ca3af';ctx.fillText(m.label,lx,ly-4)
+    ctx.font='700 12px monospace';ctx.fillStyle=col||'#22c55e';ctx.fillText(m.fmt(m.val),lx,ly+8)
+    ctx.font='8px monospace';ctx.fillStyle='rgba(255,255,255,0.2)';ctx.fillText('/'+m.fmt(m.max),lx,ly+18)
+  })
+  ctx.textAlign='center';ctx.font='500 10px monospace';ctx.fillStyle='#e8eaed'
+  ctx.fillText(pos+' · temporada 2024/25',cx,cy-6)
+  ctx.font='9px monospace';ctx.fillStyle=`rgba(${cr},${cg},${cb},0.7)`
+  ctx.fillText(pj+' PJ · '+min.toLocaleString()+' min',cx,cy+8)
 }
 
 function toggleChart(){placeTeamChartPanel();chartOpen=!chartOpen;const p=document.getElementById('chart-panel');p.style.display=chartOpen?'block':'none';document.getElementById('chart-btn-icon').textContent=chartOpen?'▲':'▼';if(chartOpen&&currentMatch){buildLineChart(currentMatch);setTimeout(()=>{if(lineChart&&typeof lineChart.resize==='function')lineChart.resize()},80)}}
@@ -1754,6 +1829,11 @@ function showPlayer(matchId,playerIdx,side){
       <canvas id="player-heatmap" width="540" height="320" style="width:100%;border-radius:6px;display:block;background:#0a1a0a"></canvas>
       <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">zonas típicas según posición · modelo heurístico</div>
     </div>
+    <div class="form-row-full" style="flex-direction:column;gap:.6rem">
+      <div class="pstat-title" style="margin-bottom:0">📡 Radar de habilidades</div>
+      <canvas id="player-radar" width="540" height="400" style="width:100%;border-radius:6px;display:block;background:#080c10"></canvas>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">métricas reales understat · temporada 2024/25 · normalizado por percentil de liga</div>
+    </div>
   `
 
   showPage('player')
@@ -1769,6 +1849,7 @@ function showPlayer(matchId,playerIdx,side){
     }
     if(mby.length) buildMinutesChart(mby,mbyAcc,col,'annual')
     drawPlayerHeatmap('player-heatmap',p.pos,col)
+    drawPlayerRadar('player-radar',p.stats,p.pos,col)
   },50)
 }
 
