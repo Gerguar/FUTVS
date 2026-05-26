@@ -1725,86 +1725,123 @@ function drawPlayerRadar(canvasId,stats,pos,col){
   if(!canvas)return
   const dpr=window.devicePixelRatio||1
   const rect=canvas.getBoundingClientRect()
-  const W=Math.round((rect.width||540)*dpr),H=Math.round((canvas.offsetHeight||400)*dpr)
-  canvas.width=W;canvas.height=H
+  const CW=rect.width||540,CH=canvas.offsetHeight||400
+  canvas.width=Math.round(CW*dpr);canvas.height=Math.round(CH*dpr)
   const ctx=canvas.getContext('2d')
   ctx.scale(dpr,dpr)
-  const CW=W/dpr,CH=H/dpr
   ctx.clearRect(0,0,CW,CH)
-  const cx=CW/2,cy=CH/2+8,maxR=Math.min(CW,CH)*.34,RINGS=5
-  const hex=(col||'#22c55e').replace('#','')
-  const cr=parseInt(hex.slice(0,2),16),cg=parseInt(hex.slice(2,4),16),cb=parseInt(hex.slice(4,6),16)
-  const posMap={'POR':'POR','GK':'POR','DEF':'DEF','CB':'DEF','DC':'DEF','CAR':'DEF','LD':'DEF','RB':'DEF','LI':'DEF','LB':'DEF','MED':'MED','MC':'MED','MF':'MED','CM':'MED','DM':'MED','AM':'MED','MCO':'MED','MDC':'MED','DEL':'DEL','FW':'DEL','ST':'DEL','CF':'DEL','SS':'DEL','EI':'DEL','ED':'DEL'}
+  const cx=CW/2,cy=CH/2,maxR=Math.min(CW,CH)*.36,RINGS=5
+  const posMap={'POR':'POR','GK':'POR','DEF':'DEF','CB':'DEF','DC':'DEF','CAR':'DEF','LD':'DEF','RB':'DEF','LI':'DEF','LB':'DEF','LAD':'DEF','LAI':'DEF','MED':'MED','MC':'MED','MF':'MED','CM':'MED','DM':'MED','AM':'MED','MCO':'MED','MDC':'MED','DEL':'DEL','FW':'DEL','ST':'DEL','CF':'DEL','SS':'DEL','EI':'DEL','ED':'DEL'}
   const pk=posMap[(pos||'').toUpperCase()]||'MED'
-  const xg=parseFloat(stats.xg)||0,xa=parseFloat(stats.xa)||0,sh=parseInt(stats.shots)||0
-  const goles=parseInt(stats.goles)||0,asist=parseInt(stats.asistencias)||0
-  const kp=parseInt(stats.key_passes)||0,pj=parseInt(stats.partidos)||0,min=parseInt(stats.minutos)||0
+  const s=stats
+  const xg=parseFloat(s.xg)||0,xa=parseFloat(s.xa)||0,sh=parseInt(s.shots)||0
+  const goles=parseInt(s.goles)||0,asist=parseInt(s.asistencias)||0
+  const kp=parseInt(s.key_passes)||0,pj=parseInt(s.partidos)||0,min=parseInt(s.minutos)||0
+  const rat=parseInt(s.rating)||70
+  const clamp=(v,lo)=>Math.min(99,Math.max(lo||1,Math.round(v)))
+  const norm=(v,max)=>clamp(v/max*99)
+  const xgS=norm(xg,pk==='DEL'?25:pk==='MED'?12:5)
+  const xaS=norm(xa,pk==='DEL'?10:pk==='MED'?14:6)
+  const shS=norm(sh,pk==='DEL'?120:pk==='MED'?70:25)
+  const gS=norm(goles,pk==='DEL'?30:pk==='MED'?15:6)
+  const aS=norm(asist,pk==='DEL'?12:pk==='MED'?14:7)
+  const kpS=norm(kp,pk==='DEL'?55:pk==='MED'?100:40)
+  const fitS=norm(min,3420),appS=norm(pj,38),ratS=norm(rat,99)
   const profiles={
     DEL:[
-      {label:'xG',val:xg,max:28,fmt:v=>v.toFixed(1)},
-      {label:'Goles',val:goles,max:35,fmt:v=>v},
-      {label:'Remates',val:sh,max:130,fmt:v=>v},
-      {label:'xA',val:xa,max:12,fmt:v=>v.toFixed(1)},
-      {label:'Asistencias',val:asist,max:15,fmt:v=>v},
-      {label:'Pases clave',val:kp,max:60,fmt:v=>v},
+      {label:'Ataque',    val:clamp(xgS*.45+gS*.35+shS*.20),      col:'#ef4444'},
+      {label:'Velocidad', val:clamp(ratS*.5+fitS*.3+appS*.2),      col:'#f59e0b'},
+      {label:'Regate',    val:clamp(xaS*.4+kpS*.35+aS*.25),        col:'#22c55e'},
+      {label:'Pase',      val:clamp(kpS*.5+xaS*.3+aS*.2),          col:'#3b82f6'},
+      {label:'Físico',    val:clamp(fitS*.6+appS*.4),               col:'#a855f7'},
+      {label:'Defensa',   val:clamp(ratS*.2+fitS*.5+appS*.3,1),     col:'#6b7280'},
     ],
     MED:[
-      {label:'xA',val:xa,max:14,fmt:v=>v.toFixed(1)},
-      {label:'Pases clave',val:kp,max:110,fmt:v=>v},
-      {label:'Asistencias',val:asist,max:15,fmt:v=>v},
-      {label:'xG',val:xg,max:14,fmt:v=>v.toFixed(1)},
-      {label:'Goles',val:goles,max:18,fmt:v=>v},
-      {label:'Remates',val:sh,max:75,fmt:v=>v},
+      {label:'Pase',      val:clamp(kpS*.45+xaS*.35+aS*.20),       col:'#3b82f6'},
+      {label:'Visión',    val:clamp(xaS*.5+kpS*.3+aS*.2),          col:'#22c55e'},
+      {label:'Regate',    val:clamp(kpS*.4+xgS*.3+shS*.3),         col:'#f59e0b'},
+      {label:'Ataque',    val:clamp(xgS*.45+gS*.35+shS*.20),       col:'#ef4444'},
+      {label:'Físico',    val:clamp(fitS*.6+appS*.4),               col:'#a855f7'},
+      {label:'Defensa',   val:clamp(ratS*.3+fitS*.4+appS*.3,1),    col:'#6b7280'},
     ],
     DEF:[
-      {label:'Partidos',val:pj,max:38,fmt:v=>v},
-      {label:'Minutos',val:min,max:3420,fmt:v=>Math.round(v/90)+"×90"},
-      {label:'xA',val:xa,max:6,fmt:v=>v.toFixed(1)},
-      {label:'Pases clave',val:kp,max:45,fmt:v=>v},
-      {label:'xG',val:xg,max:5,fmt:v=>v.toFixed(1)},
-      {label:'Asistencias',val:asist,max:8,fmt:v=>v},
+      {label:'Defensa',   val:clamp(fitS*.4+appS*.35+ratS*.25),    col:'#3b82f6'},
+      {label:'Físico',    val:clamp(fitS*.55+appS*.45),             col:'#a855f7'},
+      {label:'Pase',      val:clamp(kpS*.5+xaS*.3+aS*.2),         col:'#22c55e'},
+      {label:'Anticipación',val:clamp(ratS*.45+fitS*.35+appS*.2),  col:'#f59e0b'},
+      {label:'Aéreo',     val:clamp(ratS*.5+fitS*.3+appS*.2),      col:'#6b7280'},
+      {label:'Ataque',    val:clamp(xgS*.4+gS*.35+shS*.25,1),      col:'#ef4444'},
     ],
     POR:[
-      {label:'Partidos',val:pj,max:38,fmt:v=>v},
-      {label:'Minutos',val:min,max:3420,fmt:v=>Math.round(v/90)+"×90"},
-      {label:'xA',val:xa,max:2,fmt:v=>v.toFixed(2)},
-      {label:'Pases clave',val:kp,max:18,fmt:v=>v},
-      {label:'xG',val:xg,max:1,fmt:v=>v.toFixed(2)},
-      {label:'Remates',val:sh,max:15,fmt:v=>v},
+      {label:'Reflejos',  val:clamp(ratS*.6+fitS*.25+appS*.15),    col:'#3b82f6'},
+      {label:'Posición',  val:clamp(ratS*.5+appS*.3+fitS*.2),      col:'#22c55e'},
+      {label:'Salidas',   val:clamp(ratS*.4+fitS*.35+appS*.25),    col:'#f59e0b'},
+      {label:'Pase',      val:clamp(kpS*.5+xaS*.3+aS*.2),         col:'#a855f7'},
+      {label:'Aéreo',     val:clamp(ratS*.45+appS*.35+fitS*.2),    col:'#6b7280'},
+      {label:'Físico',    val:clamp(fitS*.6+appS*.4),               col:'#ef4444'},
     ]
   }
-  const metrics=profiles[pk]||profiles.MED
-  const N=metrics.length,step=Math.PI*2/N,start=-Math.PI/2
+  const attrs=profiles[pk]||profiles.MED
+  const N=attrs.length,step=Math.PI*2/N,start=-Math.PI/2
+  // Anillos
   for(let ring=RINGS;ring>=1;ring--){
     const rv=ring/RINGS*maxR
     ctx.beginPath()
-    for(let i=0;i<=N;i++){const a=start+i*step;const x=cx+rv*Math.cos(a),y=cy+rv*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)}
+    for(let i=0;i<=N;i++){const a=start+i*step;ctx.lineTo(cx+rv*Math.cos(a),cy+rv*Math.sin(a))}
     ctx.closePath()
-    ctx.fillStyle=ring%2===0?`rgba(${cr},${cg},${cb},0.07)`:'rgba(255,255,255,0.025)'
-    ctx.fill()
-    ctx.strokeStyle=`rgba(${cr},${cg},${cb},0.18)`;ctx.lineWidth=.5;ctx.stroke()
-    ctx.fillStyle=`rgba(${cr},${cg},${cb},0.45)`;ctx.font='8px monospace';ctx.textAlign='center'
-    ctx.fillText(Math.round(ring/RINGS*100)+'%',cx+3,cy-rv+9)
+    ctx.fillStyle=ring%2===0?'rgba(34,197,94,0.06)':'rgba(255,255,255,0.02)';ctx.fill()
+    ctx.strokeStyle='rgba(34,197,94,0.12)';ctx.lineWidth=.5;ctx.stroke()
+    ctx.fillStyle='rgba(34,197,94,0.3)';ctx.font='8px monospace';ctx.textAlign='center'
+    ctx.fillText(Math.round(ring/RINGS*100),cx+2,cy-rv+8)
   }
-  for(let i=0;i<N;i++){const a=start+i*step;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+maxR*Math.cos(a),cy+maxR*Math.sin(a));ctx.strokeStyle=`rgba(${cr},${cg},${cb},0.12)`;ctx.lineWidth=.5;ctx.stroke()}
-  ctx.beginPath()
-  metrics.forEach((m,i)=>{const a=start+i*step;const rv=Math.min(m.val/m.max,1)*maxR;const x=cx+rv*Math.cos(a),y=cy+rv*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)})
-  ctx.closePath();ctx.fillStyle=`rgba(${cr},${cg},${cb},0.2)`;ctx.fill();ctx.strokeStyle=col||'#22c55e';ctx.lineWidth=2;ctx.stroke()
-  metrics.forEach((m,i)=>{
-    const a=start+i*step;const rv=Math.min(m.val/m.max,1)*maxR
-    const px=cx+rv*Math.cos(a),py=cy+rv*Math.sin(a)
-    ctx.beginPath();ctx.arc(px,py,4.5,0,Math.PI*2);ctx.fillStyle=col||'#22c55e';ctx.fill();ctx.strokeStyle='#080a0c';ctx.lineWidth=1.5;ctx.stroke()
-    const lR=maxR+34,lx=cx+lR*Math.cos(a),ly=cy+lR*Math.sin(a)
-    ctx.textAlign=lx<cx-8?'right':lx>cx+8?'left':'center'
-    ctx.font='500 10px monospace';ctx.fillStyle='#9ca3af';ctx.fillText(m.label,lx,ly-4)
-    ctx.font='700 12px monospace';ctx.fillStyle=col||'#22c55e';ctx.fillText(m.fmt(m.val),lx,ly+8)
-    ctx.font='8px monospace';ctx.fillStyle='rgba(255,255,255,0.2)';ctx.fillText('/'+m.fmt(m.max),lx,ly+18)
+  // Ejes
+  for(let i=0;i<N;i++){
+    const a=start+i*step
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+maxR*Math.cos(a),cy+maxR*Math.sin(a))
+    ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=.5;ctx.stroke()
+  }
+  // Segmentos multicolor
+  attrs.forEach((attr,i)=>{
+    const a1=start+i*step,a2=start+((i+1)%N)*step
+    const rv1=attr.val/99*maxR,rv2=attrs[(i+1)%N].val/99*maxR
+    ctx.beginPath();ctx.moveTo(cx,cy)
+    ctx.lineTo(cx+rv1*Math.cos(a1),cy+rv1*Math.sin(a1))
+    ctx.lineTo(cx+rv2*Math.cos(a2),cy+rv2*Math.sin(a2))
+    ctx.closePath()
+    const h=attr.col.replace('#','')
+    const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16)
+    ctx.fillStyle=`rgba(${r},${g},${b},0.22)`;ctx.fill()
   })
-  ctx.textAlign='center';ctx.font='500 10px monospace';ctx.fillStyle='#e8eaed'
-  ctx.fillText(pos+' · temporada 2024/25',cx,cy-6)
-  ctx.font='9px monospace';ctx.fillStyle=`rgba(${cr},${cg},${cb},0.7)`
-  ctx.fillText(pj+' PJ · '+min.toLocaleString()+' min',cx,cy+8)
+  // Borde del polígono
+  ctx.beginPath()
+  attrs.forEach((attr,i)=>{const a=start+i*step,rv=attr.val/99*maxR;i===0?ctx.moveTo(cx+rv*Math.cos(a),cy+rv*Math.sin(a)):ctx.lineTo(cx+rv*Math.cos(a),cy+rv*Math.sin(a))})
+  ctx.closePath();ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=1.5;ctx.stroke()
+  // Puntos de colores
+  attrs.forEach((attr,i)=>{
+    const a=start+i*step,rv=attr.val/99*maxR
+    const px=cx+rv*Math.cos(a),py=cy+rv*Math.sin(a)
+    ctx.beginPath();ctx.arc(px,py,4.5,0,Math.PI*2)
+    ctx.fillStyle=attr.col;ctx.fill();ctx.strokeStyle='#080c10';ctx.lineWidth=1.5;ctx.stroke()
+  })
+  // Etiquetas con valor y barra lateral
+  const barH=14,barW=80,barX=CW-barW-8
+  attrs.forEach((attr,i)=>{
+    const a=start+i*step,lR=maxR+32
+    const lx=cx+lR*Math.cos(a),ly=cy+lR*Math.sin(a)
+    ctx.textAlign=lx<cx-8?'right':lx>cx+8?'left':'center'
+    ctx.font='500 9px monospace';ctx.fillStyle='#9ca3af';ctx.fillText(attr.label,lx,ly-3)
+    ctx.font='700 12px monospace';ctx.fillStyle=attr.col;ctx.fillText(attr.val,lx,ly+10)
+  })
+  // Promedio en centro
+  const avg=Math.round(attrs.reduce((s,a)=>s+a.val,0)/attrs.length)
+  ctx.textAlign='center'
+  ctx.font='500 11px monospace';ctx.fillStyle='#e8eaed';ctx.fillText(pos+' · OVR promedio: '+avg,cx,cy-6)
+  ctx.font='9px monospace';ctx.fillStyle='rgba(34,197,94,0.6)';ctx.fillText(pj+' PJ · '+min.toLocaleString()+' min',cx,cy+8)
+  // Barras laterales
+  const barsEl=document.getElementById('player-radar-bars')
+  if(barsEl){barsEl.innerHTML=attrs.map(a=>`<div style="display:flex;align-items:center;gap:6px;flex:1 1 160px;min-width:140px"><span style="font-family:monospace;font-size:9px;color:#6b7280;width:80px;text-align:right;flex-shrink:0">${a.label}</span><div style="flex:1;height:5px;background:#1c2028;border-radius:3px;overflow:hidden"><div style="width:${a.val}%;height:100%;background:${a.col};border-radius:3px"></div></div><span style="font-family:monospace;font-size:9px;font-weight:700;color:${a.col};width:22px">${a.val}</span></div>`).join('')}
 }
+
 
 function toggleChart(){placeTeamChartPanel();chartOpen=!chartOpen;const p=document.getElementById('chart-panel');p.style.display=chartOpen?'block':'none';document.getElementById('chart-btn-icon').textContent=chartOpen?'▲':'▼';if(chartOpen&&currentMatch){buildLineChart(currentMatch);setTimeout(()=>{if(lineChart&&typeof lineChart.resize==='function')lineChart.resize()},80)}}
 
@@ -1841,8 +1878,9 @@ function showPlayer(matchId,playerIdx,side){
     </div>
     <div class="form-row-full" style="flex-direction:column;gap:.6rem">
       <div class="pstat-title" style="margin-bottom:0">📡 Radar de habilidades</div>
-      <canvas id="player-radar" width="540" height="400" style="width:100%;border-radius:6px;display:block;background:#080c10"></canvas>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">métricas reales understat · temporada 2024/25 · normalizado por percentil de liga</div>
+      <canvas id="player-radar" width="540" height="380" style="width:100%;border-radius:6px;display:block;background:#080c10"></canvas>
+      <div id="player-radar-bars" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">atributos calculados desde stats reales · temporada 2024/25</div>
     </div>
   `
 
