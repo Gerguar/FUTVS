@@ -1685,8 +1685,7 @@ function drawPlayerHeatmap(canvasId,pos,col){
   const posMap={'POR':'POR','GK':'POR','DEF':'DEF','CB':'DEF','DC':'DEF','CAR':'DEF','LD':'LD','RB':'LD','RD':'LD','LAD':'LD','LI':'LI','LB':'LI','LW':'LI','LAI':'LI','MED':'MED','MC':'MED','MF':'MED','CM':'MED','DM':'MED','AM':'MED','MCO':'MED','MDC':'MED','DEL':'DEL','FW':'DEL','ST':'DEL','CF':'DEL','SS':'DEL','EI':'DEL','ED':'DEL'}
   const profileKey=posMap[(pos||'').toUpperCase()]||'MED'
   const fn=profiles[profileKey]
-  const ctx=canvas.getContext('2d')
-  ctx.clearRect(0,0,PW,PH)
+  ctx.clearRect(0,0,RPW,RPH)
   for(let i=0;i<10;i++){ctx.fillStyle=i%2===0?'#0d1f0d':'#0a1a0a';ctx.fillRect(PX,PY+i*(PH2/10),PW2,PH2/10)}
   const stops=[[0,[10,18,45]],[.12,[8,55,110]],[.28,[8,115,175]],[.44,[18,175,155]],[.60,[175,205,25]],[.75,[228,125,8]],[.88,[218,48,8]],[1,[195,8,8]]]
   function heatRGB(v){
