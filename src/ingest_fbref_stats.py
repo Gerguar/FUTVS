@@ -132,6 +132,15 @@ def fetch_player_stats(league: str, seasons: list[str]) -> pd.DataFrame:
     return df
 
 
+def _safe_float(val: Any) -> float:
+    try:
+        if pd.isna(val):
+            return 0.0
+        return round(float(val), 3)
+    except (TypeError, ValueError):
+        return 0.0
+
+
 def extract_stats(row: pd.Series) -> dict:
     """Extrae las stats que nos interesan en el formato de Supabase.
     Understat columns: games, time, goals, xG, assists, xA, shots,
@@ -144,6 +153,11 @@ def extract_stats(row: pd.Series) -> dict:
         "asistencias": _safe_int(row.get("assists")),
         "amarillas":   _safe_int(row.get("yellow_cards") or row.get("yellows")),
         "rojas":       _safe_int(row.get("red_cards") or row.get("reds")),
+        "xg":          _safe_float(row.get("xG") or row.get("xg") or row.get("expected_goals")),
+        "xa":          _safe_float(row.get("xA") or row.get("xa") or row.get("expected_assists")),
+        "shots":       _safe_int(row.get("shots")),
+        "npxg":        _safe_float(row.get("npxG") or row.get("npxg")),
+        "key_passes":  _safe_int(row.get("key_passes")),
     }
 
 
