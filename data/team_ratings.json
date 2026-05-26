@@ -14,7 +14,7 @@
   "ajax": {
     "attack_score": 76.14,
     "defense_score": 74.25,
-    "n_players": 40,
+    "n_players": 41,
     "top_xi_avg": 75.57
   },
   "alaves": {
@@ -31,9 +31,9 @@
   },
   "arsenal": {
     "attack_score": 85.57,
-    "defense_score": 81.62,
+    "defense_score": 80.88,
     "n_players": 36,
-    "top_xi_avg": 85.14
+    "top_xi_avg": 84.71
   },
   "aston_villa": {
     "attack_score": 81.43,
@@ -164,7 +164,7 @@
   "cremonese": {
     "attack_score": 73.71,
     "defense_score": 73.38,
-    "n_players": 32,
+    "n_players": 33,
     "top_xi_avg": 73.86
   },
   "crystal_palace": {
@@ -193,8 +193,8 @@
   },
   "espanyol": {
     "attack_score": 77.86,
-    "defense_score": 72.88,
-    "n_players": 31,
+    "defense_score": 72.75,
+    "n_players": 30,
     "top_xi_avg": 76.07
   },
   "everton": {
@@ -242,7 +242,7 @@
   "genoa": {
     "attack_score": 73.71,
     "defense_score": 72.38,
-    "n_players": 36,
+    "n_players": 38,
     "top_xi_avg": 73.29
   },
   "getafe": {
@@ -254,7 +254,7 @@
   "girona": {
     "attack_score": 77.14,
     "defense_score": 77.75,
-    "n_players": 35,
+    "n_players": 34,
     "top_xi_avg": 78.0
   },
   "heidenheim": {
@@ -349,9 +349,9 @@
   },
   "liverpool": {
     "attack_score": 86.71,
-    "defense_score": 84.38,
-    "n_players": 43,
-    "top_xi_avg": 86.0
+    "defense_score": 83.75,
+    "n_players": 42,
+    "top_xi_avg": 85.5
   },
   "lorient": {
     "attack_score": 70.71,
@@ -432,10 +432,10 @@
     "top_xi_avg": 76.71
   },
   "nottingham_forest": {
-    "attack_score": 80.43,
+    "attack_score": 80.29,
     "defense_score": 79.5,
-    "n_players": 35,
-    "top_xi_avg": 80.43
+    "n_players": 36,
+    "top_xi_avg": 80.36
   },
   "olympiakos": {
     "attack_score": 75.0,
@@ -476,7 +476,7 @@
   "parma": {
     "attack_score": 74.14,
     "defense_score": 73.38,
-    "n_players": 37,
+    "n_players": 38,
     "top_xi_avg": 73.93
   },
   "psv": {
@@ -506,13 +506,13 @@
   "real_madrid": {
     "attack_score": 86.43,
     "defense_score": 83.0,
-    "n_players": 41,
+    "n_players": 43,
     "top_xi_avg": 85.14
   },
   "real_oviedo": {
     "attack_score": 72.43,
     "defense_score": 73.38,
-    "n_players": 34,
+    "n_players": 33,
     "top_xi_avg": 73.43
   },
   "real_sociedad": {
@@ -528,15 +528,15 @@
     "top_xi_avg": 76.93
   },
   "roma": {
-    "attack_score": 80.71,
-    "defense_score": 78.12,
+    "attack_score": 80.43,
+    "defense_score": 77.25,
     "n_players": 36,
-    "top_xi_avg": 80.29
+    "top_xi_avg": 80.14
   },
   "sassuolo": {
     "attack_score": 76.86,
     "defense_score": 72.88,
-    "n_players": 33,
+    "n_players": 35,
     "top_xi_avg": 75.0
   },
   "sevilla": {
@@ -626,7 +626,7 @@
   "valencia": {
     "attack_score": 77.14,
     "defense_score": 76.12,
-    "n_players": 40,
+    "n_players": 41,
     "top_xi_avg": 77.43
   },
   "verona": {
