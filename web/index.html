@@ -1623,101 +1623,129 @@ function buildLineChart(m){
 
 function setChartMetric(metric,btn){currentMetric=metric;document.querySelectorAll('.chart-metric-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');if(currentMatch)buildLineChart(currentMatch)}
 // ── HEATMAP DE ZONAS DE INFLUENCIA POR POSICIÓN ──
+function seededRand(seed){let s=seed;return()=>{s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/0xffffffff}}
+
+function genCloud(centers,seed){
+  const rng=seededRand(seed),pts=[]
+  centers.forEach(c=>{
+    const n=c.n||40
+    for(let i=0;i<n;i++){
+      const angle=rng()*Math.PI*2,dist=rng()*c.spread
+      pts.push({x:Math.max(.02,Math.min(.98,c.x+Math.cos(angle)*dist*1.6)),y:Math.max(.02,Math.min(.98,c.y+Math.sin(angle)*dist)),r:(c.r||.09)*(0.5+rng()*1.0),a:c.a*(0.3+rng()*0.7)})
+    }
+  })
+  return pts
+}
+
+const HEATMAP_PROFILES={
+  DEL:{seed:42,centers:[
+    {x:.62,y:.50,spread:.12,r:.11,a:.95,n:55},{x:.68,y:.48,spread:.08,r:.09,a:.80,n:35},
+    {x:.57,y:.52,spread:.09,r:.09,a:.75,n:30},{x:.72,y:.42,spread:.07,r:.07,a:.60,n:20},
+    {x:.55,y:.38,spread:.07,r:.07,a:.55,n:18},{x:.48,y:.50,spread:.08,r:.07,a:.45,n:18},
+    {x:.62,y:.62,spread:.07,r:.07,a:.50,n:18},{x:.38,y:.48,spread:.07,r:.06,a:.30,n:12},
+    {x:.78,y:.52,spread:.06,r:.06,a:.35,n:12},
+  ]},
+  MED:{seed:77,centers:[
+    {x:.55,y:.50,spread:.11,r:.10,a:.90,n:45},{x:.51,y:.44,spread:.08,r:.08,a:.75,n:28},
+    {x:.51,y:.56,spread:.08,r:.08,a:.75,n:28},{x:.60,y:.38,spread:.07,r:.07,a:.62,n:20},
+    {x:.60,y:.62,spread:.07,r:.07,a:.62,n:20},{x:.46,y:.50,spread:.08,r:.07,a:.52,n:18},
+    {x:.64,y:.48,spread:.06,r:.07,a:.48,n:16},{x:.42,y:.44,spread:.07,r:.06,a:.35,n:12},
+    {x:.42,y:.56,spread:.07,r:.06,a:.35,n:12},
+  ]},
+  DEF:{seed:55,centers:[
+    {x:.25,y:.50,spread:.10,r:.10,a:.90,n:45},{x:.22,y:.44,spread:.07,r:.08,a:.78,n:28},
+    {x:.22,y:.56,spread:.07,r:.08,a:.78,n:28},{x:.30,y:.38,spread:.06,r:.07,a:.62,n:18},
+    {x:.30,y:.62,spread:.06,r:.07,a:.62,n:18},{x:.18,y:.50,spread:.07,r:.07,a:.55,n:16},
+    {x:.35,y:.48,spread:.07,r:.06,a:.42,n:14},{x:.40,y:.42,spread:.06,r:.06,a:.32,n:10},
+    {x:.40,y:.58,spread:.06,r:.06,a:.32,n:10},
+  ]},
+  POR:{seed:99,centers:[
+    {x:.08,y:.50,spread:.06,r:.09,a:.95,n:40},{x:.10,y:.42,spread:.05,r:.07,a:.80,n:22},
+    {x:.10,y:.58,spread:.05,r:.07,a:.80,n:22},{x:.14,y:.50,spread:.07,r:.08,a:.70,n:25},
+    {x:.18,y:.44,spread:.05,r:.06,a:.50,n:14},{x:.18,y:.56,spread:.05,r:.06,a:.50,n:14},
+    {x:.22,y:.50,spread:.06,r:.06,a:.38,n:12},
+  ]},
+  LD:{seed:33,centers:[
+    {x:.72,y:.82,spread:.09,r:.09,a:.92,n:40},{x:.68,y:.78,spread:.07,r:.08,a:.78,n:28},
+    {x:.58,y:.80,spread:.08,r:.08,a:.70,n:24},{x:.78,y:.72,spread:.06,r:.07,a:.62,n:18},
+    {x:.82,y:.65,spread:.05,r:.06,a:.52,n:14},{x:.65,y:.72,spread:.07,r:.07,a:.48,n:16},
+    {x:.50,y:.75,spread:.07,r:.06,a:.35,n:12},{x:.85,y:.80,spread:.05,r:.06,a:.40,n:12},
+  ]},
+  LI:{seed:66,centers:[
+    {x:.72,y:.18,spread:.09,r:.09,a:.92,n:40},{x:.68,y:.22,spread:.07,r:.08,a:.78,n:28},
+    {x:.58,y:.20,spread:.08,r:.08,a:.70,n:24},{x:.78,y:.28,spread:.06,r:.07,a:.62,n:18},
+    {x:.82,y:.35,spread:.05,r:.06,a:.52,n:14},{x:.65,y:.28,spread:.07,r:.07,a:.48,n:16},
+    {x:.50,y:.25,spread:.07,r:.06,a:.35,n:12},{x:.85,y:.20,spread:.05,r:.06,a:.40,n:12},
+  ]},
+}
+
+// Precomputar nubes
+Object.keys(HEATMAP_PROFILES).forEach(k=>{
+  const p=HEATMAP_PROFILES[k]
+  p.pts=genCloud(p.centers,p.seed)
+})
+
 function drawPlayerHeatmap(canvasId,pos,col){
   const canvas=document.getElementById(canvasId)
   if(!canvas)return
   const dpr=window.devicePixelRatio||1
-  const rect=canvas.getBoundingClientRect()
-  const PW=Math.round((rect.width||540)*dpr),PH=Math.round((canvas.offsetHeight||320)*dpr)
-  canvas.width=PW;canvas.height=PH
+  const W=canvas.offsetWidth||540,H=canvas.offsetHeight||320
+  canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr)
   const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr)
-  const RPW=PW/dpr,RPH=PH/dpr
-  const PX=18,PY=12,PW2=RPW-36,PH2=RPH-24
-  const COLS=28,ROWS=40
-  const CW=PW2/COLS,CH=PH2/ROWS
-  const GAP=1
-  const profiles={
-    POR:(c,r)=>{
-      const rowN=r/ROWS,dist=Math.abs(c-COLS/2+.5)/(COLS/2)
-      if(rowN<.12)return(1-rowN/.12*.25)*(1-dist*.55)
-      if(rowN<.25)return(.75-(rowN-.12)/.13*.5)*(1-dist*.75)
-      if(rowN<.38)return(.22-(rowN-.25)/.13*.18)*(1-dist)
-      return 0
-    },
-    DEF:(c,r)=>{
-      const rowN=r/ROWS,dist=Math.abs(c-COLS/2+.5)/(COLS/2)
-      if(rowN<.10)return .12*(1-dist*.5)
-      if(rowN<.32){const t=(rowN-.10)/.22;const pk=rowN<.22?t/.54:1-(t-.54)/.46;return Math.min(1,pk*.88*(dist>.42?1.18:1)*(1-dist*.08))}
-      if(rowN<.52)return(.52-(rowN-.32)/.20*.38)*(1-dist*.28)
-      return Math.max(0,.07*(1-(rowN-.52)/.48))
-    },
-    DEL:(c,r)=>{
-      const rowN=r/ROWS,dist=Math.abs(c-COLS/2+.5)/(COLS/2)
-      if(rowN>.90)return(.45+(rowN-.90)/.10*.3)*(1-dist*.48)
-      if(rowN>.74)return Math.min(1,(rowN-.74)/.16*1.15)*(1-dist*.42)
-      if(rowN>.58)return(rowN-.58)/.16*.58*(1-dist*.58)
-      if(rowN>.40)return Math.max(0,.18*(rowN-.40)/.18*(1-dist))
-      return 0
-    },
-    MED:(c,r)=>{
-      const rowN=r/ROWS,dist=Math.abs(c-COLS/2+.5)/(COLS/2)
-      if(rowN<.08||rowN>.92)return Math.max(0,.08-dist*.08)
-      const base=Math.max(0,1-Math.abs(rowN-.5)/.36)
-      return Math.min(1,base*.92*(dist<.28?1.18:1)*(dist>.62?.48:1))
-    },
-    LD:(c,r)=>{
-      const colN=c/COLS,rowN=r/ROWS,rightI=Math.max(0,(colN-.58)/.42),isRight=colN>.58
-      if(rowN>.74)return(isRight?.96*rightI:Math.max(0,.32-colN*.42))*(.68+(rowN-.74)/.26*.32)
-      if(rowN>.54)return isRight?(.52+(rowN-.54)/.20*.42)*rightI:Math.max(0,.18-colN*.28)
-      if(rowN>.36)return isRight?(.22+(rowN-.36)/.18*.18)*rightI*.88:0
-      if(rowN>.18)return isRight?rightI*.28*(rowN-.18)/.18:0
-      return isRight&&colN>.82?rightI*.10*((.18-rowN)/.18):0
-    },
-    LI:(c,r)=>{
-      const colN=c/COLS,rowN=r/ROWS,leftI=Math.max(0,(.42-colN)/.42),isLeft=colN<.42
-      if(rowN>.74)return(isLeft?.96*leftI:Math.max(0,.32-(1-colN)*.42))*(.68+(rowN-.74)/.26*.32)
-      if(rowN>.54)return isLeft?(.52+(rowN-.54)/.20*.42)*leftI:Math.max(0,.18-(1-colN)*.28)
-      if(rowN>.36)return isLeft?(.22+(rowN-.36)/.18*.18)*leftI*.88:0
-      if(rowN>.18)return isLeft?leftI*.28*(rowN-.18)/.18:0
-      return isLeft&&colN<.18?leftI*.10*((.18-rowN)/.18):0
-    }
-  }
+  const PX=16,PY=12,PW=W-32,PH=H-24
   const posMap={'POR':'POR','GK':'POR','DEF':'DEF','CB':'DEF','DC':'DEF','CAR':'DEF','LD':'LD','RB':'LD','RD':'LD','LAD':'LD','LI':'LI','LB':'LI','LW':'LI','LAI':'LI','MED':'MED','MC':'MED','MF':'MED','CM':'MED','DM':'MED','AM':'MED','MCO':'MED','MDC':'MED','DEL':'DEL','FW':'DEL','ST':'DEL','CF':'DEL','SS':'DEL','EI':'DEL','ED':'DEL'}
-  const profileKey=posMap[(pos||'').toUpperCase()]||'MED'
-  const fn=profiles[profileKey]
-  ctx.clearRect(0,0,RPW,RPH)
-  for(let i=0;i<10;i++){ctx.fillStyle=i%2===0?'#0d1f0d':'#0a1a0a';ctx.fillRect(PX,PY+i*(PH2/10),PW2,PH2/10)}
-  const stops=[[0,[10,18,45]],[.12,[8,55,110]],[.28,[8,115,175]],[.44,[18,175,155]],[.60,[175,205,25]],[.75,[228,125,8]],[.88,[218,48,8]],[1,[195,8,8]]]
+  const pk=posMap[(pos||'').toUpperCase()]||'MED'
+  const profile=HEATMAP_PROFILES[pk]||HEATMAP_PROFILES.DEL
+
+  // Paleta verde→amarillo→naranja→rojo (estilo Messi)
+  const STOPS=[[0,[90,180,90,0]],[.08,[200,230,60,.25]],[.18,[255,240,0,.52]],[.32,[255,180,0,.68]],[.48,[255,100,0,.80]],[.64,[220,30,0,.88]],[.80,[170,0,0,.93]],[1,[110,0,0,.97]]]
   function heatRGB(v){
-    let lo=stops[0],hi=stops[stops.length-1]
-    for(let i=0;i<stops.length-1;i++){if(v>=stops[i][0]&&v<=stops[i+1][0]){lo=stops[i];hi=stops[i+1];break}}
+    let lo=STOPS[0],hi=STOPS[STOPS.length-1]
+    for(let i=0;i<STOPS.length-1;i++){if(v>=STOPS[i][0]&&v<=STOPS[i+1][0]){lo=STOPS[i];hi=STOPS[i+1];break}}
     const t=(v-lo[0])/(hi[0]-lo[0]+.0001)
-    return lo[1].map((a,i)=>Math.round(a+(hi[1][i]-a)*t))
+    return lo[1].map((a,i)=>lo[1][i]+(hi[1][i]-lo[1][i])*t)
   }
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      const v=fn(c,r)
-      const x=PX+c*CW,y=PY+r*CH
-      if(v<.008){ctx.fillStyle='rgba(0,0,0,0)';continue}
-      const rgb=heatRGB(v)
-      const alpha=Math.min(.92,v*.88+.08)
-      ctx.fillStyle=`rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`
-      ctx.fillRect(x+GAP,y+GAP,CW-GAP*2,CH-GAP*2)
-    }
-  }
-  ctx.strokeStyle='#2a5a2a';ctx.lineWidth=1
-  ctx.strokeRect(PX,PY,PW2,PH2)
-  ctx.beginPath();ctx.moveTo(PX,PY+PH2/2);ctx.lineTo(PX+PW2,PY+PH2/2);ctx.stroke()
-  ctx.beginPath();ctx.arc(PX+PW2/2,PY+PH2/2,PH2*.08,0,Math.PI*2);ctx.stroke()
-  const paW=PW2*.52,paH=PH2*.22,paX=PX+(PW2-paW)/2
-  ctx.strokeRect(paX,PY,paW,paH);ctx.strokeRect(paX,PY+PH2-paH,paW,paH)
-  const saW=PW2*.26,saH=PH2*.10,saX=PX+(PW2-saW)/2
-  ctx.strokeRect(saX,PY,saW,saH);ctx.strokeRect(saX,PY+PH2-saH,saW,saH)
-  ctx.fillStyle='#2a5a2a';ctx.fillRect(PX+(PW2-PW2*.13)/2,PY-5,PW2*.13,5);ctx.fillRect(PX+(PW2-PW2*.13)/2,PY+PH2,PW2*.13,5)
-  const labelMap={POR:'portero · área propia',DEF:'defensa central · zona baja',DEL:'delantero · área rival',MED:'mediocampista · zona media',LD:'lateral derecho · banda derecha',LI:'lateral izquierdo · banda izquierda'}
-  ctx.fillStyle='rgba(0,0,0,.65)';ctx.fillRect(PX+2,PY+PH2-17,PW2-4,15)
-  ctx.fillStyle=col||'#22c55e';ctx.font='9px monospace';ctx.textAlign='center'
-  ctx.fillText((labelMap[profileKey]||profileKey).toUpperCase(),PX+PW2/2,PY+PH2-6)
+
+  // Fondo verde
+  ctx.fillStyle='#5db85d'
+  ctx.fillRect(0,0,W,H)
+  for(let i=0;i<8;i++){ctx.fillStyle=i%2===0?'rgba(0,0,0,.035)':'rgba(0,0,0,0)';ctx.fillRect(PX,PY+i*(PH/8),PW,PH/8)}
+
+  // Puntos gaussianos densos
+  profile.pts.forEach(pt=>{
+    const x=PX+pt.x*PW,y=PY+pt.y*PH
+    const r=pt.r*Math.min(PW,PH)*1.55
+    const [cr,cg,cb,ca]=heatRGB(Math.min(1,pt.a))
+    const grad=ctx.createRadialGradient(x,y,0,x,y,r)
+    grad.addColorStop(0,   `rgba(${Math.round(cr)},${Math.round(cg)},${Math.round(cb)},${Math.min(.78,ca*.78).toFixed(3)})`)
+    grad.addColorStop(.28, `rgba(${Math.round(cr)},${Math.round(cg)},${Math.round(cb)},${Math.min(.48,ca*.45).toFixed(3)})`)
+    grad.addColorStop(.58, `rgba(${Math.round(cr)},${Math.round(cg)},${Math.round(cb)},${Math.min(.20,ca*.18).toFixed(3)})`)
+    grad.addColorStop(1,   'rgba(0,0,0,0)')
+    ctx.fillStyle=grad
+    ctx.fillRect(x-r,y-r,r*2,r*2)
+  })
+
+  // Líneas encima
+  ctx.strokeStyle='rgba(255,255,255,.82)';ctx.lineWidth=1.2
+  ctx.strokeRect(PX,PY,PW,PH)
+  ctx.beginPath();ctx.moveTo(PX+PW/2,PY);ctx.lineTo(PX+PW/2,PY+PH);ctx.stroke()
+  ctx.beginPath();ctx.arc(PX+PW/2,PY+PH/2,PH*.15,0,Math.PI*2);ctx.stroke()
+  ctx.beginPath();ctx.arc(PX+PW/2,PY+PH/2,3,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.75)';ctx.fill()
+  const aW=PW*.18,aH=PH*.58
+  ctx.strokeRect(PX,PY+(PH-aH)/2,aW,aH);ctx.strokeRect(PX+PW-aW,PY+(PH-aH)/2,aW,aH)
+  const sW=PW*.08,sH=PH*.32
+  ctx.strokeRect(PX,PY+(PH-sH)/2,sW,sH);ctx.strokeRect(PX+PW-sW,PY+(PH-sH)/2,sW,sH)
+  ctx.beginPath();ctx.arc(PX+aW,PY+PH/2,3,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.75)';ctx.fill()
+  ctx.beginPath();ctx.arc(PX+PW-aW,PY+PH/2,3,0,Math.PI*2);ctx.fill()
+  ctx.beginPath();ctx.arc(PX+aW,PY+PH/2,PH*.12,-Math.PI/2,Math.PI/2);ctx.stroke()
+  ctx.beginPath();ctx.arc(PX+PW-aW,PY+PH/2,PH*.12,Math.PI/2,-Math.PI/2);ctx.stroke()
+  ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='10px monospace';ctx.textAlign='center'
+  ctx.fillText('→ ataque',PX+PW/2,PY-3)
+  // Etiqueta posición
+  const lbl={DEL:'delantero · área rival',MED:'mediocampista · zona media',DEF:'defensa central · zona baja',POR:'portero · área propia',LD:'lateral derecho · banda derecha',LI:'lateral izquierdo · banda izquierda'}
+  ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(PX+2,PY+PH-16,PW-4,14)
+  ctx.fillStyle='rgba(255,255,255,.65)';ctx.font='8px monospace'
+  ctx.fillText((lbl[pk]||pk).toUpperCase(),PX+PW/2,PY+PH-5)
 }
 
 function drawPlayerRadar(canvasId,stats,pos,col){
@@ -1873,7 +1901,7 @@ function showPlayer(matchId,playerIdx,side){
     ${mby.length?`<div class="pstat-card" style="grid-column:1/-1"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem"><div class="pstat-title" style="margin-bottom:0">⏱️ Minutos por temporada</div><div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:900;color:${col}">${totalMin.toLocaleString()} min TOTAL</div></div><div class="chart-tabs"><button class="chart-tab active" id="tab-annual" onclick="switchMinTab('annual','${col}')">Por año</button><button class="chart-tab" id="tab-accum" onclick="switchMinTab('accum','${col}')">Acumulado</button></div><div class="player-chart-box player-minutes-chart"><canvas id="minutesChart"></canvas></div><div class="min-strip">${mby.map(d=>`<div class="min-chip"><span class="min-chip-yr">${d.y}</span><span class="min-chip-val" style="color:${col}">${d.m.toLocaleString()}'</span></div>`).join('')}</div></div>`:''}
     <div class="form-row-full" style="flex-direction:column;gap:.6rem">
       <div class="pstat-title" style="margin-bottom:0">🗺️ Zonas de influencia</div>
-      <canvas id="player-heatmap" width="540" height="320" style="width:100%;border-radius:6px;display:block;background:#0a1a0a"></canvas>
+      <canvas id="player-heatmap" width="540" height="340" style="width:100%;border-radius:6px;display:block"></canvas>
       <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">zonas típicas según posición · modelo heurístico</div>
     </div>
     <div class="form-row-full" style="flex-direction:column;gap:.6rem">
