@@ -1763,6 +1763,18 @@ function drawPlayerHeatmap(canvasId,pos,col){
   ctx.fillText((lbl[pk]||pk).toUpperCase(),PX+PW/2,PY+PH-5)
 }
 
+// True solo si EAFC tiene los 6 stats relevantes (segun POR vs campo) sin nulls.
+// Si falta cualquiera, no mostramos el radar.
+function hasFullEafcRadar(eafc, pos) {
+  if (!eafc) return false
+  const p = (pos || '').toUpperCase()
+  const isGK = (p === 'POR' || p === 'GK')
+  const keys = isGK
+    ? ['gk_diving','gk_handling','gk_kicking','gk_positioning','gk_reflexes','gk_speed']
+    : ['pace','shooting','passing','dribbling','defending','physic']
+  return keys.every(k => eafc[k] != null)
+}
+
 function drawPlayerRadar(canvasId,stats,pos,col,eafc){
   const canvas=document.getElementById(canvasId)
   if(!canvas)return
@@ -1948,12 +1960,13 @@ function showPlayer(matchId,playerIdx,side){
       <canvas id="player-heatmap" width="540" height="340" style="width:100%;border-radius:6px;display:block"></canvas>
       <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">zonas típicas según posición · modelo heurístico</div>
     </div>
+    ${hasFullEafcRadar(p.eafc, p.pos) ? `
     <div class="form-row-full" style="flex-direction:column;gap:.6rem">
       <div class="pstat-title" style="margin-bottom:0">📡 Radar de habilidades</div>
       <canvas id="player-radar" width="540" height="380" style="width:100%;border-radius:6px;display:block;background:#080c10"></canvas>
       <div id="player-radar-bars" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">atributos calculados desde stats reales · temporada 2024/25</div>
-    </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">atributos oficiales EA FC 26</div>
+    </div>` : ''}
   `
 
   showPage('player')
@@ -1969,13 +1982,10 @@ function showPlayer(matchId,playerIdx,side){
     }
     if(mby.length) buildMinutesChart(mby,mbyAcc,col,'annual')
     drawPlayerHeatmap('player-heatmap',p.pos,col)
-    drawPlayerRadar('player-radar',p.stats,p.pos,col,p.eafc)
-    // Actualizar subtitulo segun la fuente real usada por el radar
-    const radarFooter=document.querySelector('#player-radar')?.parentElement?.querySelector('div[style*="font-size:.62rem"]')
-    if (radarFooter) {
-      radarFooter.textContent = drawPlayerRadar._lastSource === 'eafc26'
-        ? 'atributos oficiales EA FC 26'
-        : 'atributos calculados desde stats reales · temporada 2024/25'
+    // Radar solo si tenemos los 6 stats EAFC completos (sino el bloque ya no
+    // se renderea, no hace falta dibujar nada).
+    if (document.getElementById('player-radar')) {
+      drawPlayerRadar('player-radar',p.stats,p.pos,col,p.eafc)
     }
   },50)
 }
