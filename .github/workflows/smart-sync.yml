@@ -86,6 +86,19 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python -m src.ingest_match_stats || echo "[stats] fallo no critico, sigue el sync"
 
+      - name: Sync fixture Mundial 2026 (selecciones FIFA, liga_id=7)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+        run: python -m src.ingest_wc2026 || echo "[wc2026] fallo no critico, sigue el sync"
+
+      - name: Sync ranking Elo selecciones (eloratings.net)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.ingest_elo_selecciones || echo "[elo] fallo no critico"
+
       - name: Commit parquet actualizado (si hubo cambios)
         run: |
           git config user.name "github-actions[bot]"
