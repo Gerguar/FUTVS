@@ -21,6 +21,42 @@ from .supabase_writer import sb_get, sb_post, sb_patch
 LIGA_SELECCIONES = 7
 DEFAULT_TOP = 80
 
+# slug canonico -> codigo ISO2 (o ISO 3166-2 si es region) para flagcdn.com.
+# flagcdn URL: https://flagcdn.com/w160/<iso>.png (PNG ancho 160px, retina-ready).
+SLUG_TO_ISO: dict[str, str] = {
+    "argentina":"ar","brasil":"br","francia":"fr","espana":"es","alemania":"de",
+    "italia":"it","portugal":"pt","paises_bajos":"nl","belgica":"be","croacia":"hr",
+    "dinamarca":"dk","suiza":"ch","polonia":"pl","austria":"at","turquia":"tr",
+    "noruega":"no","suecia":"se","republica_checa":"cz","eslovaquia":"sk","serbia":"rs",
+    "rumania":"ro","grecia":"gr","ucrania":"ua","hungria":"hu","eslovenia":"si",
+    "albania":"al","georgia":"ge","finlandia":"fi","irlanda":"ie","israel":"il",
+    "bulgaria":"bg","islandia":"is","macedonia_norte":"mk","bosnia":"ba",
+    # Reino Unido subdivisiones (flagcdn soporta gb-eng, gb-sct, gb-wls, gb-nir)
+    "inglaterra":"gb-eng","escocia":"gb-sct","gales":"gb-wls","irlanda_norte":"gb-nir",
+    # CONMEBOL
+    "uruguay":"uy","colombia":"co","ecuador":"ec","paraguay":"py","venezuela":"ve",
+    "bolivia":"bo","peru":"pe","chile":"cl",
+    # CONCACAF
+    "estados_unidos":"us","canada":"ca","mexico":"mx","panama":"pa","costa_rica":"cr",
+    "honduras":"hn","jamaica":"jm","curazao":"cw","haiti":"ht","el_salvador":"sv",
+    # AFC
+    "japon":"jp","corea_sur":"kr","australia":"au","iran":"ir","arabia_saudita":"sa",
+    "irak":"iq","qatar":"qa","uzbekistan":"uz","jordania":"jo","emiratos_arabes":"ae",
+    "china":"cn","oman":"om",
+    # CAF
+    "marruecos":"ma","senegal":"sn","egipto":"eg","argelia":"dz","ghana":"gh",
+    "nigeria":"ng","costa_marfil":"ci","tunez":"tn","camerun":"cm","sudafrica":"za",
+    "mali":"ml","cabo_verde":"cv","rdc":"cd",
+    # OFC
+    "nueva_zelanda":"nz",
+}
+
+def flag_url(slug: str) -> str | None:
+    iso = SLUG_TO_ISO.get(slug)
+    if not iso:
+        return None
+    return f"https://flagcdn.com/w160/{iso}.png"
+
 # Colores oficiales aproximados por slug. Para slugs no listados se usa default gris.
 TEAM_COLORS: dict[str, tuple[str, str]] = {
     "argentina":       ("#75AADB", "#FFFFFF"),
@@ -114,6 +150,7 @@ def main() -> None:
             "pais": "Internacional",
             "color_prim": col_p,
             "color_sec": col_s,
+            "escudo_url": flag_url(s["slug"]),  # bandera del pais via flagcdn.com
             "elo_externo": s["elo"],
             "elo_ranking": s["ranking"],
             "elo_actualizado_at": s["ultima_actualizacion"],
@@ -149,7 +186,7 @@ def main() -> None:
             print(f"  ! error insert chunk {i}: {e}")
     print(f"[seed] insertadas {inserted} selecciones en equipos")
 
-    # Patch existentes (solo Elo)
+    # Patch existentes (Elo + bandera si no estaba)
     patched = 0
     for eid, payload in a_actualizar:
         patch_data = {
@@ -157,12 +194,14 @@ def main() -> None:
             "elo_ranking": payload["elo_ranking"],
             "elo_actualizado_at": payload["elo_actualizado_at"],
         }
+        if payload.get("escudo_url"):
+            patch_data["escudo_url"] = payload["escudo_url"]
         try:
             sb_patch(f"equipos?id=eq.{eid}", patch_data)
             patched += 1
         except Exception as e:
             print(f"  ! error patch id={eid}: {e}")
-    print(f"[seed] actualizado Elo en {patched} selecciones ya existentes")
+    print(f"[seed] actualizado Elo+bandera en {patched} selecciones ya existentes")
 
 
 if __name__ == "__main__":

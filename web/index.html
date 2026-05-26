@@ -32,6 +32,11 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .filters{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;padding:1.2rem 1rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .filter-btn{padding:7px 18px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.82rem;font-weight:700;transition:all .2s;font-family:'Inter',sans-serif}
 .filter-btn.active,.filter-btn:hover{background:var(--green);border-color:var(--green);color:#080a0c}
+/* Filtro destacado del Mundial 2026 — color dorado tipo trofeo, separado del resto */
+.filter-btn-mundial{margin-left:auto;border:1px solid #d4a017;color:#e6b94c;background:linear-gradient(135deg,rgba(212,160,23,.08),rgba(212,160,23,.04))}
+.filter-btn-mundial:hover{background:linear-gradient(135deg,#d4a017,#b8870b);border-color:#d4a017;color:#1a1408}
+.filter-btn-mundial.active{background:linear-gradient(135deg,#f0c44f,#d4a017);border-color:#f0c44f;color:#1a1408;box-shadow:0 0 12px rgba(212,160,23,.4)}
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}
 .matches-grid{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 3rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;position:relative;z-index:1;width:100%}
 /* Layout del home con sidebar flotante a la izquierda */
 .home-main{max-width:1380px;margin:0 auto;display:grid;grid-template-columns:160px 1fr;gap:1.6rem;padding:.5rem 1.5rem 0 .25rem;position:relative;z-index:1}
@@ -696,6 +701,7 @@ button,a{touch-action:manipulation}
     <button class="filter-btn" onclick="filterMatches('laliga',this)">La Liga</button>
     <button class="filter-btn" onclick="filterMatches('premier',this)">Premier League</button>
     <button class="filter-btn" onclick="filterMatches('seriea',this)">Serie A</button>
+    <button class="filter-btn filter-btn-mundial" onclick="filterMatches('mundial',this)">🏆 Mundial 2026</button>
   </div>
   <div class="home-main">
     <aside class="stats-sidebar">
@@ -921,7 +927,8 @@ async function sb(path) {
 const LEAGUE_KEYS = {
   'Champions League':'champions','La Liga':'laliga',
   'Premier League':'premier','Serie A':'seriea',
-  'Bundesliga':'bundesliga','Ligue 1':'ligue1'
+  'Bundesliga':'bundesliga','Ligue 1':'ligue1',
+  'Selecciones FIFA':'mundial'
 }
 
 function formatDate(iso) {
