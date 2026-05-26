@@ -1045,6 +1045,21 @@ function transformJugador(j) {
   return {
     name: j.nombre, pos: j.posicion, rating: j.rating,
     minutesByYear: mby, market,
+    // Atributos oficiales EA FC 26 (smallint 0-99 o null si no matcheo en CSV).
+    eafc: {
+      pace:      j.pace,
+      shooting:  j.shooting,
+      passing:   j.passing,
+      dribbling: j.dribbling,
+      defending: j.defending,
+      physic:    j.physic,
+      gk_diving:      j.gk_diving,
+      gk_handling:    j.gk_handling,
+      gk_kicking:     j.gk_kicking,
+      gk_positioning: j.gk_positioning,
+      gk_reflexes:    j.gk_reflexes,
+      gk_speed:       j.gk_speed,
+    },
     stats: {
       partidos: s.partidos||0, goles: s.goles||0, asistencias: s.asistencias||0,
       minutos: s.minutos||0, amarillas: s.amarillas||0, rojas: s.rojas||0,
@@ -1748,7 +1763,7 @@ function drawPlayerHeatmap(canvasId,pos,col){
   ctx.fillText((lbl[pk]||pk).toUpperCase(),PX+PW/2,PY+PH-5)
 }
 
-function drawPlayerRadar(canvasId,stats,pos,col){
+function drawPlayerRadar(canvasId,stats,pos,col,eafc){
   const canvas=document.getElementById(canvasId)
   if(!canvas)return
   const dpr=window.devicePixelRatio||1
@@ -1762,6 +1777,35 @@ function drawPlayerRadar(canvasId,stats,pos,col){
   const posMap={'POR':'POR','GK':'POR','DEF':'DEF','CB':'DEF','DC':'DEF','CAR':'DEF','LD':'DEF','RB':'DEF','LI':'DEF','LB':'DEF','LAD':'DEF','LAI':'DEF','MED':'MED','MC':'MED','MF':'MED','CM':'MED','DM':'MED','AM':'MED','MCO':'MED','MDC':'MED','DEL':'DEL','FW':'DEL','ST':'DEL','CF':'DEL','SS':'DEL','EI':'DEL','ED':'DEL'}
   const pk=posMap[(pos||'').toUpperCase()]||'MED'
   const s=stats
+  const isGK = pk==='POR'
+
+  // === EAFC FIRST: si el jugador tiene atributos oficiales EA FC 26, los usamos.
+  // (Arquero: 6 stats de portero. Jugador de campo: PAC/SHO/PAS/DRI/DEF/PHY.)
+  let eafcAttrs = null
+  const nz = v => (v == null ? 0 : v)
+  if (eafc) {
+    if (isGK && eafc.gk_diving != null) {
+      eafcAttrs = [
+        {label:'Estirada',       val: nz(eafc.gk_diving),      col:'#3b82f6'},
+        {label:'Manos',          val: nz(eafc.gk_handling),    col:'#22c55e'},
+        {label:'Saque',          val: nz(eafc.gk_kicking),     col:'#f59e0b'},
+        {label:'Posicionamiento',val: nz(eafc.gk_positioning), col:'#a855f7'},
+        {label:'Reflejos',       val: nz(eafc.gk_reflexes),    col:'#ef4444'},
+        {label:'Velocidad',      val: nz(eafc.gk_speed),       col:'#6b7280'},
+      ]
+    } else if (!isGK && eafc.pace != null) {
+      eafcAttrs = [
+        {label:'Velocidad', val: nz(eafc.pace),      col:'#f59e0b'},
+        {label:'Tiro',      val: nz(eafc.shooting),  col:'#ef4444'},
+        {label:'Pase',      val: nz(eafc.passing),   col:'#3b82f6'},
+        {label:'Regate',    val: nz(eafc.dribbling), col:'#22c55e'},
+        {label:'Defensa',   val: nz(eafc.defending), col:'#6b7280'},
+        {label:'Físico',    val: nz(eafc.physic),    col:'#a855f7'},
+      ]
+    }
+  }
+  // Marca subtitulo segun fuente (lo lee renderRadarFooter mas abajo)
+  drawPlayerRadar._lastSource = eafcAttrs ? 'eafc26' : 'heuristico'
   const xg=parseFloat(s.xg)||0,xa=parseFloat(s.xa)||0,sh=parseInt(s.shots)||0
   const goles=parseInt(s.goles)||0,asist=parseInt(s.asistencias)||0
   const kp=parseInt(s.key_passes)||0,pj=parseInt(s.partidos)||0,min=parseInt(s.minutos)||0
@@ -1809,7 +1853,7 @@ function drawPlayerRadar(canvasId,stats,pos,col){
       {label:'Físico',    val:clamp(fitS*.6+appS*.4),               col:'#ef4444'},
     ]
   }
-  const attrs=profiles[pk]||profiles.MED
+  const attrs = eafcAttrs || profiles[pk] || profiles.MED
   const N=attrs.length,step=Math.PI*2/N,start=-Math.PI/2
   // Anillos
   for(let ring=RINGS;ring>=1;ring--){
@@ -1925,7 +1969,14 @@ function showPlayer(matchId,playerIdx,side){
     }
     if(mby.length) buildMinutesChart(mby,mbyAcc,col,'annual')
     drawPlayerHeatmap('player-heatmap',p.pos,col)
-    drawPlayerRadar('player-radar',p.stats,p.pos,col)
+    drawPlayerRadar('player-radar',p.stats,p.pos,col,p.eafc)
+    // Actualizar subtitulo segun la fuente real usada por el radar
+    const radarFooter=document.querySelector('#player-radar')?.parentElement?.querySelector('div[style*="font-size:.62rem"]')
+    if (radarFooter) {
+      radarFooter.textContent = drawPlayerRadar._lastSource === 'eafc26'
+        ? 'atributos oficiales EA FC 26'
+        : 'atributos calculados desde stats reales · temporada 2024/25'
+    }
   },50)
 }
 

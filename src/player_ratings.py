@@ -122,10 +122,56 @@ def load_eafc26_csv(source: str = EAFC26_CSV_URL) -> list[dict]:
         usecols=[
             "player_id", "short_name", "long_name", "overall", "potential",
             "club_name", "league_name", "age", "player_positions",
+            # 6 stats de jugador de campo
+            "pace", "shooting", "passing", "dribbling", "defending", "physic",
+            # 6 stats de arquero
+            "goalkeeping_diving", "goalkeeping_handling", "goalkeeping_kicking",
+            "goalkeeping_positioning", "goalkeeping_reflexes", "goalkeeping_speed",
         ],
         low_memory=False,
     )
     return df.to_dict("records")
+
+
+# Columnas EAFC -> columnas de la tabla `jugadores` en Supabase.
+_EAFC_ATTR_MAP = {
+    "pace":                    "pace",
+    "shooting":                "shooting",
+    "passing":                 "passing",
+    "dribbling":               "dribbling",
+    "defending":               "defending",
+    "physic":                  "physic",
+    "goalkeeping_diving":      "gk_diving",
+    "goalkeeping_handling":    "gk_handling",
+    "goalkeeping_kicking":     "gk_kicking",
+    "goalkeeping_positioning": "gk_positioning",
+    "goalkeeping_reflexes":    "gk_reflexes",
+    "goalkeeping_speed":       "gk_speed",
+}
+
+
+def _safe_smallint(value) -> int | None:
+    """Convierte un valor de pandas (puede ser NaN/None/str) a int o None."""
+    if value is None:
+        return None
+    try:
+        # pd.isna no esta importado aca; chequeo manual por NaN
+        if isinstance(value, float) and value != value:  # NaN
+            return None
+        v = int(round(float(value)))
+        if 0 <= v <= 99:
+            return v
+    except (TypeError, ValueError):
+        pass
+    return None
+
+
+def eafc_attributes_from_row(row: dict) -> dict:
+    """Devuelve {col_supabase: valor_int_or_None} listo para PATCH."""
+    out: dict = {}
+    for src_col, dst_col in _EAFC_ATTR_MAP.items():
+        out[dst_col] = _safe_smallint(row.get(src_col))
+    return out
 
 
 def build_eafc_index(rows: list[dict]) -> dict[str, list[dict]]:
@@ -138,7 +184,12 @@ def build_eafc_index(rows: list[dict]) -> dict[str, list[dict]]:
     return index
 
 
-def eafc_rating_from_index(player: dict, index: dict[str, list[dict]]) -> tuple[int | None, str]:
+def eafc_rating_from_index(player: dict, index: dict[str, list[dict]]) -> tuple[int | None, str, dict | None]:
+    """Devuelve (rating, reason, attrs).
+
+    `attrs` es dict con las 12 columnas EAFC traducidas a columnas de Supabase
+    (pace/shooting/.../gk_speed) o None si no hubo match.
+    """
     name = str(player.get("nombre") or "")
     keys = [norm_text(name)]
     parts = keys[0].split()
@@ -155,21 +206,22 @@ def eafc_rating_from_index(player: dict, index: dict[str, list[dict]]) -> tuple[
                 candidates.append(row)
                 seen_ids.add(rid)
     if not candidates:
-        return None, "not_found"
+        return None, "not_found", None
 
     local_team = ((player.get("equipo") or {}) or {}).get("nombre")
     team_hits = [row for row in candidates if team_matches(local_team, row.get("club_name"))]
     if team_hits:
         candidates = team_hits
     elif len(candidates) > 1:
-        return None, "team_mismatch"
+        return None, "team_mismatch", None
 
     # Si quedan varios, elegimos el mayor OVR: en duplicados suele ser la carta/base mas relevante.
     best = max(candidates, key=lambda r: _safe_num(r.get("overall")))
+    attrs = eafc_attributes_from_row(best)
     try:
-        return int(best["overall"]), "eafc26_csv"
+        return int(best["overall"]), "eafc26_csv", attrs
     except (TypeError, ValueError):
-        return None, "bad_ovr"
+        return None, "bad_ovr", None
 
 
 def fetch_eafc26_player(name: str, timeout: int = 20) -> dict | None:
@@ -373,6 +425,8 @@ def build_updates(season: str | None = None,
                   scan_limit: int | None = None) -> tuple[list[dict], dict]:
     players = paged_get(
         "jugadores?select=id,nombre,posicion,fecha_nac,rating,equipo_id,"
+        "pace,shooting,passing,dribbling,defending,physic,"
+        "gk_diving,gk_handling,gk_kicking,gk_positioning,gk_reflexes,gk_speed,"
         "equipo:equipos(nombre)&order=id"
     )
     if scan_limit:
@@ -406,13 +460,16 @@ def build_updates(season: str | None = None,
         "max_rating": 0,
     }
 
+    summary["attrs_filled"] = 0
     for player in players:
         stat = stats_by_player.get(int(player["id"]))
         ea_rating = None
         ea_reason = ""
+        ea_attrs: dict | None = None
         if prefer_eafc:
-            ea_rating, ea_reason = eafc_rating_from_index(player, ea_index)
+            ea_rating, ea_reason, ea_attrs = eafc_rating_from_index(player, ea_index)
             if ea_rating is None and eafc_api_fallback:
+                # API fallback no devuelve los 12 stats detallados, solo rating.
                 ea_rating, ea_reason = eafc_rating_for_player(
                     player, ea_cache, sleep_seconds=eafc_sleep
                 )
@@ -435,9 +492,20 @@ def build_updates(season: str | None = None,
 
         old_rating = player.get("rating")
         new_rating = breakdown.rating
+
+        # Check si los 12 stats EAFC ya estan iguales en Supabase -> no resync.
+        attrs_changed = False
+        if ea_attrs:
+            for col, new_val in ea_attrs.items():
+                if player.get(col) != new_val:
+                    attrs_changed = True
+                    break
+
         summary["min_rating"] = min(summary["min_rating"], new_rating)
         summary["max_rating"] = max(summary["max_rating"], new_rating)
-        if old_rating == new_rating:
+        if ea_attrs and any(v is not None for v in ea_attrs.values()):
+            summary["attrs_filled"] += 1
+        if old_rating == new_rating and not attrs_changed:
             summary["unchanged"] += 1
             continue
         summary["changed"] += 1
@@ -449,6 +517,7 @@ def build_updates(season: str | None = None,
             "rating": new_rating,
             "source": breakdown.source,
             "breakdown": breakdown,
+            "attrs": ea_attrs,  # None si no hubo match EAFC
         })
 
     if prefer_eafc:
@@ -463,8 +532,25 @@ def apply_updates(updates: list[dict], dry_run: bool,
     selected = updates[:limit]
     applied = 0
     if not dry_run:
+        # Separamos en dos grupos:
+        #  1) Updates con `attrs` (EAFC matcheado) -> PATCH individual incluyendo los 12 stats.
+        #  2) Updates sin `attrs` (fallback/stats) -> batch por rating (eficiente).
+        with_attrs = [u for u in selected if u.get("attrs")]
+        without_attrs = [u for u in selected if not u.get("attrs")]
+
+        # Grupo 1: PATCH individual por jugador (rating + 12 attrs).
+        for item in with_attrs:
+            payload = {"rating": int(item["rating"])}
+            payload.update({k: v for k, v in item["attrs"].items() if v is not None})
+            try:
+                sb_patch(f"jugadores?id=eq.{int(item['id'])}", payload)
+                applied += 1
+            except Exception as e:
+                print(f"  ! error PATCH jugador {item['id']}: {e}")
+
+        # Grupo 2: batch tradicional por rating.
         ids_by_rating: dict[int, list[int]] = {}
-        for item in selected:
+        for item in without_attrs:
             ids_by_rating.setdefault(int(item["rating"]), []).append(int(item["id"]))
         for rating, ids in sorted(ids_by_rating.items()):
             for i in range(0, len(ids), 200):
@@ -476,9 +562,14 @@ def apply_updates(updates: list[dict], dry_run: bool,
 
     for item in selected:
         if dry_run:
+            extra = ""
+            if item.get("attrs"):
+                pace = item["attrs"].get("pace")
+                shoot = item["attrs"].get("shooting")
+                extra = f" [+attrs: pace={pace} sho={shoot} ...]"
             print(
                 f"  [dry-run] jugador_id={item['id']} {item['nombre']}: "
-                f"{item['old_rating']} -> {item['rating']} ({item['source']})"
+                f"{item['old_rating']} -> {item['rating']} ({item['source']}){extra}"
             )
         applied += 1
     return applied
