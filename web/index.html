@@ -174,6 +174,33 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .factor-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
 /* Stats del partido finalizado: lista 3 columnas (valor local | label | valor visit). */
 .match-stats-table{display:flex;flex-direction:column;gap:.45rem;grid-column:1/-1;width:100%}
+/* Comparador de equipos */
+.comp-select{padding:.6rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.85rem;cursor:pointer;min-width:160px;text-align:center}
+.comp-select:focus{outline:none;border-color:var(--green)}
+.comp-header{display:grid;grid-template-columns:1fr 2fr 1fr;align-items:center;gap:.5rem;padding:.8rem .25rem;border-bottom:1px solid var(--border);margin-bottom:.4rem}
+.comp-team-header{display:flex;flex-direction:column;align-items:center;gap:.4rem;font-family:'JetBrains Mono',monospace}
+.comp-team-header img{width:48px;height:48px;object-fit:contain;border-radius:6px;background:#fff;padding:2px}
+.comp-team-header span{font-size:.78rem;font-weight:900;color:var(--text);letter-spacing:.4px}
+.comp-vs{text-align:center;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--faint);letter-spacing:1px}
+.comp-row{display:grid;grid-template-columns:1fr 2fr 1fr;align-items:center;gap:.5rem;padding:.5rem .25rem;border-bottom:1px solid rgba(255,255,255,.03)}
+.comp-val{justify-self:center;display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:32px;border-radius:18px;padding:0 14px;font-family:'JetBrains Mono',monospace;font-size:.92rem;font-weight:700;color:var(--text)}
+.comp-val.winner{background:rgba(86,184,124,.18);color:#7fc99a}
+.comp-val.loser{color:var(--muted);opacity:.7}
+.comp-label{text-align:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:.4px}
+.comp-label-pts{font-size:.6rem;color:var(--faint);margin-left:.4rem}
+.comp-winner-banner{margin-top:1.6rem;padding:1.4rem;border-radius:14px;background:linear-gradient(135deg,rgba(212,160,23,.18),rgba(212,160,23,.06));border:2px solid #d4a017;text-align:center;font-family:'Inter',sans-serif}
+.comp-winner-banner .cwb-trophy{font-size:2.2rem}
+.comp-winner-banner .cwb-name{font-size:1.4rem;font-weight:900;color:#f0c44f;margin:.4rem 0;letter-spacing:.5px}
+.comp-winner-banner .cwb-score{font-size:.85rem;color:#d4a017;font-family:'JetBrains Mono',monospace}
+.comp-winner-banner.tie{background:linear-gradient(135deg,rgba(150,150,150,.18),rgba(150,150,150,.06));border-color:#888}
+.comp-winner-banner.tie .cwb-name{color:#bbb}
+@media(max-width:540px){
+  .comp-row{grid-template-columns:64px 1fr 64px;gap:.4rem;padding:.4rem .15rem}
+  .comp-val{min-width:48px;height:28px;font-size:.82rem;padding:0 10px}
+  .comp-label{font-size:.66rem}
+  .comp-team-header img{width:36px;height:36px}
+  .comp-team-header span{font-size:.7rem}
+}
 .match-stats-row{display:grid;grid-template-columns:1fr 2fr 1fr;align-items:center;gap:.5rem;padding:.3rem .25rem}
 .ms-val{display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:30px;border-radius:18px;padding:0 14px;font-family:'JetBrains Mono',monospace;font-size:.86rem;font-weight:700;color:var(--text)}
 .ms-val.ms-home{justify-self:end}
@@ -684,6 +711,7 @@ button,a{touch-action:manipulation}
   <div class="nav-links">
     <a href="#" onclick="showPage('home');return false">Inicio</a>
     <a href="#" onclick="currentMatch&&showPage('detail');return false">Partido</a>
+    <a href="#" onclick="openComparador();return false">⚖️ Comparador</a>
     <a href="#">Estadísticas</a>
   </div>
   <div class="live-badge"><div class="live-dot"></div>Temporada <span id="current-season">…</span></div>
@@ -902,6 +930,38 @@ button,a{touch-action:manipulation}
     </div>
     <div class="player-banner" id="player-banner"></div>
     <div class="player-stats-grid" id="player-stats-grid"></div>
+  </div>
+</div>
+
+<!-- COMPARADOR DE EQUIPOS -->
+<div id="comparador" class="page">
+  <div class="player-page" style="max-width:980px">
+    <div style="display:flex;gap:.6rem;margin-bottom:1.2rem">
+      <button class="back-btn" onclick="showPage('home')">← Inicio</button>
+    </div>
+    <h1 style="font-family:'Inter',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:.5px;margin:0 0 .3rem;text-align:center">⚖️ COMPARADOR DE EQUIPOS</h1>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-align:center;margin:0 0 1.8rem">solo se comparan equipos de la misma liga · selecciones entre sí</p>
+
+    <!-- Selector -->
+    <div class="comp-mode" style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem">
+      <button class="filter-btn active" id="comp-mode-clubes" onclick="setCompMode('clubes')">Clubes (misma liga)</button>
+      <button class="filter-btn" id="comp-mode-selecciones" onclick="setCompMode('selecciones')">Selecciones</button>
+    </div>
+
+    <!-- Filtros de liga (solo en modo clubes) -->
+    <div id="comp-liga-row" style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem">
+      <select id="comp-liga" class="comp-select" onchange="populateCompTeams()"></select>
+    </div>
+
+    <!-- Selectores de equipos -->
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;margin-bottom:1.8rem">
+      <select id="comp-team-a" class="comp-select" onchange="renderComparador()"></select>
+      <div style="font-family:'JetBrains Mono',monospace;font-weight:900;color:var(--muted);font-size:1rem">VS</div>
+      <select id="comp-team-b" class="comp-select" onchange="renderComparador()"></select>
+    </div>
+
+    <!-- Tabla comparativa -->
+    <div id="comp-result"></div>
   </div>
 </div>
 
@@ -2098,6 +2158,323 @@ try {
   function frame(ts){resize();ctx.clearRect(0,0,W,H);drawGrid();drawField();waves.forEach(w=>drawWave(w,ts));drawParticles();requestAnimationFrame(frame)}
   requestAnimationFrame(frame)
 })()
+
+// ──────────────────────────── COMPARADOR DE EQUIPOS ────────────────────────────
+// Estado del comparador
+let _comp = {
+  mode: 'clubes',        // 'clubes' | 'selecciones'
+  ligaSel: null,
+  equipos: [],           // lista de todos los equipos relevantes
+  meta: {},              // {equipo_id: {ano_fundacion,...}}
+  finales: [],           // [{equipo_a_id, equipo_b_id, ganador_id, ...}]
+  partidos: [],          // [{equipo_local_id, equipo_visitante_id, goles_local, goles_visitante}]
+  loaded: false,
+}
+
+// Ligas disponibles en el comparador (ids -> nombre)
+const COMP_LIGAS = {
+  2: 'La Liga',
+  3: 'Premier League',
+  4: 'Serie A',
+  5: 'Bundesliga',
+  6: 'Ligue 1',
+}
+
+// Pesos del sistema ponderado
+const COMP_WEIGHTS = {
+  mundialClubes: 5, mundialesSel: 5,
+  finalMundial: 3, continental: 3,
+  liga: 2,           // cada 5 ligas
+  copa: 1,           // cada 5 copas nacionales
+  antiguedad: 1,     // cada 25 años de diferencia
+  estadio: 1,        // >10k diferencia
+  socios: 1,         // >50k diferencia
+  apariciones: 1,    // cada 5 apariciones Mundial
+  descenso: -2,      // cada descenso (penaliza)
+  h2hVictoria: 1,    // por victoria
+  h2hGoleada: 2,     // por goleada historica (4+ gol dif)
+  h2hFinal: 3,       // por final ganada al rival
+}
+
+async function openComparador() {
+  showPage('comparador')
+  if (_comp.loaded) {
+    populateCompLigas()
+    populateCompTeams()
+    return
+  }
+  document.getElementById('comp-result').innerHTML = `<div class="loader" style="color:var(--faint);text-align:center">Cargando datos...</div>`
+  try {
+    const [equipos, meta, finales, partidos] = await Promise.all([
+      sb('equipos?select=id,nombre,abreviacion,escudo_url,color_prim,color_sec,liga_id&liga_id=in.(2,3,4,5,6,7)&order=nombre'),
+      sb('equipo_meta?select=*'),
+      sb('finales_historicas?select=*'),
+      sb('partidos?select=equipo_local_id,equipo_visitante_id,goles_local,goles_visitante,estado&estado=eq.finalizado'),
+    ])
+    _comp.equipos = equipos
+    _comp.meta = {}
+    meta.forEach(m => _comp.meta[m.equipo_id] = m)
+    _comp.finales = finales
+    _comp.partidos = partidos
+    _comp.loaded = true
+    populateCompLigas()
+    populateCompTeams()
+  } catch (e) {
+    document.getElementById('comp-result').innerHTML = `<div style="color:var(--red)">Error cargando datos: ${e.message}</div>`
+  }
+}
+
+function populateCompLigas() {
+  const sel = document.getElementById('comp-liga')
+  if (_comp.mode !== 'clubes') return
+  sel.innerHTML = Object.entries(COMP_LIGAS).map(([id,n]) => `<option value="${id}">${n}</option>`).join('')
+  if (!_comp.ligaSel) _comp.ligaSel = '2'
+  sel.value = _comp.ligaSel
+}
+
+function setCompMode(mode) {
+  _comp.mode = mode
+  document.getElementById('comp-mode-clubes').classList.toggle('active', mode === 'clubes')
+  document.getElementById('comp-mode-selecciones').classList.toggle('active', mode === 'selecciones')
+  document.getElementById('comp-liga-row').style.display = (mode === 'clubes') ? '' : 'none'
+  if (mode === 'clubes') populateCompLigas()
+  populateCompTeams()
+}
+
+function populateCompTeams() {
+  const ligaSel = document.getElementById('comp-liga')
+  _comp.ligaSel = ligaSel.value
+  let lista
+  if (_comp.mode === 'clubes') {
+    const lid = parseInt(_comp.ligaSel)
+    lista = _comp.equipos.filter(e => e.liga_id === lid)
+  } else {
+    lista = _comp.equipos.filter(e => e.liga_id === 7)
+  }
+  const a = document.getElementById('comp-team-a')
+  const b = document.getElementById('comp-team-b')
+  const opts = lista.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('')
+  a.innerHTML = opts
+  b.innerHTML = opts
+  // Default: primer y segundo equipo distintos
+  if (lista.length >= 2) {
+    a.selectedIndex = 0
+    b.selectedIndex = 1
+  }
+  renderComparador()
+}
+
+// Computa H2H entre 2 equipos: {victoriasA, victoriasB, empates, goleadasA, goleadasB}
+function computeH2H(idA, idB) {
+  let vA=0, vB=0, e=0, gA=0, gB=0
+  for (const p of _comp.partidos) {
+    let aIsHome, gh, gv
+    if (p.equipo_local_id === idA && p.equipo_visitante_id === idB) { aIsHome=true; gh=p.goles_local; gv=p.goles_visitante }
+    else if (p.equipo_local_id === idB && p.equipo_visitante_id === idA) { aIsHome=false; gh=p.goles_local; gv=p.goles_visitante }
+    else continue
+    if (gh == null || gv == null) continue
+    const dif = Math.abs(gh - gv)
+    if (gh > gv) { aIsHome ? vA++ : vB++ ; if (dif >= 4) (aIsHome ? gA++ : gB++) }
+    else if (gv > gh) { aIsHome ? vB++ : vA++ ; if (dif >= 4) (aIsHome ? gB++ : gA++) }
+    else e++
+  }
+  return { vA, vB, e, gA, gB }
+}
+
+// Computa finales H2H ganadas por cada uno
+function computeFinalesH2H(idA, idB) {
+  let fA=0, fB=0
+  for (const f of _comp.finales) {
+    const involucra = (f.equipo_a_id === idA && f.equipo_b_id === idB) ||
+                       (f.equipo_a_id === idB && f.equipo_b_id === idA)
+    if (!involucra) continue
+    if (f.ganador_id === idA) fA++
+    else if (f.ganador_id === idB) fB++
+  }
+  return { fA, fB }
+}
+
+function renderComparador() {
+  const idA = parseInt(document.getElementById('comp-team-a').value)
+  const idB = parseInt(document.getElementById('comp-team-b').value)
+  if (!idA || !idB || idA === idB) {
+    document.getElementById('comp-result').innerHTML = `<div style="text-align:center;color:var(--faint);font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:2rem">Elegí dos equipos distintos para comparar</div>`
+    return
+  }
+  const eqA = _comp.equipos.find(e => e.id === idA)
+  const eqB = _comp.equipos.find(e => e.id === idB)
+  const mA = _comp.meta[idA] || {}
+  const mB = _comp.meta[idB] || {}
+  const h2h = computeH2H(idA, idB)
+  const finalesH2H = computeFinalesH2H(idA, idB)
+
+  // Filas: cada una con {label, valA, valB, winsA (bool|null), points}
+  // null = no comparable (sin datos) -> no asigna puntos a nadie
+  const rows = []
+
+  // Helper para comparar numericos: gana el mayor (o el menor si lowerIsBetter)
+  const compNum = (vA, vB, label, weight, lowerIsBetter=false, hasDatos=true) => {
+    if (!hasDatos || vA == null || vB == null) {
+      rows.push({label, valA: vA ?? '—', valB: vB ?? '—', winsA: null, points: 0})
+      return
+    }
+    if (vA === vB) {
+      rows.push({label, valA: vA, valB: vB, winsA: null, points: 0})
+      return
+    }
+    const aGana = lowerIsBetter ? vA < vB : vA > vB
+    rows.push({label, valA: vA, valB: vB, winsA: aGana, points: weight})
+  }
+
+  // Detectar si es comparador de selecciones (ambos liga 7)
+  const isSel = (eqA.liga_id === 7 && eqB.liga_id === 7)
+
+  // ── Filas comunes (institucional) ──
+  // Antiguedad: cada 25 años de diferencia = +1
+  if (mA.ano_fundacion != null && mB.ano_fundacion != null) {
+    const dif = Math.abs(mA.ano_fundacion - mB.ano_fundacion)
+    const aGana = mA.ano_fundacion < mB.ano_fundacion  // mas antiguo = menor año
+    const pts = Math.floor(dif / 25) || (dif > 0 ? 1 : 0)
+    rows.push({label:'Año de fundación', valA: mA.ano_fundacion, valB: mB.ano_fundacion, winsA: mA.ano_fundacion === mB.ano_fundacion ? null : aGana, points: pts})
+  } else rows.push({label:'Año de fundación', valA:'—', valB:'—', winsA:null, points:0})
+
+  // Estadio
+  if (mA.capacidad_estadio != null && mB.capacidad_estadio != null) {
+    if (Math.abs(mA.capacidad_estadio - mB.capacidad_estadio) > 10000) {
+      rows.push({label:'Capacidad de estadio', valA: mA.capacidad_estadio.toLocaleString(), valB: mB.capacidad_estadio.toLocaleString(), winsA: mA.capacidad_estadio > mB.capacidad_estadio, points: COMP_WEIGHTS.estadio})
+    } else {
+      rows.push({label:'Capacidad de estadio', valA: (mA.capacidad_estadio||'—').toLocaleString?.()||'—', valB: (mB.capacidad_estadio||'—').toLocaleString?.()||'—', winsA: null, points: 0})
+    }
+  }
+  // Socios
+  if (mA.socios != null && mB.socios != null) {
+    if (Math.abs(mA.socios - mB.socios) > 50000) {
+      rows.push({label:'Socios', valA: mA.socios.toLocaleString(), valB: mB.socios.toLocaleString(), winsA: mA.socios > mB.socios, points: COMP_WEIGHTS.socios})
+    } else {
+      rows.push({label:'Socios', valA: mA.socios?.toLocaleString()||'—', valB: mB.socios?.toLocaleString()||'—', winsA: null, points: 0})
+    }
+  }
+
+  if (!isSel) {
+    // ── Variables de clubes ──
+    // Liga (cada 5 títulos -> +2 al ganador)
+    if (mA.titulos_liga != null || mB.titulos_liga != null) {
+      const a = mA.titulos_liga ?? 0, b = mB.titulos_liga ?? 0
+      const dif = Math.abs(a - b)
+      const pts = Math.max(2, Math.floor(dif / 5) * COMP_WEIGHTS.liga)
+      const winsA = a === b ? null : a > b
+      rows.push({label:'Títulos de liga', valA: a, valB: b, winsA, points: a === b ? 0 : pts})
+    }
+    // Copa nacional
+    if (mA.titulos_copa_nacional != null || mB.titulos_copa_nacional != null) {
+      const a = mA.titulos_copa_nacional ?? 0, b = mB.titulos_copa_nacional ?? 0
+      const winsA = a === b ? null : a > b
+      const pts = a === b ? 0 : Math.max(1, Math.floor(Math.abs(a-b)/5))
+      rows.push({label:'Copas nacionales', valA: a, valB: b, winsA, points: pts})
+    }
+    // Continental (UCL/Libertadores) — cada título +3
+    if (mA.titulos_continental != null || mB.titulos_continental != null) {
+      const a = mA.titulos_continental ?? 0, b = mB.titulos_continental ?? 0
+      const winsA = a === b ? null : a > b
+      const pts = a === b ? 0 : Math.abs(a-b) * COMP_WEIGHTS.continental
+      rows.push({label:'Títulos continentales', valA: a, valB: b, winsA, points: pts})
+    }
+    // Mundial de clubes — cada uno +5
+    if (mA.titulos_mundial_clubes != null || mB.titulos_mundial_clubes != null) {
+      const a = mA.titulos_mundial_clubes ?? 0, b = mB.titulos_mundial_clubes ?? 0
+      const winsA = a === b ? null : a > b
+      const pts = a === b ? 0 : Math.abs(a-b) * COMP_WEIGHTS.mundialClubes
+      rows.push({label:'Mundiales de clubes', valA: a, valB: b, winsA, points: pts})
+    }
+    // Descensos (penaliza)
+    if (mA.descensos != null || mB.descensos != null) {
+      const a = mA.descensos ?? 0, b = mB.descensos ?? 0
+      // El que TIENE descensos pierde puntos. Aca el ganador es el que tiene MENOS
+      const winsA = a === b ? null : a < b
+      const pts = a === b ? 0 : Math.abs(a-b) * Math.abs(COMP_WEIGHTS.descenso)
+      rows.push({label:'Descensos (penaliza)', valA: a, valB: b, winsA, points: pts})
+    }
+  } else {
+    // ── Variables de selecciones ──
+    if (mA.mundiales_ganados != null || mB.mundiales_ganados != null) {
+      const a = mA.mundiales_ganados ?? 0, b = mB.mundiales_ganados ?? 0
+      const winsA = a === b ? null : a > b
+      const pts = a === b ? 0 : Math.abs(a-b) * COMP_WEIGHTS.mundialesSel
+      rows.push({label:'Mundiales ganados', valA: a, valB: b, winsA, points: pts})
+    }
+    if (mA.finales_mundial != null || mB.finales_mundial != null) {
+      const a = mA.finales_mundial ?? 0, b = mB.finales_mundial ?? 0
+      const winsA = a === b ? null : a > b
+      const pts = a === b ? 0 : Math.abs(a-b) * COMP_WEIGHTS.finalMundial
+      rows.push({label:'Finales de Mundial', valA: a, valB: b, winsA, points: pts})
+    }
+    if (mA.copas_continentales != null || mB.copas_continentales != null) {
+      const a = mA.copas_continentales ?? 0, b = mB.copas_continentales ?? 0
+      const winsA = a === b ? null : a > b
+      const pts = a === b ? 0 : Math.abs(a-b) * COMP_WEIGHTS.continental
+      rows.push({label:'Copas continentales', valA: a, valB: b, winsA, points: pts})
+    }
+    if (mA.apariciones_mundial != null || mB.apariciones_mundial != null) {
+      const a = mA.apariciones_mundial ?? 0, b = mB.apariciones_mundial ?? 0
+      const winsA = a === b ? null : a > b
+      const pts = a === b ? 0 : Math.max(1, Math.floor(Math.abs(a-b)/5))
+      rows.push({label:'Apariciones en Mundial', valA: a, valB: b, winsA, points: pts})
+    }
+  }
+
+  // ── Head to head (3 filas, aplican a clubes y selecciones) ──
+  rows.push({label:'Mano a mano: Victorias', valA: h2h.vA, valB: h2h.vB, winsA: h2h.vA === h2h.vB ? null : h2h.vA > h2h.vB, points: h2h.vA === h2h.vB ? 0 : Math.abs(h2h.vA - h2h.vB) * COMP_WEIGHTS.h2hVictoria})
+  rows.push({label:'Goleadas históricas (4+ gol dif)', valA: h2h.gA, valB: h2h.gB, winsA: h2h.gA === h2h.gB ? null : h2h.gA > h2h.gB, points: h2h.gA === h2h.gB ? 0 : Math.abs(h2h.gA - h2h.gB) * COMP_WEIGHTS.h2hGoleada})
+  rows.push({label:'Finales ganadas al rival', valA: finalesH2H.fA, valB: finalesH2H.fB, winsA: finalesH2H.fA === finalesH2H.fB ? null : finalesH2H.fA > finalesH2H.fB, points: finalesH2H.fA === finalesH2H.fB ? 0 : Math.abs(finalesH2H.fA - finalesH2H.fB) * COMP_WEIGHTS.h2hFinal})
+
+  // Sumar puntos
+  let ptsA = 0, ptsB = 0
+  for (const r of rows) {
+    if (r.winsA === true) ptsA += r.points
+    else if (r.winsA === false) ptsB += r.points
+  }
+
+  // ── Render ──
+  const flagOrCrest = (eq) => eq.escudo_url
+    ? `<img src="${eq.escudo_url}" alt="${eq.nombre}" onerror="this.style.display='none'">`
+    : `<div style="width:48px;height:48px;border-radius:6px;background:${eq.color_prim||'#222'};display:flex;align-items:center;justify-content:center;font-weight:900;color:${eq.color_sec||'#fff'};font-family:'JetBrains Mono',monospace;font-size:.85rem">${eq.abreviacion||'?'}</div>`
+
+  let html = `<div class="comp-header">
+    <div class="comp-team-header">${flagOrCrest(eqA)}<span>${eqA.nombre}</span></div>
+    <div class="comp-vs">VS</div>
+    <div class="comp-team-header">${flagOrCrest(eqB)}<span>${eqB.nombre}</span></div>
+  </div>`
+
+  for (const r of rows) {
+    const aWins = r.winsA === true
+    const bWins = r.winsA === false
+    const ptsStr = (r.winsA != null && r.points > 0) ? `<span class="comp-label-pts">+${r.points} pt${r.points>1?'s':''}</span>` : ''
+    html += `<div class="comp-row">
+      <span class="comp-val ${aWins?'winner':(bWins?'loser':'')}">${r.valA}</span>
+      <span class="comp-label">${r.label}${ptsStr}</span>
+      <span class="comp-val ${bWins?'winner':(aWins?'loser':'')}">${r.valB}</span>
+    </div>`
+  }
+
+  // Banner ganador
+  if (ptsA === ptsB) {
+    html += `<div class="comp-winner-banner tie">
+      <div class="cwb-trophy">🤝</div>
+      <div class="cwb-name">EMPATE TÉCNICO</div>
+      <div class="cwb-score">${ptsA} pts a ${ptsB} pts</div>
+    </div>`
+  } else {
+    const ganador = ptsA > ptsB ? eqA : eqB
+    const ptsG = Math.max(ptsA, ptsB), ptsP = Math.min(ptsA, ptsB)
+    html += `<div class="comp-winner-banner">
+      <div class="cwb-trophy">🏆</div>
+      <div class="cwb-name">GANA ${ganador.nombre.toUpperCase()}</div>
+      <div class="cwb-score">${ptsG} puntos contra ${ptsP}</div>
+    </div>`
+  }
+
+  document.getElementById('comp-result').innerHTML = html
+}
 </script>
 </body>
 </html>
