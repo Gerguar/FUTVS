@@ -36,6 +36,12 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .filter-btn-mundial{border:1px solid #d4a017;color:#e6b94c;background:linear-gradient(135deg,rgba(212,160,23,.08),rgba(212,160,23,.04))}
 .filter-btn-mundial:hover{background:linear-gradient(135deg,#d4a017,#b8870b);border-color:#d4a017;color:#1a1408}
 .filter-btn-mundial.active{background:linear-gradient(135deg,#f0c44f,#d4a017);border-color:#f0c44f;color:#1a1408;box-shadow:0 0 12px rgba(212,160,23,.4)}
+/* Sub-fila de filtros por grupo (solo visible cuando esta activo el filtro Mundial) */
+.group-filters{display:none;justify-content:center;flex-wrap:wrap;gap:.35rem;padding:0 1rem .8rem;border-bottom:1px solid var(--border);margin-bottom:.4rem}
+.group-filters.visible{display:flex}
+.group-btn{padding:5px 12px;border-radius:14px;border:1px solid rgba(212,160,23,.3);background:transparent;color:#9c8a5a;cursor:pointer;font-size:.72rem;font-weight:700;transition:all .15s;font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
+.group-btn:hover{border-color:#d4a017;color:#e6b94c}
+.group-btn.active{background:rgba(212,160,23,.15);border-color:#d4a017;color:#f0c44f}
 .matches-grid{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 3rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;position:relative;z-index:1;width:100%}
 /* Layout del home con sidebar flotante a la izquierda */
 .home-main{max-width:1380px;margin:0 auto;display:grid;grid-template-columns:160px 1fr;gap:1.6rem;padding:.5rem 1.5rem 0 .25rem;position:relative;z-index:1}
@@ -702,6 +708,21 @@ button,a{touch-action:manipulation}
     <button class="filter-btn" onclick="filterMatches('premier',this)">Premier League</button>
     <button class="filter-btn" onclick="filterMatches('seriea',this)">Serie A</button>
   </div>
+  <div id="group-filters" class="group-filters">
+    <button class="group-btn active" onclick="filterByGroup('all',this)">TODOS</button>
+    <button class="group-btn" onclick="filterByGroup('A',this)">GRUPO A</button>
+    <button class="group-btn" onclick="filterByGroup('B',this)">GRUPO B</button>
+    <button class="group-btn" onclick="filterByGroup('C',this)">GRUPO C</button>
+    <button class="group-btn" onclick="filterByGroup('D',this)">GRUPO D</button>
+    <button class="group-btn" onclick="filterByGroup('E',this)">GRUPO E</button>
+    <button class="group-btn" onclick="filterByGroup('F',this)">GRUPO F</button>
+    <button class="group-btn" onclick="filterByGroup('G',this)">GRUPO G</button>
+    <button class="group-btn" onclick="filterByGroup('H',this)">GRUPO H</button>
+    <button class="group-btn" onclick="filterByGroup('I',this)">GRUPO I</button>
+    <button class="group-btn" onclick="filterByGroup('J',this)">GRUPO J</button>
+    <button class="group-btn" onclick="filterByGroup('K',this)">GRUPO K</button>
+    <button class="group-btn" onclick="filterByGroup('L',this)">GRUPO L</button>
+  </div>
   <div class="home-main">
     <aside class="stats-sidebar">
       <div class="stat-fl ok">
@@ -1084,7 +1105,7 @@ async function loadMatches() {
     const sevenDaysAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString().slice(0,10)
     const filterClause = `or=(estado.eq.programado,and(estado.eq.finalizado,fecha.gte.${sevenDaysAgo}))`
     const data = await sb(
-      'partidos?select=id,fecha,estado,goles_local,goles_visitante,' +
+      'partidos?select=id,fecha,estado,goles_local,goles_visitante,grupo,' +
       'equipo_local:equipo_local_id(id,nombre,abreviacion,escudo_url,color_prim,color_sec),' +
       'equipo_visitante:equipo_visitante_id(id,nombre,abreviacion,escudo_url,color_prim,color_sec),' +
       'liga:liga_id(nombre),' +
@@ -1101,6 +1122,7 @@ async function loadMatches() {
         id: p.id,
         league: (p.liga?.nombre||'').toUpperCase(),
         leagueKey: LEAGUE_KEYS[p.liga?.nombre] || 'other',
+        grupo: p.grupo || null,  // 'A'..'L' para partidos del Mundial, null para el resto
         date: formatDate(p.fecha), time: formatTime(p.fecha),
         kickoffIso: p.fecha,
         status: p.estado,
@@ -1304,9 +1326,15 @@ function matchCardHtml(m) {
     </div>`
 }
 
+let currentGroupFilter = 'all'  // 'all' | 'A'..'L'  (solo aplica cuando esta activo el filtro Mundial)
+
 function renderMatches(filter) {
   const c = document.getElementById('matches-container')
-  const list = filter==='all' ? matches : matches.filter(m=>m.leagueKey===filter)
+  let list = filter==='all' ? matches : matches.filter(m=>m.leagueKey===filter)
+  // Subfiltro por grupo: solo aplica cuando estamos en el filtro Mundial
+  if (filter === 'mundial' && currentGroupFilter !== 'all') {
+    list = list.filter(m => m.grupo === currentGroupFilter)
+  }
   if (!list.length) {
     c.innerHTML = `<div class="loader" style="color:var(--faint)">No hay partidos disponibles</div>`
     return
@@ -1326,7 +1354,26 @@ function renderMatches(filter) {
 function filterMatches(key,btn) {
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'))
   btn.classList.add('active')
+  // Mostrar/ocultar la sub-fila de grupos segun si esta seleccionado Mundial
+  const gf = document.getElementById('group-filters')
+  if (gf) {
+    if (key === 'mundial') {
+      gf.classList.add('visible')
+      // Reset al sub-filtro 'TODOS' cada vez que entras al filtro Mundial
+      currentGroupFilter = 'all'
+      document.querySelectorAll('.group-btn').forEach((b,i)=>b.classList.toggle('active', i===0))
+    } else {
+      gf.classList.remove('visible')
+    }
+  }
   renderMatches(key)
+}
+
+function filterByGroup(g, btn) {
+  currentGroupFilter = g
+  document.querySelectorAll('.group-btn').forEach(b=>b.classList.remove('active'))
+  btn.classList.add('active')
+  renderMatches('mundial')
 }
 
 // ── SHOW DETAIL ──

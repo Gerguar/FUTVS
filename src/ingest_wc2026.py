@@ -158,6 +158,10 @@ def main() -> None:
         gl = score.get("home")
         gv = score.get("away")
 
+        # group viene como "GROUP_A".."GROUP_L"; lo guardamos como letra A..L.
+        grupo_raw = m.get("group") or ""
+        grupo = grupo_raw.replace("GROUP_", "") if grupo_raw.startswith("GROUP_") else None
+
         payload = {
             "liga_id": LIGA_SELECCIONES,
             "temporada": TEMPORADA,
@@ -167,6 +171,7 @@ def main() -> None:
             "estado": estado,
             "goles_local": gl if gl is not None else 0,
             "goles_visitante": gv if gv is not None else 0,
+            "grupo": grupo,
         }
 
         key = (fecha_iso[:10], home_id, away_id)
@@ -199,13 +204,14 @@ def main() -> None:
             print(f"  ! error insert: {e}")
     print(f"[wc2026] insertados {inserted} partidos")
 
-    # Patch existentes (cambia score/estado si cambio)
+    # Patch existentes (cambia score/estado/grupo si cambio)
     patched = 0
     for pid, payload in a_actualizar:
         patch_data = {
             "estado": payload["estado"],
             "goles_local": payload["goles_local"],
             "goles_visitante": payload["goles_visitante"],
+            "grupo": payload.get("grupo"),
         }
         try:
             sb_patch(f"partidos?id=eq.{pid}", patch_data)
