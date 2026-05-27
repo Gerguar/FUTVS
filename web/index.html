@@ -194,6 +194,20 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .comp-winner-banner .cwb-score{font-size:.85rem;color:#d4a017;font-family:'JetBrains Mono',monospace}
 .comp-winner-banner.tie{background:linear-gradient(135deg,rgba(150,150,150,.18),rgba(150,150,150,.06));border-color:#888}
 .comp-winner-banner.tie .cwb-name{color:#bbb}
+/* Breakdown de puntos por equipo */
+.cwb-breakdown{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(212,160,23,.3);display:flex;flex-direction:column;gap:.6rem}
+.cwb-bd-row{display:grid;grid-template-columns:130px 60px 1fr;align-items:center;gap:.6rem;font-family:'JetBrains Mono',monospace}
+.cwb-bd-row .bd-name{text-align:right;font-weight:700;color:var(--text);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cwb-bd-row .bd-pts{font-weight:900;font-size:1.05rem;color:#f0c44f;text-align:left}
+.cwb-bd-row .bd-bar{height:14px;background:rgba(255,255,255,.06);border-radius:8px;overflow:hidden;position:relative}
+.cwb-bd-row .bd-bar-fill{height:100%;background:linear-gradient(90deg,#f0c44f,#d4a017);border-radius:8px;transition:width .4s}
+.cwb-bd-row.loser .bd-pts{color:var(--muted);font-size:.95rem}
+.cwb-bd-row.loser .bd-bar-fill{background:rgba(150,150,150,.4)}
+@media(max-width:540px){
+  .cwb-bd-row{grid-template-columns:80px 46px 1fr;gap:.4rem}
+  .cwb-bd-row .bd-name{font-size:.7rem}
+  .cwb-bd-row .bd-pts{font-size:.88rem}
+}
 @media(max-width:540px){
   .comp-row{grid-template-columns:64px 1fr 64px;gap:.4rem;padding:.4rem .15rem}
   .comp-val{min-width:48px;height:28px;font-size:.82rem;padding:0 10px}
@@ -2456,20 +2470,34 @@ function renderComparador() {
     </div>`
   }
 
-  // Banner ganador
+  // Banner ganador con breakdown de puntos por equipo
+  const totalPts = ptsA + ptsB
+  const pctA = totalPts > 0 ? Math.round(ptsA / totalPts * 100) : 50
+  const pctB = totalPts > 0 ? Math.round(ptsB / totalPts * 100) : 50
+  const rowA = `<div class="cwb-bd-row ${ptsA < ptsB ? 'loser' : ''}">
+    <div class="bd-name">${eqA.nombre}</div>
+    <div class="bd-pts">${ptsA} pts</div>
+    <div class="bd-bar"><div class="bd-bar-fill" style="width:${pctA}%"></div></div>
+  </div>`
+  const rowB = `<div class="cwb-bd-row ${ptsB < ptsA ? 'loser' : ''}">
+    <div class="bd-name">${eqB.nombre}</div>
+    <div class="bd-pts">${ptsB} pts</div>
+    <div class="bd-bar"><div class="bd-bar-fill" style="width:${pctB}%"></div></div>
+  </div>`
+
   if (ptsA === ptsB) {
     html += `<div class="comp-winner-banner tie">
       <div class="cwb-trophy">🤝</div>
       <div class="cwb-name">EMPATE TÉCNICO</div>
       <div class="cwb-score">${ptsA} pts a ${ptsB} pts</div>
+      <div class="cwb-breakdown">${rowA}${rowB}</div>
     </div>`
   } else {
     const ganador = ptsA > ptsB ? eqA : eqB
-    const ptsG = Math.max(ptsA, ptsB), ptsP = Math.min(ptsA, ptsB)
     html += `<div class="comp-winner-banner">
       <div class="cwb-trophy">🏆</div>
       <div class="cwb-name">GANA ${ganador.nombre.toUpperCase()}</div>
-      <div class="cwb-score">${ptsG} puntos contra ${ptsP}</div>
+      <div class="cwb-breakdown">${rowA}${rowB}</div>
     </div>`
   }
 
