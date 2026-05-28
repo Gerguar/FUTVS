@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-27T12:39:50.910795+00:00",
+  "generated_at_utc": "2026-05-28T12:51:18.447585+00:00",
   "model": {
     "trained_at": "2026-05-24T05:08:42.420043+00:00",
     "method": "DixonColes+Elo+XGBoost(isotonic)",
@@ -32,9 +32,9 @@
       "is_neutral": false,
       "snapshot": "24h",
       "probabilities": {
-        "home": 0.3174,
-        "draw": 0.2407,
-        "away": 0.4419
+        "home": 0.3142,
+        "draw": 0.2418,
+        "away": 0.4439
       },
       "market_probabilities": null,
       "scoreline_top": [
