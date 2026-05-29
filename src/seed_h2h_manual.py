@@ -48,6 +48,62 @@ H2H_MANUAL: list[tuple[str, str, int, int, int]] = [
     ("Bayern Múnich",   "Dortmund",         68, 37,  33),  # Der Klassiker (138)
     # ── Ligue 1 ──────────────────────────────────────────────────────────────────
     ("PSG",             "Olympique Lyon",   24,  8,  15),  # (47)
+
+    # ═══ Ampliación: cruces entre grandes de cada liga ═══════════════════════════
+    # ── La Liga ──────────────────────────────────────────────────────────────────
+    ("Barcelona",       "Atlético Madrid", 116, 57,  79),  # (252)
+    ("Real Madrid",     "Sevilla FC",      109, 32,  57),  # (198)
+    ("Real Madrid",     "Valencia",        112, 43,  59),  # (214)
+    ("Real Madrid",     "Athletic",        126, 45,  79),  # (250)
+    ("Real Madrid",     "Real Sociedad",   102, 38,  43),  # (183)
+    ("Real Madrid",     "Real Betis",       77, 32,  32),  # (141)
+    ("Real Madrid",     "Villarreal",       31, 17,   6),  # (54)
+    ("Barcelona",       "Sevilla FC",      118, 39,  46),  # (203)
+    ("Barcelona",       "Valencia",        115, 57,  59),  # (231)
+    ("Barcelona",       "Athletic",        126, 40,  80),  # (246)
+    ("Barcelona",       "Real Sociedad",   117, 42,  38),  # (197)
+    ("Barcelona",       "Real Betis",       87, 26,  30),  # (143)
+    ("Barcelona",       "Villarreal",       36, 10,  12),  # (58)
+    # ── Premier League (Big Six entre sí) ────────────────────────────────────────
+    ("Arsenal",         "Chelsea",          87, 62,  66),  # (215)
+    ("Arsenal",         "Liverpool",        83, 67,  96),  # (246) fuentes en conflicto
+    ("Arsenal",         "Man United",       90, 60, 101),  # (251)
+    ("Arsenal",         "Man. City",        87, 46,  56),  # (189)
+    ("Chelsea",         "Liverpool",        59, 49,  75),  # (183)
+    ("Chelsea",         "Man United",       57, 57,  85),  # (199)
+    ("Chelsea",         "Man. City",        71, 42,  70),  # (183)
+    ("Chelsea",         "Tottenham",        83, 42,  56),  # (181)
+    ("Liverpool",       "Man. City",       108, 58,  60),  # (226)
+    ("Liverpool",       "Tottenham",        84, 42,  44),  # (170)
+    ("Man United",      "Tottenham",        97, 52,  58),  # (207)
+    ("Man. City",       "Tottenham",        69, 37,  69),  # (175)
+    # ── Serie A (grandes entre sí) ────────────────────────────────────────────────
+    ("Juventus",        "Inter Milán",     114, 63,  78),  # (255) Derby d'Italia
+    ("Juventus",        "Napoli",           85, 55,  46),  # (186)
+    ("Juventus",        "Roma",             96, 59,  49),  # (204)
+    ("Juventus",        "Lazio",            86, 38,  35),  # (159)
+    ("Inter Milán",     "Napoli",           81, 45,  52),  # (178)
+    ("Inter Milán",     "Roma",             99, 57,  63),  # (219)
+    ("Inter Milán",     "Lazio",            78, 62,  45),  # (185)
+    ("AC Milán",        "Napoli",           68, 54,  53),  # (175)
+    ("AC Milán",        "Roma",             88, 63,  53),  # (204)
+    ("AC Milán",        "Lazio",            86, 65,  41),  # (192)
+    ("Napoli",          "Roma",             53, 60,  63),  # (176)
+    ("Napoli",          "Lazio",            64, 53,  53),  # (170)
+    # ── Bundesliga (Bayern/Dortmund vs clásicos) ──────────────────────────────────
+    ("Bayern Múnich",   "M'gladbach",       63, 32,  29),  # (124)
+    ("Bayern Múnich",   "Bremen",           76, 26,  29),  # (131)
+    ("Bayern Múnich",   "HSV",              74, 24,  23),  # (121)
+    ("Bayern Múnich",   "Stuttgart",        98, 29,  37),  # (164)
+    ("Bayern Múnich",   "1. FC Köln",       61, 24,  24),  # (109)
+    ("Dortmund",        "M'gladbach",       61, 36,  37),  # (134)
+    ("Dortmund",        "Bremen",           55, 21,  46),  # (122)
+    # ── Premier ↔ Ligue 1 (cruces PSG/Lyon) ──────────────────────────────────────
+    ("PSG",             "Lille",            29, 13,   7),  # (49)
+    ("PSG",             "RC Lens",          16,  8,   4),  # (28)
+    ("PSG",             "Nice",             22,  7,  14),  # (43)
+    ("Olympique Lyon",  "Lille",            15, 17,  16),  # (48)
+    ("Olympique Lyon",  "RC Lens",          13,  6,   8),  # (27)
 ]
 
 
@@ -60,9 +116,17 @@ def main() -> None:
     name2id = {e["nombre"]: e["id"] for e in eq}
 
     # H2H existente (couk) para preservar las goleadas 4+ ya calculadas.
+    # Se pagina porque PostgREST corta en 1000 filas y la tabla tiene ~3000.
     existing = {}
-    for r in sb_get("h2h_historico?select=equipo_a_id,equipo_b_id,goleadas_a,goleadas_b"):
-        existing[(r["equipo_a_id"], r["equipo_b_id"])] = (r["goleadas_a"], r["goleadas_b"])
+    offset = 0
+    while True:
+        chunk = sb_get("h2h_historico?select=equipo_a_id,equipo_b_id,goleadas_a,goleadas_b"
+                       f"&order=id&limit=1000&offset={offset}")
+        for r in chunk:
+            existing[(r["equipo_a_id"], r["equipo_b_id"])] = (r["goleadas_a"], r["goleadas_b"])
+        if len(chunk) < 1000:
+            break
+        offset += 1000
 
     payloads = []
     for nx, ny, wx, e, wy in H2H_MANUAL:
