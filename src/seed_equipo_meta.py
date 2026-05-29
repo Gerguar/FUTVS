@@ -698,6 +698,85 @@ EQUIPO_META: dict[str, dict] = {
         copas_continentales=1,   # AFCON 1976
         apariciones_mundial=6,
     ),
+
+    # --- CONMEBOL ---
+    "Colombia": dict(ano_fundacion=1924, mundiales_ganados=0, finales_mundial=0, copas_continentales=1, apariciones_mundial=6),
+    "Ecuador":  dict(ano_fundacion=1925, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=4),
+    "Paraguay": dict(ano_fundacion=1906, mundiales_ganados=0, finales_mundial=0, copas_continentales=2, apariciones_mundial=8),
+    "Chile":    dict(ano_fundacion=1895, mundiales_ganados=0, finales_mundial=0, copas_continentales=2, apariciones_mundial=9),
+    "Perú":     dict(ano_fundacion=1922, mundiales_ganados=0, finales_mundial=0, copas_continentales=2, apariciones_mundial=5),
+    "Bolivia":  dict(ano_fundacion=1925, mundiales_ganados=0, finales_mundial=0, copas_continentales=1, apariciones_mundial=3),
+    "Venezuela":dict(ano_fundacion=1926, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=0),
+
+    # --- UEFA ---
+    "Noruega":         dict(ano_fundacion=1902, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=3),
+    "Turquía":         dict(ano_fundacion=1923, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=2),
+    "Suiza":           dict(ano_fundacion=1895, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=12),
+    "Dinamarca":       dict(ano_fundacion=1889, mundiales_ganados=0, finales_mundial=0, copas_continentales=1, apariciones_mundial=6),
+    "Austria":         dict(ano_fundacion=1904, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=7),
+    "Serbia":          dict(ano_fundacion=1919, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=3),
+    "Escocia":         dict(ano_fundacion=1873, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=8),
+    "Ucrania":         dict(ano_fundacion=1991, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=1),
+    "Grecia":          dict(ano_fundacion=1926, mundiales_ganados=0, finales_mundial=0, copas_continentales=1, apariciones_mundial=3),
+    "Polonia":         dict(ano_fundacion=1919, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=9),
+    "República Checa": dict(ano_fundacion=1901, mundiales_ganados=0, finales_mundial=2, copas_continentales=1, apariciones_mundial=9),
+    "Suecia":          dict(ano_fundacion=1904, mundiales_ganados=0, finales_mundial=1, copas_continentales=0, apariciones_mundial=12),
+    "Hungría":         dict(ano_fundacion=1901, mundiales_ganados=0, finales_mundial=2, copas_continentales=0, apariciones_mundial=9),
+    "Eslovenia":       dict(ano_fundacion=1920, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=2),
+    "Irlanda":         dict(ano_fundacion=1921, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=3),
+    "Israel":          dict(ano_fundacion=1928, mundiales_ganados=0, finales_mundial=0, copas_continentales=1, apariciones_mundial=1),
+    "Rumanía":         dict(ano_fundacion=1909, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=7),
+    "Eslovaquia":      dict(ano_fundacion=1938, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=1),
+    "Albania":         dict(ano_fundacion=1930, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=0),
+    "Georgia":         dict(ano_fundacion=1990, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=0),
+    "Finlandia":       dict(ano_fundacion=1907, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=0),
+    "Bulgaria":        dict(ano_fundacion=1923, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=7),
+    "Islandia":        dict(ano_fundacion=1947, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=1),
+    "Irlanda del Norte": dict(ano_fundacion=1880, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=3),
+
+    # --- CAF ---
+    "Senegal":         dict(ano_fundacion=1960, mundiales_ganados=0, finales_mundial=0, copas_continentales=1, apariciones_mundial=3),
+    "Nigeria":         dict(ano_fundacion=1945, mundiales_ganados=0, finales_mundial=0, copas_continentales=3, apariciones_mundial=6),
+    "Argelia":         dict(ano_fundacion=1962, mundiales_ganados=0, finales_mundial=0, copas_continentales=2, apariciones_mundial=4),
+    "Egipto":          dict(ano_fundacion=1921, mundiales_ganados=0, finales_mundial=0, copas_continentales=7, apariciones_mundial=3),
+    "Costa de Marfil": dict(ano_fundacion=1960, mundiales_ganados=0, finales_mundial=0, copas_continentales=3, apariciones_mundial=3),
+    "RD del Congo":    dict(ano_fundacion=1919, mundiales_ganados=0, finales_mundial=0, copas_continentales=2, apariciones_mundial=1),
+    "Túnez":           dict(ano_fundacion=1957, mundiales_ganados=0, finales_mundial=0, copas_continentales=1, apariciones_mundial=6),
+    "Camerún":         dict(ano_fundacion=1959, mundiales_ganados=0, finales_mundial=0, copas_continentales=5, apariciones_mundial=8),
+    "Malí":            dict(ano_fundacion=1960, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=0),
+    "Sudáfrica":       dict(ano_fundacion=1991, mundiales_ganados=0, finales_mundial=0, copas_continentales=1, apariciones_mundial=3),
+    "Ghana":           dict(ano_fundacion=1957, mundiales_ganados=0, finales_mundial=0, copas_continentales=4, apariciones_mundial=4),
+    "Cabo Verde":      dict(ano_fundacion=1982, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=0),
+
+    # --- CONCACAF ---
+    "Canadá":      dict(ano_fundacion=1912, mundiales_ganados=0, finales_mundial=0, copas_continentales=2, apariciones_mundial=2),
+    "Panamá":      dict(ano_fundacion=1937, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=1),
+    "Costa Rica":  dict(ano_fundacion=1921, mundiales_ganados=0, finales_mundial=0, copas_continentales=3, apariciones_mundial=6),
+    "Honduras":    dict(ano_fundacion=1951, mundiales_ganados=0, finales_mundial=0, copas_continentales=1, apariciones_mundial=3),
+    "Jamaica":     dict(ano_fundacion=1910, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=1),
+    "Haití":       dict(ano_fundacion=1904, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=1),
+    "Curazao":     dict(ano_fundacion=1921, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=0),
+    "El Salvador": dict(ano_fundacion=1935, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=2),
+
+    # --- AFC ---
+    "Japón":               dict(ano_fundacion=1921, mundiales_ganados=0, finales_mundial=0, copas_continentales=4, apariciones_mundial=7),
+    "Corea del Sur":       dict(ano_fundacion=1928, mundiales_ganados=0, finales_mundial=0, copas_continentales=2, apariciones_mundial=11),
+    "Irán":                dict(ano_fundacion=1920, mundiales_ganados=0, finales_mundial=0, copas_continentales=3, apariciones_mundial=6),
+    "Australia":           dict(ano_fundacion=1961, mundiales_ganados=0, finales_mundial=0, copas_continentales=5, apariciones_mundial=6),
+    "Uzbekistán":          dict(ano_fundacion=1946, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=0),
+    "Jordania":            dict(ano_fundacion=1949, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=0),
+    "Irak":                dict(ano_fundacion=1948, mundiales_ganados=0, finales_mundial=0, copas_continentales=1, apariciones_mundial=1),
+    "Arabia Saudita":      dict(ano_fundacion=1956, mundiales_ganados=0, finales_mundial=0, copas_continentales=3, apariciones_mundial=6),
+    "Emiratos Árabes Unidos": dict(ano_fundacion=1971, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=1),
+    "Omán":                dict(ano_fundacion=1978, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=0),
+    "Qatar":               dict(ano_fundacion=1960, mundiales_ganados=0, finales_mundial=0, copas_continentales=2, apariciones_mundial=1),
+    "China":               dict(ano_fundacion=1924, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=1),
+
+    # --- OFC ---
+    "Nueva Zelanda": dict(ano_fundacion=1891, mundiales_ganados=0, finales_mundial=0, copas_continentales=5, apariciones_mundial=2),
+
+    # --- UEFA (Balcanes) ---
+    "Bosnia y Herzegovina": dict(ano_fundacion=1992, mundiales_ganados=0, finales_mundial=0, copas_continentales=0, apariciones_mundial=1),
 }
 
 
