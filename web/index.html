@@ -2223,11 +2223,17 @@ async function openComparador() {
       sb('finales_historicas?select=*'),
       sb('partidos?select=equipo_local_id,equipo_visitante_id,goles_local,goles_visitante,estado&estado=eq.finalizado'),
     ])
+    // H2H histórico: opcional, no debe romper el comparador si la tabla no existe.
+    let h2h = []
+    try { h2h = await sb('h2h_historico?select=*') } catch (_) { h2h = [] }
     _comp.equipos = equipos
     _comp.meta = {}
     meta.forEach(m => _comp.meta[m.equipo_id] = m)
     _comp.finales = finales
     _comp.partidos = partidos
+    // Índice de H2H histórico por par canónico "menorId_mayorId".
+    _comp.h2h = {}
+    ;(h2h || []).forEach(r => { _comp.h2h[`${r.equipo_a_id}_${r.equipo_b_id}`] = r })
     _comp.loaded = true
     populateCompLigas()
     populateCompTeams()
@@ -2277,7 +2283,21 @@ function populateCompTeams() {
 }
 
 // Computa H2H entre 2 equipos: {victoriasA, victoriasB, empates, goleadasA, goleadasB}
+// Prioriza el histórico agregado (tabla h2h_historico); si no hay par, cae a los
+// partidos finalizados cargados (temporada actual).
 function computeH2H(idA, idB) {
+  const a = Math.min(idA, idB), b = Math.max(idA, idB)
+  const h = _comp.h2h && _comp.h2h[`${a}_${b}`]
+  if (h) {
+    const aIsA = (idA === a)  // ¿idA es el equipo canónico "a" (id menor)?
+    return {
+      vA: aIsA ? h.victorias_a : h.victorias_b,
+      vB: aIsA ? h.victorias_b : h.victorias_a,
+      e:  h.empates,
+      gA: aIsA ? h.goleadas_a : h.goleadas_b,
+      gB: aIsA ? h.goleadas_b : h.goleadas_a,
+    }
+  }
   let vA=0, vB=0, e=0, gA=0, gB=0
   for (const p of _comp.partidos) {
     let aIsHome, gh, gv
