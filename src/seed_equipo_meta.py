@@ -23,81 +23,87 @@ EQUIPO_META: dict[str, dict] = {
     "Real Madrid": dict(
         ano_fundacion=1902, capacidad_estadio=81044, socios=95000,
         titulos_liga=36, titulos_copa_nacional=20,
-        titulos_continental=15,  # UEFA Champions League
-        titulos_mundial_clubes=9,  # 4 Intercontinental + 5 Mundial Clubes FIFA
-        descensos=0,
+        titulos_champions=15, titulos_internacionales=2, supercopas=19,
+        titulos_mundial_clubes=9, descensos=0,
     ),
     "Barcelona": dict(
         ano_fundacion=1899, capacidad_estadio=99354, socios=140000,
         titulos_liga=27, titulos_copa_nacional=31,
-        titulos_continental=5, titulos_mundial_clubes=3, descensos=0,
+        titulos_champions=5, titulos_internacionales=4, supercopas=19,
+        titulos_mundial_clubes=3, descensos=0,
     ),
     "Atlético Madrid": dict(
         ano_fundacion=1903, capacidad_estadio=70460, socios=130000,
         titulos_liga=11, titulos_copa_nacional=10,
-        titulos_continental=3,  # 0 UCL + 3 UEL/Recopa
+        titulos_champions=0, titulos_internacionales=4, supercopas=5,
         titulos_mundial_clubes=1, descensos=1,
     ),
     "Athletic": dict(
         ano_fundacion=1898, capacidad_estadio=53289, socios=45000,
         titulos_liga=8, titulos_copa_nacional=24,
-        titulos_continental=0, titulos_mundial_clubes=0, descensos=0,
+        titulos_champions=0, titulos_internacionales=0, supercopas=3,
+        titulos_mundial_clubes=0, descensos=0,
     ),
     "Valencia": dict(
         ano_fundacion=1919, capacidad_estadio=49430, socios=50000,
         titulos_liga=6, titulos_copa_nacional=8,
-        titulos_continental=4, titulos_mundial_clubes=0, descensos=0,
+        titulos_champions=0, titulos_internacionales=2, supercopas=3,
+        titulos_mundial_clubes=0, descensos=0,
     ),
     "Sevilla FC": dict(
         ano_fundacion=1890, capacidad_estadio=43883, socios=50000,
         titulos_liga=1, titulos_copa_nacional=5,
-        titulos_continental=7,  # 7 UEL — record absoluto
+        titulos_champions=0, titulos_internacionales=7, supercopas=2,
         titulos_mundial_clubes=0, descensos=0,
     ),
     "Real Sociedad": dict(
         ano_fundacion=1909, capacidad_estadio=39500, socios=36000,
         titulos_liga=2, titulos_copa_nacional=3,
-        titulos_continental=0, titulos_mundial_clubes=0, descensos=0,
+        titulos_champions=0, titulos_internacionales=0, supercopas=1,
+        titulos_mundial_clubes=0, descensos=0,
     ),
     "Villarreal": dict(
         ano_fundacion=1923, capacidad_estadio=23500, socios=23000,
         titulos_liga=0, titulos_copa_nacional=0,
-        titulos_continental=1, titulos_mundial_clubes=0, descensos=0,
+        titulos_champions=0, titulos_internacionales=1, supercopas=0,
+        titulos_mundial_clubes=0, descensos=0,
     ),
 
     # === PREMIER LEAGUE ===
     "Man United": dict(
         ano_fundacion=1878, capacidad_estadio=74310,
         titulos_liga=20, titulos_copa_nacional=13,
-        titulos_continental=4,  # 3 UCL + 1 UEL
+        titulos_champions=3, titulos_internacionales=2, supercopas=23,
         titulos_mundial_clubes=2, descensos=0,
     ),
     "Liverpool": dict(
         ano_fundacion=1892, capacidad_estadio=61276,
         titulos_liga=20, titulos_copa_nacional=8,
-        titulos_continental=9,  # 6 UCL + 3 UEFA Cup
+        titulos_champions=6, titulos_internacionales=3, supercopas=20,
         titulos_mundial_clubes=1, descensos=0,
     ),
     "Man. City": dict(
         ano_fundacion=1880, capacidad_estadio=53400,
         titulos_liga=10, titulos_copa_nacional=7,
-        titulos_continental=1, titulos_mundial_clubes=1, descensos=0,
+        titulos_champions=1, titulos_internacionales=1, supercopas=8,
+        titulos_mundial_clubes=1, descensos=0,
     ),
     "Arsenal": dict(
         ano_fundacion=1886, capacidad_estadio=60704,
         titulos_liga=13, titulos_copa_nacional=14,
-        titulos_continental=0, titulos_mundial_clubes=0, descensos=0,
+        titulos_champions=0, titulos_internacionales=1, supercopas=17,
+        titulos_mundial_clubes=0, descensos=0,
     ),
     "Chelsea": dict(
         ano_fundacion=1905, capacidad_estadio=40173,
         titulos_liga=6, titulos_copa_nacional=8,
-        titulos_continental=4,  # 2 UCL + 2 UEL
+        titulos_champions=2, titulos_internacionales=4, supercopas=6,
         titulos_mundial_clubes=1, descensos=0,
     ),
     "Tottenham": dict(
         ano_fundacion=1882, capacidad_estadio=62850,
         titulos_liga=2, titulos_copa_nacional=8,
-        titulos_continental=3,  # 2 UEFA Cup + 1 UEL
+        titulos_champions=0, titulos_internacionales=3, supercopas=7,
         titulos_mundial_clubes=0, descensos=0,
     ),
 
@@ -105,43 +111,45 @@ EQUIPO_META: dict[str, dict] = {
     "Juventus": dict(
         ano_fundacion=1897, capacidad_estadio=41507,
         titulos_liga=36, titulos_copa_nacional=15,
-        titulos_continental=5,  # 2 UCL + 3 UEFA Cup
+        titulos_champions=2, titulos_internacionales=4, supercopas=11,
         titulos_mundial_clubes=2, descensos=1,
     ),
     "AC Milán": dict(
         ano_fundacion=1899, capacidad_estadio=75817,
         titulos_liga=19, titulos_copa_nacional=5,
-        titulos_continental=7,  # 7 UCL
+        titulos_champions=7, titulos_internacionales=2, supercopas=12,
         titulos_mundial_clubes=4, descensos=0,
     ),
     "Inter Milán": dict(
         ano_fundacion=1908, capacidad_estadio=75817,
         titulos_liga=20, titulos_copa_nacional=9,
-        titulos_continental=6,  # 3 UCL + 3 UEFA Cup
+        titulos_champions=3, titulos_internacionales=3, supercopas=8,
         titulos_mundial_clubes=3, descensos=0,
     ),
     "Napoli": dict(
         ano_fundacion=1926, capacidad_estadio=54726,
         titulos_liga=3, titulos_copa_nacional=6,
-        titulos_continental=1, titulos_mundial_clubes=0, descensos=2,
+        titulos_champions=0, titulos_internacionales=1, supercopas=2,
+        titulos_mundial_clubes=0, descensos=2,
     ),
     "Roma": dict(
         ano_fundacion=1927, capacidad_estadio=70634,
         titulos_liga=3, titulos_copa_nacional=9,
-        titulos_continental=1, titulos_mundial_clubes=0, descensos=0,
+        titulos_champions=0, titulos_internacionales=0, supercopas=2,
+        titulos_mundial_clubes=0, descensos=0,
     ),
 
     # === BUNDESLIGA ===
     "Bayern Múnich": dict(
         ano_fundacion=1900, capacidad_estadio=75000, socios=360000,
         titulos_liga=33, titulos_copa_nacional=20,
-        titulos_continental=7,  # 6 UCL + 1 UEFA Cup
+        titulos_champions=6, titulos_internacionales=2, supercopas=13,
         titulos_mundial_clubes=4, descensos=0,
     ),
     "Dortmund": dict(
         ano_fundacion=1909, capacidad_estadio=81365, socios=175000,
         titulos_liga=8, titulos_copa_nacional=5,
-        titulos_continental=2,  # 1 UCL + 1 Recopa
+        titulos_champions=1, titulos_internacionales=1, supercopas=6,
         titulos_mundial_clubes=1, descensos=0,
     ),
 
@@ -149,13 +157,14 @@ EQUIPO_META: dict[str, dict] = {
     "PSG": dict(
         ano_fundacion=1970, capacidad_estadio=47929,
         titulos_liga=12, titulos_copa_nacional=15,
-        titulos_continental=2,  # 1 Recopa + 1 UCL 2025
+        titulos_champions=1, titulos_internacionales=1, supercopas=13,
         titulos_mundial_clubes=0, descensos=0,
     ),
     "Marseille": dict(
         ano_fundacion=1899, capacidad_estadio=67394,
         titulos_liga=9, titulos_copa_nacional=10,
-        titulos_continental=1, titulos_mundial_clubes=0, descensos=1,
+        titulos_champions=1, titulos_internacionales=0, supercopas=0,
+        titulos_mundial_clubes=0, descensos=1,
     ),
 
     # === SELECCIONES TOP FIFA ===
@@ -318,6 +327,7 @@ def main() -> None:
     ALL_KEYS = [
         "ano_fundacion", "capacidad_estadio", "socios",
         "titulos_liga", "titulos_copa_nacional", "titulos_continental",
+        "titulos_champions", "titulos_internacionales", "supercopas",
         "titulos_mundial_clubes", "descensos",
         "mundiales_ganados", "finales_mundial", "copas_continentales",
         "apariciones_mundial",

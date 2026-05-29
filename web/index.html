@@ -2188,7 +2188,9 @@ const COMP_WEIGHTS = {
   // CLUBES
   liga:            1,       // por titulo de liga
   copa_nac:        1,       // por copa nacional
-  continental:     3,       // por titulo continental (UCL/Lib/UEL)
+  champions:       5,       // por UEFA Champions League ganada
+  internacionales: 2,       // por UEL/Recopa/UEFA Cup ganada
+  supercopas:      1,       // por Supercopa de Europa + Supercopa nacional
   mundial_clubes:  5,       // por mundial de clubes / intercontinental
   descenso:       -2,       // por descenso (penaliza, suma negativo)
   // SELECCIONES
@@ -2367,11 +2369,13 @@ function renderComparador() {
 
   if (!isSel) {
     // ── Variables de clubes ──
-    addRow('Títulos de liga',         mA.titulos_liga,          mB.titulos_liga,          W.liga)
-    addRow('Copas nacionales',         mA.titulos_copa_nacional, mB.titulos_copa_nacional, W.copa_nac)
-    addRow('Títulos continentales',    mA.titulos_continental,   mB.titulos_continental,   W.continental)
-    addRow('Mundiales de clubes',      mA.titulos_mundial_clubes,mB.titulos_mundial_clubes,W.mundial_clubes)
-    addRow('Descensos (penaliza)',     mA.descensos,             mB.descensos,             W.descenso)
+    addRow('Títulos de liga',           mA.titulos_liga,             mB.titulos_liga,             W.liga)
+    addRow('Copas nacionales',          mA.titulos_copa_nacional,    mB.titulos_copa_nacional,    W.copa_nac)
+    addRow('🏆 UEFA Champions League',  mA.titulos_champions,        mB.titulos_champions,        W.champions)
+    addRow('🥈 Europa League / Recopa', mA.titulos_internacionales,  mB.titulos_internacionales,  W.internacionales)
+    addRow('⭐ Supercopas',             mA.supercopas,               mB.supercopas,               W.supercopas)
+    addRow('Mundiales de clubes',       mA.titulos_mundial_clubes,   mB.titulos_mundial_clubes,   W.mundial_clubes)
+    addRow('Descensos (penaliza)',      mA.descensos,                mB.descensos,                W.descenso)
   } else {
     // ── Variables de selecciones ──
     addRow('Mundiales ganados',        mA.mundiales_ganados,    mB.mundiales_ganados,    W.mundial_sel)
