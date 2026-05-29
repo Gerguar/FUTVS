@@ -813,6 +813,64 @@ FINALES_H2H = [
     # AC Milan vs Inter
     ("AC Milán", "Inter Milán", "Inter Milán", "Supercopa Italia 2022", 2022, "3-0"),
     ("AC Milán", "Inter Milán", "AC Milán", "Copa Italia 1976-77", 1977, "2-0"),
+
+    # === CLUBES: rivalidades de misma liga ===
+    # Real Madrid vs Atlético Madrid
+    ("Real Madrid", "Atlético Madrid", "Real Madrid", "UEFA Champions League 2014", 2014, "4-1"),
+    ("Real Madrid", "Atlético Madrid", "Real Madrid", "UEFA Champions League 2016", 2016, "1-1 (5-3 pen)"),
+    ("Real Madrid", "Atlético Madrid", "Atlético Madrid", "Supercopa España 2014", 2014, "2-1 global"),
+    ("Real Madrid", "Atlético Madrid", "Atlético Madrid", "Copa del Rey 2012-13", 2013, "1-2"),
+
+    # Barcelona vs Athletic Club (finales de Copa del Rey/Supercopa)
+    ("Barcelona", "Athletic", "Barcelona", "Copa del Rey 2008-09", 2009, "4-1"),
+    ("Barcelona", "Athletic", "Barcelona", "Copa del Rey 2011-12", 2012, "3-0"),
+    ("Barcelona", "Athletic", "Barcelona", "Copa del Rey 2014-15", 2015, "3-1"),
+    ("Barcelona", "Athletic", "Barcelona", "Copa del Rey 2020-21", 2021, "4-0"),
+    ("Barcelona", "Athletic", "Athletic", "Supercopa España 2020-21", 2021, "3-2"),
+    ("Barcelona", "Athletic", "Athletic", "Copa del Rey 1983-84", 1984, "1-0"),
+
+    # Arsenal vs Chelsea
+    ("Arsenal", "Chelsea", "Arsenal", "FA Cup 2002", 2002, "2-0"),
+    ("Arsenal", "Chelsea", "Arsenal", "FA Cup 2017", 2017, "2-1"),
+    ("Arsenal", "Chelsea", "Arsenal", "FA Cup 2020", 2020, "2-1"),
+    ("Arsenal", "Chelsea", "Chelsea", "UEFA Europa League 2019", 2019, "4-1"),
+    ("Arsenal", "Chelsea", "Chelsea", "EFL Cup 2007", 2007, "2-1"),
+
+    # Liverpool vs Chelsea
+    ("Liverpool", "Chelsea", "Liverpool", "EFL Cup 2022", 2022, "0-0 (11-10 pen)"),
+    ("Liverpool", "Chelsea", "Liverpool", "FA Cup 2022", 2022, "0-0 (6-5 pen)"),
+    ("Liverpool", "Chelsea", "Chelsea", "EFL Cup 2005", 2005, "3-2"),
+
+    # Liverpool vs Man United
+    ("Liverpool", "Man United", "Man United", "FA Cup 1977", 1977, "2-1"),
+    ("Liverpool", "Man United", "Liverpool", "EFL Cup 1983", 1983, "2-1"),
+
+    # Manchester City vs Man United
+    ("Man. City", "Man United", "Man. City", "FA Cup 2023", 2023, "2-1"),
+    ("Man. City", "Man United", "Man United", "FA Cup 2024", 2024, "2-1"),
+
+    # Bayern vs Dortmund
+    ("Bayern Múnich", "Dortmund", "Bayern Múnich", "UEFA Champions League 2013", 2013, "2-1"),
+    ("Bayern Múnich", "Dortmund", "Dortmund", "DFB-Pokal 2011-12", 2012, "5-2"),
+    ("Bayern Múnich", "Dortmund", "Bayern Múnich", "DFB-Pokal 2013-14", 2014, "2-0"),
+    ("Bayern Múnich", "Dortmund", "Dortmund", "DFB-Pokal 2016-17", 2017, "2-1"),
+
+    # PSG vs Marseille
+    ("PSG", "Marseille", "PSG", "Coupe de France 2006", 2006, "2-1"),
+
+    # Juventus vs Milan
+    ("Juventus", "AC Milán", "AC Milán", "Supercopa Italia 2016", 2016, "1-1 (5-4 pen)"),
+
+    # === SELECCIONES: finales históricas ===
+    ("Argentina", "Alemania", "Argentina", "Mundial 1986 (final)", 1986, "3-2"),
+    ("Argentina", "Alemania", "Alemania", "Mundial 1990 (final)", 1990, "1-0"),
+    ("Argentina", "Alemania", "Alemania", "Mundial 2014 (final)", 2014, "1-0"),
+    ("Argentina", "Países Bajos", "Argentina", "Mundial 1978 (final)", 1978, "3-1"),
+    ("Francia", "Croacia", "Francia", "Mundial 2018 (final)", 2018, "4-2"),
+    ("España", "Países Bajos", "España", "Mundial 2010 (final)", 2010, "1-0"),
+    ("España", "Italia", "España", "Eurocopa 2012 (final)", 2012, "4-0"),
+    ("Portugal", "Francia", "Portugal", "Eurocopa 2016 (final)", 2016, "1-0"),
+    ("Italia", "Inglaterra", "Italia", "Eurocopa 2020 (final)", 2021, "1-1 (3-2 pen)"),
 ]
 
 
