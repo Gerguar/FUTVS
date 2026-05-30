@@ -709,11 +709,11 @@ button,a{touch-action:manipulation}
 <body>
 <canvas id="bg-canvas"></canvas>
 <nav>
-  <a class="logo" href="#" onclick="showPage('home');return false">FUT<span>VS</span></a>
+  <a class="logo" href="/" onclick="nav('/');return false">FUT<span>VS</span></a>
   <div class="nav-links">
-    <a href="#" onclick="showPage('home');return false">Inicio</a>
+    <a href="/" onclick="nav('/');return false">Inicio</a>
     <a href="#" onclick="currentMatch&&showPage('detail');return false">Partido</a>
-    <a href="#" onclick="openComparador();return false">⚖️ Comparador</a>
+    <a href="/comparador" onclick="nav('/comparador');return false">⚖️ Comparador</a>
     <a href="#">Estadísticas</a>
   </div>
   <div class="live-badge"><div class="live-dot"></div>Temporada <span id="current-season">…</span></div>
@@ -2472,7 +2472,78 @@ async function renderComparador() {
   }
 
   document.getElementById('comp-result').innerHTML = html
+
+  // Reflejar el par seleccionado en la URL (compartible: /comparador?a=barcelona&b=real-madrid)
+  if (window.NavRouter && !NavRouter._suppress) {
+    const sa = NavRouter.slugify(eqA.nombre), sb_ = NavRouter.slugify(eqB.nombre)
+    NavRouter.push(`/comparador?a=${sa}&b=${sb_}`)
+  }
 }
+
+// ── Mini-router (rutas reales sin frameworks) ─────────────────────────────────
+// /                          → home
+// /comparador                → vista comparador
+// /comparador?a=X&b=Y        → comparador con par preseleccionado (slugs de nombre)
+// Soporta back/forward del navegador via popstate.
+const NavRouter = {
+  _suppress: false,
+  slugify(s) {
+    return (s || '').toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')   // quita acentos
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+  },
+  teamBySlug(slug) {
+    if (!_comp.equipos) return null
+    return _comp.equipos.find(e => this.slugify(e.nombre) === slug)
+  },
+  push(path) {
+    if (location.pathname + location.search === path) return
+    history.pushState({}, '', path)
+  },
+  async parse() {
+    const path = location.pathname
+    const q = new URLSearchParams(location.search)
+    if (path === '/comparador' || path === '/comparador/') {
+      this._suppress = true
+      try {
+        await openComparador()
+        const sa = q.get('a'), sb_ = q.get('b')
+        if (sa && sb_ && _comp.equipos) {
+          const ea = this.teamBySlug(sa), eb = this.teamBySlug(sb_)
+          if (ea && eb && ea.id !== eb.id) {
+            const bothSel = (ea.liga_id === 7 && eb.liga_id === 7)
+            if (bothSel) {
+              setCompMode('selecciones')
+            } else {
+              _comp.ligaSel = String(ea.liga_id)
+              setCompMode('clubes')
+              const ls = document.getElementById('comp-liga')
+              if (ls) { ls.value = String(ea.liga_id); populateCompTeams() }
+            }
+            document.getElementById('comp-team-a').value = String(ea.id)
+            document.getElementById('comp-team-b').value = String(eb.id)
+            await renderComparador()
+          }
+        }
+      } finally { this._suppress = false }
+      return
+    }
+    // default: home
+    showPage('home')
+  },
+  init() {
+    window.addEventListener('popstate', () => this.parse())
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.parse())
+    } else {
+      this.parse()
+    }
+  }
+}
+// Wrapper para los enlaces del nav: pushea la URL y dispara la vista.
+function nav(path) { NavRouter.push(path); NavRouter.parse() }
+NavRouter.init()
 </script>
 </body>
 </html>
