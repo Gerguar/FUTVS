@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-31T03:55:08+00:00",
-  "dato_curioso": "El partido con mayor expectativa de goles es PSG vs Arsenal, con 2.8 goles esperados según el modelo Dixon-Coles.",
+  "generated_at_utc": "2026-05-31T11:53:15+00:00",
+  "dato_curioso": "El modelo FutVS procesa más de 12.500 partidos históricos para generar cada pronóstico.",
   "forma_reciente": [
     {
       "slug": "rm",
@@ -129,7 +129,7 @@
   "alertas": [],
   "xg_performance": [],
   "meta": {
-    "n_partidos_analizados": 1,
+    "n_partidos_analizados": 0,
     "n_equipos_con_forma": 63,
     "n_tendencias": 0,
     "n_oportunidades": 0,
