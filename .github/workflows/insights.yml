@@ -1,10 +1,8 @@
 name: insights
 
 on:
-  # Corre después del workflow predict (cada 6h) con 10 min de delay
   schedule:
     - cron: "10 */6 * * *"
-  # También se puede triggerear manualmente
   workflow_dispatch: {}
 
 jobs:
@@ -31,13 +29,13 @@ jobs:
           SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           ANTHROPIC_API_KEY:    ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python -m src.generate_insights --out data/insights.json
+        run: python -m src.generate_insights --out web/data/insights.json
 
       - name: Commit insights
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/insights.json || true
+          git add web/data/insights.json || true
           if ! git diff --cached --quiet; then
             git commit -m "chore: refresh insights $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             git push
