@@ -1,0 +1,46 @@
+name: insights
+
+on:
+  # Corre después del workflow predict (cada 6h) con 10 min de delay
+  schedule:
+    - cron: "10 */6 * * *"
+  # También se puede triggerear manualmente
+  workflow_dispatch: {}
+
+jobs:
+  insights:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Generate insights
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY:    ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python -m src.generate_insights --out data/insights.json
+
+      - name: Commit insights
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/insights.json || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh insights $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          else
+            echo "no changes in insights"
+          fi
