@@ -1,0 +1,191 @@
+equipo_x,equipo_y,victorias_x,empates,victorias_y,partidos
+AFC Bournemouth,Arsenal,4,2,14,20
+AFC Bournemouth,Aston Villa,5,4,8,17
+AFC Bournemouth,Brentford,39,34,50,123
+AFC Bournemouth,Brighton and Hove Albion,46,30,44,120
+AFC Bournemouth,Burnley,9,13,16,38
+AFC Bournemouth,Chelsea,5,5,15,25
+AFC Bournemouth,Crystal Palace,33,22,28,83
+AFC Bournemouth,Everton,11,2,11,24
+AFC Bournemouth,Fulham,18,13,12,43
+AFC Bournemouth,Leeds United,2,4,11,17
+AFC Bournemouth,Liverpool,3,3,20,26
+AFC Bournemouth,Manchester City,1,3,22,26
+AFC Bournemouth,Manchester United,5,7,14,26
+AFC Bournemouth,Newcastle United,8,8,8,24
+AFC Bournemouth,Nottingham Forest,11,9,6,26
+AFC Bournemouth,Sunderland,2,4,6,12
+AFC Bournemouth,Tottenham Hotspur,6,3,10,19
+AFC Bournemouth,West Ham United,4,11,9,24
+AFC Bournemouth,Wolverhampton Wanderers,12,4,8,24
+Arsenal,Aston Villa,89,46,72,207
+Arsenal,Brentford,11,7,6,24
+Arsenal,Brighton and Hove Albion,20,7,8,35
+Arsenal,Burnley,59,24,34,117
+Arsenal,Chelsea,88,61,66,215
+Arsenal,Crystal Palace,38,17,6,61
+Arsenal,Everton,114,48,65,227
+Arsenal,Fulham,45,13,9,67
+Arsenal,Leeds United,55,33,41,129
+Arsenal,Liverpool,83,67,96,246
+Arsenal,Manchester City,101,48,67,216
+Arsenal,Manchester United,91,51,103,245
+Arsenal,Newcastle United,88,39,72,199
+Arsenal,Nottingham Forest,56,24,29,109
+Arsenal,Sunderland,64,42,50,156
+Arsenal,Tottenham Hotspur,91,55,67,213
+Arsenal,West Ham United,76,41,38,155
+Arsenal,Wolverhampton Wanderers,67,29,32,128
+Aston Villa,Brentford,10,8,7,25
+Aston Villa,Brighton and Hove Albion,21,10,6,37
+Aston Villa,Burnley,55,30,41,126
+Aston Villa,Chelsea,62,37,71,170
+Aston Villa,Crystal Palace,23,17,19,59
+Aston Villa,Everton,89,62,84,235
+Aston Villa,Fulham,31,22,27,80
+Aston Villa,Leeds United,43,33,32,108
+Aston Villa,Liverpool,60,43,104,207
+Aston Villa,Manchester City,61,42,82,185
+Aston Villa,Manchester United,52,42,108,202
+Aston Villa,Newcastle United,61,40,77,178
+Aston Villa,Nottingham Forest,65,32,41,138
+Aston Villa,Sunderland,84,47,55,186
+Aston Villa,Tottenham Hotspur,64,36,80,180
+Aston Villa,West Ham United,43,37,45,125
+Aston Villa,Wolverhampton Wanderers,59,35,46,140
+Brentford,Brighton and Hove Albion,30,17,37,84
+Brentford,Burnley,12,10,14,36
+Brentford,Chelsea,7,6,12,25
+Brentford,Crystal Palace,16,13,19,48
+Brentford,Everton,11,6,11,28
+Brentford,Fulham,25,19,26,70
+Brentford,Leeds United,13,18,15,46
+Brentford,Liverpool,5,5,15,25
+Brentford,Manchester City,7,2,15,24
+Brentford,Manchester United,8,3,12,23
+Brentford,Newcastle United,7,1,15,23
+Brentford,Nottingham Forest,16,11,16,43
+Brentford,Sunderland,7,4,10,21
+Brentford,Tottenham Hotspur,7,17,28,52
+Brentford,West Ham United,23,12,25,60
+Brentford,Wolverhampton Wanderers,15,7,17,39
+Brighton and Hove Albion,Burnley,14,17,12,43
+Brighton and Hove Albion,Chelsea,7,5,16,28
+Brighton and Hove Albion,Crystal Palace,42,32,41,115
+Brighton and Hove Albion,Everton,7,9,13,29
+Brighton and Hove Albion,Fulham,23,9,28,60
+Brighton and Hove Albion,Leeds United,20,14,19,53
+Brighton and Hove Albion,Liverpool,9,12,25,46
+Brighton and Hove Albion,Manchester City,8,7,21,36
+Brighton and Hove Albion,Manchester United,10,5,23,38
+Brighton and Hove Albion,Newcastle United,16,11,12,39
+Brighton and Hove Albion,Nottingham Forest,15,12,19,46
+Brighton and Hove Albion,Sunderland,15,8,14,37
+Brighton and Hove Albion,Tottenham Hotspur,12,10,21,43
+Brighton and Hove Albion,West Ham United,22,24,19,65
+Brighton and Hove Albion,Wolverhampton Wanderers,22,17,9,48
+Burnley,Chelsea,38,27,43,108
+Burnley,Crystal Palace,22,19,16,57
+Burnley,Everton,38,31,56,125
+Burnley,Fulham,49,21,33,103
+Burnley,Leeds United,20,13,35,68
+Burnley,Liverpool,38,30,62,130
+Burnley,Manchester City,30,25,59,114
+Burnley,Manchester United,45,26,68,139
+Burnley,Newcastle United,44,21,51,116
+Burnley,Nottingham Forest,43,30,39,112
+Burnley,Sunderland,40,34,49,123
+Burnley,Tottenham Hotspur,42,29,56,127
+Burnley,West Ham United,35,21,42,98
+Burnley,Wolverhampton Wanderers,42,32,68,142
+Chelsea,Crystal Palace,39,18,12,69
+Chelsea,Everton,78,57,61,196
+Chelsea,Fulham,54,27,14,95
+Chelsea,Leeds United,40,31,41,112
+Chelsea,Liverpool,67,47,87,201
+Chelsea,Manchester City,71,42,70,183
+Chelsea,Manchester United,57,57,85,199
+Chelsea,Newcastle United,81,41,59,181
+Chelsea,Nottingham Forest,43,31,28,102
+Chelsea,Sunderland,61,22,44,127
+Chelsea,Tottenham Hotspur,83,42,56,181
+Chelsea,West Ham United,59,23,44,126
+Chelsea,Wolverhampton Wanderers,49,30,43,122
+Crystal Palace,Everton,15,22,29,66
+Crystal Palace,Fulham,17,20,19,56
+Crystal Palace,Leeds United,20,18,32,70
+Crystal Palace,Liverpool,18,14,38,70
+Crystal Palace,Manchester City,18,17,41,76
+Crystal Palace,Manchester United,13,14,43,70
+Crystal Palace,Newcastle United,14,13,33,60
+Crystal Palace,Nottingham Forest,16,25,30,71
+Crystal Palace,Sunderland,17,16,17,50
+Crystal Palace,Tottenham Hotspur,16,15,38,69
+Crystal Palace,West Ham United,21,25,26,72
+Crystal Palace,Wolverhampton Wanderers,30,20,30,80
+Everton,Fulham,34,16,24,74
+Everton,Leeds United,36,35,53,124
+Everton,Liverpool,84,87,128,299
+Everton,Manchester City,68,50,83,201
+Everton,Manchester United,72,48,97,217
+Everton,Newcastle United,78,38,72,188
+Everton,Nottingham Forest,60,28,48,136
+Everton,Sunderland,83,31,73,187
+Everton,Tottenham Hotspur,58,60,74,192
+Everton,West Ham United,75,34,46,155
+Everton,Wolverhampton Wanderers,65,30,52,147
+Fulham,Leeds United,23,15,27,65
+Fulham,Liverpool,14,21,46,81
+Fulham,Manchester City,17,16,45,78
+Fulham,Manchester United,16,21,59,96
+Fulham,Newcastle United,34,15,36,85
+Fulham,Nottingham Forest,48,29,33,110
+Fulham,Sunderland,22,20,26,68
+Fulham,Tottenham Hotspur,23,31,55,109
+Fulham,West Ham United,35,25,53,113
+Fulham,Wolverhampton Wanderers,29,26,47,102
+Leeds United,Liverpool,29,33,63,125
+Leeds United,Manchester City,43,18,51,112
+Leeds United,Manchester United,27,38,50,115
+Leeds United,Newcastle United,39,22,41,102
+Leeds United,Nottingham Forest,33,35,37,105
+Leeds United,Sunderland,41,22,36,99
+Leeds United,Tottenham Hotspur,33,30,42,105
+Leeds United,West Ham United,51,30,33,114
+Leeds United,Wolverhampton Wanderers,47,23,36,106
+Liverpool,Manchester City,110,58,63,231
+Liverpool,Manchester United,82,71,93,246
+Liverpool,Newcastle United,96,45,51,192
+Liverpool,Nottingham Forest,61,30,33,124
+Liverpool,Sunderland,80,40,52,172
+Liverpool,Tottenham Hotspur,94,45,50,189
+Liverpool,West Ham United,88,38,29,155
+Liverpool,Wolverhampton Wanderers,65,18,38,121
+Manchester City,Manchester United,63,54,81,198
+Manchester City,Newcastle United,83,42,74,199
+Manchester City,Nottingham Forest,46,29,34,109
+Manchester City,Sunderland,73,26,50,149
+Manchester City,Tottenham Hotspur,69,38,69,176
+Manchester City,West Ham United,67,20,38,125
+Manchester City,Wolverhampton Wanderers,59,25,50,134
+Manchester United,Newcastle United,93,41,49,183
+Manchester United,Nottingham Forest,55,25,36,116
+Manchester United,Sunderland,66,39,42,147
+Manchester United,Tottenham Hotspur,97,52,58,207
+Manchester United,West Ham United,74,34,50,158
+Manchester United,Wolverhampton Wanderers,57,21,39,117
+Newcastle United,Nottingham Forest,58,28,35,121
+Newcastle United,Sunderland,54,49,55,158
+Newcastle United,Tottenham Hotspur,66,35,74,175
+Newcastle United,West Ham United,62,41,45,148
+Newcastle United,Wolverhampton Wanderers,38,31,42,111
+Nottingham Forest,Sunderland,34,24,41,99
+Nottingham Forest,Tottenham Hotspur,41,29,59,129
+Nottingham Forest,West Ham United,49,26,49,124
+Nottingham Forest,Wolverhampton Wanderers,47,31,63,141
+Sunderland,Tottenham Hotspur,39,32,50,121
+Sunderland,West Ham United,32,25,37,94
+Sunderland,Wolverhampton Wanderers,50,33,41,124
+Tottenham Hotspur,West Ham United,103,56,68,227
+Tottenham Hotspur,Wolverhampton Wanderers,53,23,34,110
+West Ham United,Wolverhampton Wanderers,37,14,27,78
