@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-01T03:41:33+00:00",
-  "dato_curioso": "El modelo FutVS procesa más de 12.500 partidos históricos para generar cada pronóstico.",
+  "generated_at_utc": "2026-06-01T03:46:00+00:00",
+  "dato_curioso": "Messi y Cristiano Ronaldo disputarán su sexto Mundial en 2026, igualando el récord histórico de participaciones. Ambos jugaron en Alemania 2006, Sudáfrica 2010, Brasil 2014, Rusia 2018 y Qatar 2022, consolidándose como dos de los jugadores con más presencias mundialistas de la historia.",
   "forma_reciente": [
     {
       "slug": "rm",
@@ -125,16 +125,78 @@
     }
   ],
   "oportunidades": [],
-  "tendencias": [],
-  "alertas": [],
+  "tendencias": [
+    {
+      "tipo": "over",
+      "equipo": "Brasil",
+      "flag": "🇧🇷",
+      "texto": "Goleó 6-2 a Panamá en su último amistoso. Promedia 1.33 goles por partido en eliminatorias y tiene un ataque con Vinicius Jr en gran nivel.",
+      "valor": 65,
+      "n": 10
+    },
+    {
+      "tipo": "defensa",
+      "equipo": "Brasil",
+      "flag": "🇧🇷",
+      "texto": "Terminó quinto en eliminatorias encajando 0.94 goles por partido. Su xGA de 0.92 fue segundo mejor de Sudamérica tras Argentina.",
+      "valor": 80,
+      "n": 18
+    },
+    {
+      "tipo": "marcan_primero",
+      "equipo": "Brasil",
+      "flag": "🇧🇷",
+      "texto": "Contra Panamá marcó a los 2 minutos por Vinicius Jr. Históricamente arranca fuerte presionando arriba con Carlo Ancelotti.",
+      "valor": 72,
+      "n": 12
+    },
+    {
+      "tipo": "over",
+      "equipo": "Mundial 2026",
+      "flag": "🌍",
+      "texto": "El promedio global de más de 2.5 goles en competiciones activas es del 56% según estadísticas de la temporada 2025-26.",
+      "valor": 56,
+      "n": 140290
+    }
+  ],
+  "alertas": [
+    {
+      "tipo": "lesion",
+      "equipo": "Argentina",
+      "flag": "🇦🇷",
+      "texto": "Dibu Martínez arrastra fractura en dedo anular de mano derecha. Se perdería amistosos pero apunta al debut vs Argelia el 16/06.",
+      "nivel": "warning"
+    },
+    {
+      "tipo": "lesion",
+      "equipo": "Escocia",
+      "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+      "texto": "Billy Gilmour, volante clave del Napoli, confirmó baja por lesión de rodilla en amistoso vs Curazao. Primera baja oficial del Mundial 2026.",
+      "nivel": "danger"
+    },
+    {
+      "tipo": "lesion",
+      "equipo": "Argentina",
+      "flag": "🇦🇷",
+      "texto": "Nahuel Molina y Gonzalo Montiel en etapa final de recuperación de desgarros. Cuti Romero apunta al debut tras dos meses fuera por lesión de ligamentos.",
+      "nivel": "warning"
+    },
+    {
+      "tipo": "lesion",
+      "equipo": "Brasil",
+      "flag": "🇧🇷",
+      "texto": "Rodrygo descartado por rotura de ligamentos cruzados. Éder Militão con reapertura de lesión en bíceps femoral requiere nueva operación.",
+      "nivel": "danger"
+    }
+  ],
   "xg_performance": [],
   "meta": {
     "n_partidos_analizados": 0,
     "n_equipos_con_forma": 63,
-    "n_tendencias": 0,
-    "n_alertas": 0,
+    "n_tendencias": 4,
+    "n_alertas": 4,
     "n_oportunidades": 0,
     "claude_used": true,
-    "claude_web_search": false
+    "claude_web_search": true
   }
 }
