@@ -1,0 +1,158 @@
+equipo_x,equipo_y,victorias_x,empates,victorias_y,partidos
+Atalanta,Bologna,47,35,48,130
+Atalanta,Cagliari,41,16,30,87
+Atalanta,Como,18,21,20,59
+Atalanta,Cremonese,21,15,9,45
+Atalanta,Fiorentina,37,45,65,147
+Atalanta,Genoa,39,32,39,110
+Atalanta,Hellas Verona,44,23,23,90
+Atalanta,Inter,27,37,81,145
+Atalanta,Juventus,19,54,76,149
+Atalanta,Lazio,42,52,41,135
+Atalanta,Lecce,24,18,12,54
+Atalanta,Milan,32,49,69,150
+Atalanta,Napoli,36,35,55,126
+Atalanta,Parma,26,23,19,68
+Atalanta,Roma,37,44,61,142
+Atalanta,Sassuolo,19,5,6,30
+Atalanta,Torino,37,44,53,134
+Atalanta,Udinese,31,34,33,98
+Bologna,Cagliari,29,25,26,80
+Bologna,Cremonese,13,10,6,29
+Bologna,Fiorentina,47,51,63,161
+Bologna,Genoa,51,43,41,135
+Bologna,Hellas Verona,35,27,16,78
+Bologna,Inter,58,44,93,195
+Bologna,Juventus,29,69,96,194
+Bologna,Lazio,61,45,60,166
+Bologna,Lecce,21,20,9,50
+Bologna,Milan,54,47,90,191
+Bologna,Napoli,50,43,62,155
+Bologna,Parma,14,22,13,49
+Bologna,Pisa,13,9,6,28
+Bologna,Roma,57,51,59,167
+Bologna,Sassuolo,9,7,6,22
+Bologna,Torino,54,48,59,161
+Bologna,Udinese,37,28,32,97
+Cagliari,Como,20,15,18,53
+Cagliari,Fiorentina,26,26,40,92
+Cagliari,Genoa,28,23,29,80
+Cagliari,Hellas Verona,26,20,26,72
+Cagliari,Inter,16,32,54,102
+Cagliari,Juventus,16,32,52,100
+Cagliari,Lazio,21,18,48,87
+Cagliari,Lecce,12,14,17,43
+Cagliari,Milan,10,30,55,95
+Cagliari,Napoli,14,34,44,92
+Cagliari,Parma,29,27,26,82
+Cagliari,Roma,25,29,47,101
+Cagliari,Sassuolo,6,10,6,22
+Cagliari,Torino,28,32,37,97
+Cagliari,Udinese,18,23,33,74
+Como,Cremonese,17,19,23,59
+Como,Fiorentina,14,7,18,39
+Como,Hellas Verona,23,20,18,61
+Como,Inter,6,7,28,41
+Como,Lecce,17,7,8,32
+Como,Milan,5,11,20,36
+Como,Napoli,7,9,21,37
+Como,Parma,16,17,16,49
+Como,Torino,9,10,21,40
+Cremonese,Hellas Verona,17,22,24,63
+Cremonese,Inter,3,4,17,24
+Cremonese,Lecce,14,13,18,45
+Cremonese,Napoli,6,10,17,33
+Cremonese,Parma,14,15,17,46
+Cremonese,Pisa,18,10,20,48
+Cremonese,Sassuolo,6,3,5,14
+Cremonese,Udinese,17,19,16,52
+Fiorentina,Genoa,52,43,25,120
+Fiorentina,Hellas Verona,42,23,21,86
+Fiorentina,Inter,51,59,82,192
+Fiorentina,Juventus,43,61,92,196
+Fiorentina,Lazio,56,45,68,169
+Fiorentina,Milan,53,50,82,185
+Fiorentina,Napoli,60,51,66,177
+Fiorentina,Parma,25,27,20,72
+Fiorentina,Roma,60,68,71,199
+Fiorentina,Sassuolo,10,8,8,26
+Fiorentina,Torino,57,59,53,169
+Fiorentina,Udinese,56,29,27,112
+Genoa,Hellas Verona,30,31,21,82
+Genoa,Inter,33,34,74,141
+Genoa,Juventus,27,30,89,146
+Genoa,Lazio,49,36,55,140
+Genoa,Milan,29,46,63,138
+Genoa,Napoli,36,43,50,129
+Genoa,Pisa,17,17,9,43
+Genoa,Roma,39,27,62,128
+Genoa,Sassuolo,9,5,8,22
+Genoa,Torino,41,40,56,137
+Genoa,Udinese,27,22,25,74
+Hellas Verona,Inter,8,25,55,88
+Hellas Verona,Juventus,15,23,53,91
+Hellas Verona,Lecce,19,16,16,51
+Hellas Verona,Milan,14,28,40,82
+Hellas Verona,Napoli,19,27,48,94
+Hellas Verona,Parma,31,12,16,59
+Hellas Verona,Pisa,30,19,18,67
+Hellas Verona,Roma,15,22,42,79
+Hellas Verona,Sassuolo,10,3,15,28
+Hellas Verona,Torino,20,35,42,97
+Hellas Verona,Udinese,23,26,23,72
+Inter,Juventus,71,60,111,242
+Inter,Lazio,82,61,48,191
+Inter,Lecce,33,7,4,44
+Inter,Milan,85,69,76,230
+Inter,Napoli,81,46,53,180
+Inter,Parma,31,20,19,70
+Inter,Roma,100,57,63,220
+Inter,Sassuolo,12,2,10,24
+Inter,Torino,85,56,55,196
+Inter,Udinese,64,32,25,121
+Juventus,Lazio,102,46,50,198
+Juventus,Lecce,32,12,4,48
+Juventus,Milan,89,75,66,230
+Juventus,Napoli,86,51,49,186
+Juventus,Parma,40,19,14,73
+Juventus,Roma,97,60,49,206
+Juventus,Sassuolo,16,3,4,23
+Juventus,Torino,93,52,44,189
+Juventus,Udinese,77,22,14,113
+Lazio,Lecce,23,13,13,49
+Lazio,Milan,43,65,87,195
+Lazio,Napoli,54,52,64,170
+Lazio,Roma,51,64,72,187
+Lazio,Sassuolo,14,4,6,24
+Lazio,Torino,45,63,46,154
+Lazio,Udinese,41,26,27,94
+Lecce,Milan,2,15,31,48
+Lecce,Napoli,7,14,20,41
+Lecce,Parma,13,15,24,52
+Lecce,Pisa,16,8,13,37
+Lecce,Roma,2,11,29,42
+Lecce,Sassuolo,1,5,4,10
+Lecce,Torino,9,8,15,32
+Lecce,Udinese,19,7,28,54
+Milan,Napoli,71,54,55,180
+Milan,Parma,38,18,18,74
+Milan,Roma,86,64,54,204
+Milan,Sassuolo,13,5,8,26
+Milan,Torino,79,67,56,202
+Milan,Udinese,48,37,24,109
+Napoli,Parma,23,13,16,52
+Napoli,Roma,55,59,66,180
+Napoli,Torino,57,61,46,164
+Napoli,Udinese,44,34,20,98
+Parma,Pisa,10,14,10,34
+Parma,Roma,11,13,39,63
+Parma,Sassuolo,6,5,4,15
+Pisa,Sassuolo,2,3,2,7
+Pisa,Torino,8,9,12,29
+Pisa,Udinese,8,11,8,27
+Roma,Sassuolo,13,9,2,24
+Roma,Torino,82,48,59,189
+Roma,Udinese,59,26,25,110
+Sassuolo,Torino,6,11,15,32
+Sassuolo,Udinese,6,10,8,24
+Torino,Udinese,32,24,29,85
