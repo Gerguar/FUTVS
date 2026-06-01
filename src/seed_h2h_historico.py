@@ -195,6 +195,30 @@ def main() -> None:
 
     print(f"\n[h2h] total pares a upsert: {len(payloads)}")
 
+    # Protección: NO pisar pares que ya tengan una fuente más completa
+    # (manual / bdfutbol / 11v11 / transfermarkt / worldfootball). Esos vienen
+    # de matrices all-time externas (todas las competiciones) y siempre tienen
+    # más partidos que el cálculo couk (liga solo desde 1995).
+    BETTER_SOURCES = {"manual", "bdfutbol", "bdfutbol-liga",
+                      "11v11", "transfermarkt", "worldfootball"}
+    existing_better: set[tuple[int, int]] = set()
+    offset = 0
+    while True:
+        chunk = sb_get(f"h2h_historico?select=equipo_a_id,equipo_b_id,fuente"
+                       f"&order=id&limit=1000&offset={offset}")
+        for r in chunk:
+            if r["fuente"] in BETTER_SOURCES:
+                existing_better.add((r["equipo_a_id"], r["equipo_b_id"]))
+        if len(chunk) < 1000:
+            break
+        offset += 1000
+    before = len(payloads)
+    payloads = [pl for pl in payloads
+                if (pl["equipo_a_id"], pl["equipo_b_id"]) not in existing_better]
+    skipped = before - len(payloads)
+    print(f"[h2h] protegidos por fuente all-time: {skipped} pares (no se pisan)")
+    print(f"[h2h] pares efectivos a upsert: {len(payloads)}")
+
     if args.dry_run:
         print("\nEjemplos (primeros 12):")
         id2name = {e["id"]: e["nombre"] for e in sb_get("equipos?select=id,nombre")}

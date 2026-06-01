@@ -9,9 +9,11 @@ quedarse con el que tenga MÁS partidos.
 Goleadas 4+: worldfootball no las expone agregadas, así que se PRESERVAN las
 existentes si las hay.
 
-Nota: Bayer Leverkusen (id=64) y Eintracht Frankfurt (id=65) están en
-`equipos.liga_id=1` y NO en liga=5, así que el seed couk no los procesó vs
-Bundesliga. Sus cruces se cargan acá por primera vez (33 NUEVOS).
+Nota histórica: Bayer Leverkusen (id=64) y Eintracht Frankfurt (id=65)
+estaban en `equipos.liga_id=1` (Champions) en lugar de liga=5, así que el
+seed couk los ignoraba. Sus cruces se cargaron acá por primera vez (33
+NUEVOS) y luego se movieron a Bundesliga. Idem Marseille (67) y Monaco
+(68) que pasaron a Ligue 1 (6).
 
 Fuente del row resultante: "worldfootball".
 
