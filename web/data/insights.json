@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-01T03:46:00+00:00",
-  "dato_curioso": "Messi y Cristiano Ronaldo disputarán su sexto Mundial en 2026, igualando el récord histórico de participaciones. Ambos jugaron en Alemania 2006, Sudáfrica 2010, Brasil 2014, Rusia 2018 y Qatar 2022, consolidándose como dos de los jugadores con más presencias mundialistas de la historia.",
+  "generated_at_utc": "2026-06-01T19:32:51+00:00",
+  "dato_curioso": "Curazao se convierte en el país más pequeño en disputar un Mundial con solo 185.000 habitantes y 444 km². Messi y Cristiano Ronaldo jugarán su sexto Mundial 2026, récord histórico de participaciones en la competencia.",
   "forma_reciente": [
     {
       "slug": "rm",
@@ -127,65 +127,65 @@
   "oportunidades": [],
   "tendencias": [
     {
+      "tipo": "racha_negativa",
+      "equipo": "Marsella",
+      "flag": "🇫🇷",
+      "texto": "Marsella en mala racha como local: 3 derrotas en sus últimos 5 partidos de Ligue 1 en abril-mayo 2026.",
+      "valor": 40,
+      "n": 5
+    },
+    {
+      "tipo": "racha_negativa",
+      "equipo": "Nantes",
+      "flag": "🇫🇷",
+      "texto": "Nantes sin victorias hace 5 jornadas con el ataque más débil de Ligue 1, complicando su pelea por la permanencia.",
+      "valor": 0,
+      "n": 5
+    },
+    {
       "tipo": "over",
-      "equipo": "Brasil",
-      "flag": "🇧🇷",
-      "texto": "Goleó 6-2 a Panamá en su último amistoso. Promedia 1.33 goles por partido en eliminatorias y tiene un ataque con Vinicius Jr en gran nivel.",
-      "valor": 65,
-      "n": 10
-    },
-    {
-      "tipo": "defensa",
-      "equipo": "Brasil",
-      "flag": "🇧🇷",
-      "texto": "Terminó quinto en eliminatorias encajando 0.94 goles por partido. Su xGA de 0.92 fue segundo mejor de Sudamérica tras Argentina.",
-      "valor": 80,
-      "n": 18
-    },
-    {
-      "tipo": "marcan_primero",
-      "equipo": "Brasil",
-      "flag": "🇧🇷",
-      "texto": "Contra Panamá marcó a los 2 minutos por Vinicius Jr. Históricamente arranca fuerte presionando arriba con Carlo Ancelotti.",
-      "valor": 72,
+      "equipo": "FC Barcelona",
+      "flag": "🇪🇸",
+      "texto": "Barcelona lidera La Liga 2025/26 con un promedio de 2.5 goles por partido, el más alto de la competencia.",
+      "valor": 83,
       "n": 12
     },
     {
-      "tipo": "over",
-      "equipo": "Mundial 2026",
-      "flag": "🌍",
-      "texto": "El promedio global de más de 2.5 goles en competiciones activas es del 56% según estadísticas de la temporada 2025-26.",
-      "valor": 56,
-      "n": 140290
+      "tipo": "racha_positiva",
+      "equipo": "Lille",
+      "flag": "🇫🇷",
+      "texto": "Lille en racha positiva: 9 partidos sin perder en Ligue 1 hasta mayo 2026, peleando por el podio a un punto del Marsella.",
+      "valor": 100,
+      "n": 9
     }
   ],
   "alertas": [
     {
       "tipo": "lesion",
-      "equipo": "Argentina",
-      "flag": "🇦🇷",
-      "texto": "Dibu Martínez arrastra fractura en dedo anular de mano derecha. Se perdería amistosos pero apunta al debut vs Argelia el 16/06.",
-      "nivel": "warning"
-    },
-    {
-      "tipo": "lesion",
-      "equipo": "Escocia",
-      "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
-      "texto": "Billy Gilmour, volante clave del Napoli, confirmó baja por lesión de rodilla en amistoso vs Curazao. Primera baja oficial del Mundial 2026.",
+      "equipo": "Brasil",
+      "flag": "🇧🇷",
+      "texto": "Rodrygo descartado por rotura de ligamentos cruzados en marzo. Éder Militão operado del bíceps femoral izquierdo (21/04), ausente 5 meses.",
       "nivel": "danger"
     },
     {
       "tipo": "lesion",
       "equipo": "Argentina",
       "flag": "🇦🇷",
-      "texto": "Nahuel Molina y Gonzalo Montiel en etapa final de recuperación de desgarros. Cuti Romero apunta al debut tras dos meses fuera por lesión de ligamentos.",
+      "texto": "Lionel Messi con lesión muscular muslo izquierdo, no jugará amistosos previos al Mundial. Cuti Romero con esguince de rodilla derecha, llegaría justo.",
       "nivel": "warning"
     },
     {
       "tipo": "lesion",
-      "equipo": "Brasil",
-      "flag": "🇧🇷",
-      "texto": "Rodrygo descartado por rotura de ligamentos cruzados. Éder Militão con reapertura de lesión en bíceps femoral requiere nueva operación.",
+      "equipo": "España",
+      "flag": "🇪🇸",
+      "texto": "Lamine Yamal con desgarro grado 2 bíceps femoral (22/04). Se perderá primeros partidos del Mundial, recuperación 6-8 semanas.",
+      "nivel": "warning"
+    },
+    {
+      "tipo": "lesion",
+      "equipo": "Inglaterra",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "texto": "Jack Grealish descartado definitivamente por fractura por estrés en pie izquierdo. Operado el 9 de febrero, sin fecha de regreso.",
       "nivel": "danger"
     }
   ],
