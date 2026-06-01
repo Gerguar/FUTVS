@@ -769,7 +769,7 @@ button,a{touch-action:manipulation}
     <a href="/" onclick="nav('/');return false">Inicio</a>
     <a href="#" onclick="currentMatch&&showPage('detail');return false">Partido</a>
     <a href="/comparador" onclick="nav('/comparador');return false">⚖️ Comparador</a>
-    <a href="#" onclick="showPage('insights');return false">Insights ✦</a>
+    <a href="/insights" onclick="nav('/insights');return false">Insights ✦</a>
   </div>
   <div class="live-badge"><div class="live-dot"></div>Temporada <span id="current-season">…</span></div>
 </nav>
@@ -2644,6 +2644,10 @@ const NavRouter = {
           }
         }
       } finally { this._suppress = false }
+      return
+    }
+    if (path === '/insights' || path === '/insights/') {
+      showPage('insights')   // el wrapper de showPage dispara loadInsights()
       return
     }
     // default: home
