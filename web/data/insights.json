@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0",
-  "generated_at_utc": "2026-05-31T21:39:52+00:00",
+  "schema_version": "1.1",
+  "generated_at_utc": "2026-06-01T03:10:12+00:00",
   "dato_curioso": "El modelo FutVS procesa más de 12.500 partidos históricos para generar cada pronóstico.",
   "forma_reciente": [
     {
@@ -132,7 +132,9 @@
     "n_partidos_analizados": 0,
     "n_equipos_con_forma": 63,
     "n_tendencias": 0,
+    "n_alertas": 0,
     "n_oportunidades": 0,
-    "claude_used": false
+    "claude_used": true,
+    "claude_web_search": false
   }
 }
