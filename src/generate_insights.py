@@ -273,12 +273,24 @@ Reglas:
             print("[insights] Claude no devolvió texto")
             return [], [], ""
 
-        # Limpiar posibles backticks
+        # Extraer JSON robusto
         text = text.strip()
-        if text.startswith("```"):
-            text = text.split("```")[1]
-            if text.startswith("json"):
-                text = text[4:]
+        if "```" in text:
+            parts = text.split("```")
+            for part in parts:
+                candidate = part.strip()
+                if candidate.startswith("json"):
+                    candidate = candidate[4:].strip()
+                if candidate.startswith("{"):
+                    text = candidate
+                    break
+        if not text.startswith("{"):
+            idx = text.find("{")
+            if idx != -1:
+                text = text[idx:]
+        idx_end = text.rfind("}")
+        if idx_end != -1:
+            text = text[:idx_end+1]
         text = text.strip()
 
         parsed = json.loads(text)
