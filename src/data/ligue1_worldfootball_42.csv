@@ -1,0 +1,43 @@
+equipo_x,equipo_y,victorias_x,empates,victorias_y,partidos
+Paris Saint-Germain,AS Monaco,38,31,50,119
+Paris Saint-Germain,Olympique de Marseille,53,24,35,112
+Paris Saint-Germain,Racing Strasbourg,43,21,14,78
+Paris Saint-Germain,Olympique Lyonnais,51,27,33,111
+Paris Saint-Germain,Lille OSC,47,27,32,106
+Paris Saint-Germain,Stade Rennais,45,19,23,87
+Paris Saint-Germain,RC Lens,47,22,25,94
+Paris Saint-Germain,OGC Nice,38,24,25,87
+Paris Saint-Germain,Toulouse FC,48,14,19,81
+Paris Saint-Germain,Paris FC,1,2,1,4
+Paris Saint-Germain,FC Nantes,56,24,30,110
+Paris Saint-Germain,FC Lorient,24,9,10,43
+Paris Saint-Germain,Stade Brestois 29,30,13,4,47
+Paris Saint-Germain,AJ Auxerre,35,23,21,79
+Paris Saint-Germain,Havre AC,23,13,4,40
+Paris Saint-Germain,Angers SCO,27,7,3,37
+Paris Saint-Germain,FC Metz,52,15,18,85
+AS Monaco,Olympique de Marseille,45,28,50,123
+AS Monaco,Racing Strasbourg,51,26,29,106
+AS Monaco,Olympique Lyonnais,58,26,49,133
+AS Monaco,Lille OSC,46,42,35,123
+AS Monaco,RC Lens,57,33,34,125
+AS Monaco,OGC Nice,54,35,37,126
+AS Monaco,Toulouse FC,38,22,15,75
+AS Monaco,Paris FC,5,0,3,8
+Olympique de Marseille,Racing Strasbourg,48,37,29,114
+Olympique de Marseille,Olympique Lyonnais,42,41,42,125
+Olympique de Marseille,Lille OSC,51,38,44,133
+Olympique de Marseille,Stade Rennais,57,38,35,130
+Olympique de Marseille,RC Lens,45,23,43,111
+Olympique de Marseille,Toulouse FC,40,27,15,82
+Olympique de Marseille,FC Nantes,50,26,33,109
+Olympique de Marseille,Havre AC,26,11,11,48
+Racing Strasbourg,Lille OSC,41,23,38,102
+Olympique Lyonnais,Angers SCO,41,15,20,76
+Olympique Lyonnais,FC Metz,54,18,30,102
+Lille OSC,Paris FC,5,3,0,8
+Stade Rennais,RC Lens,32,28,44,104
+Stade Rennais,Paris FC,8,2,4,14
+Stade Rennais,Havre AC,29,24,25,78
+RC Lens,OGC Nice,38,27,39,104
+FC Lorient,AJ Auxerre,6,11,11,28
