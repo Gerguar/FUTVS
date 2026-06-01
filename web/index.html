@@ -1514,7 +1514,13 @@ function renderMatches(filter) {
     list = list.filter(m => m.grupo === currentGroupFilter)
   }
   if (!list.length) {
-    c.innerHTML = `<div class="loader" style="color:var(--faint)">No hay partidos disponibles</div>`
+    // Ligas top-5 fuera de temporada (mayo-agosto): no es un bug, no hay fixture cargado.
+    const OFFSEASON = {laliga:'La Liga',premier:'Premier League',seriea:'Serie A',bundesliga:'Bundesliga',ligue1:'Ligue 1'}
+    const isOffseason = OFFSEASON[filter] && !matches.some(m => m.leagueKey === filter)
+    const msg = isOffseason
+      ? `${OFFSEASON[filter]} arranca en agosto.<br><span style="font-size:.78rem;color:var(--faint)">Mientras tanto: Mundial 2026 desde el 11 de junio.</span>`
+      : 'No hay partidos disponibles'
+    c.innerHTML = `<div class="loader" style="color:var(--faint);text-align:center;padding:2rem">${msg}</div>`
     return
   }
   const upcoming = list.filter(m => m.status !== 'finalizado')
