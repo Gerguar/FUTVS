@@ -1,0 +1,154 @@
+equipo_x,equipo_y,victorias_x,empates,victorias_y,partidos
+Bayern Munich,Borussia Dortmund,69,37,33,139
+Bayern Munich,RB Leipzig,14,8,3,25
+Bayern Munich,VfB Stuttgart,98,29,38,165
+Bayern Munich,1899 Hoffenheim,25,7,5,37
+Bayern Munich,Bayer Leverkusen,63,22,22,107
+Bayern Munich,SC Freiburg,39,10,5,54
+Bayern Munich,Eintracht Frankfurt,80,32,44,156
+Bayern Munich,FC Augsburg,28,2,6,36
+Bayern Munich,1. FSV Mainz 05,32,4,8,44
+Bayern Munich,1. FC Union Berlin,10,5,0,15
+Bayern Munich,Bor. Mönchengladbach,61,34,29,124
+Bayern Munich,Hamburger SV,75,25,22,122
+Bayern Munich,1. FC Köln,60,24,24,108
+Bayern Munich,Werder Bremen,76,27,29,132
+Bayern Munich,VfL Wolfsburg,52,9,4,65
+Bayern Munich,1. FC Heidenheim 1846,5,1,1,7
+Bayern Munich,FC St. Pauli,18,5,3,26
+Borussia Dortmund,RB Leipzig,9,4,9,22
+Borussia Dortmund,VfB Stuttgart,49,26,48,123
+Borussia Dortmund,1899 Hoffenheim,19,11,9,39
+Borussia Dortmund,Bayer Leverkusen,48,27,36,111
+Borussia Dortmund,SC Freiburg,36,13,6,55
+Borussia Dortmund,Eintracht Frankfurt,56,23,35,114
+Borussia Dortmund,FC Augsburg,19,7,5,31
+Borussia Dortmund,1. FSV Mainz 05,23,10,7,40
+Borussia Dortmund,1. FC Union Berlin,11,1,4,16
+Borussia Dortmund,Bor. Mönchengladbach,62,36,37,135
+Borussia Dortmund,Hamburger SV,48,29,41,118
+Borussia Dortmund,1. FC Köln,55,34,41,130
+Borussia Dortmund,Werder Bremen,56,22,46,124
+Borussia Dortmund,VfL Wolfsburg,38,13,12,63
+Borussia Dortmund,1. FC Heidenheim 1846,4,2,0,6
+Borussia Dortmund,FC St. Pauli,18,5,3,26
+RB Leipzig,VfB Stuttgart,10,2,5,17
+RB Leipzig,1899 Hoffenheim,13,4,5,22
+RB Leipzig,Bayer Leverkusen,8,5,7,20
+RB Leipzig,SC Freiburg,13,6,4,23
+RB Leipzig,Eintracht Frankfurt,8,8,6,22
+RB Leipzig,FC Augsburg,13,7,3,23
+RB Leipzig,1. FSV Mainz 05,9,4,7,20
+RB Leipzig,1. FC Union Berlin,8,3,7,18
+RB Leipzig,Bor. Mönchengladbach,11,5,4,20
+RB Leipzig,Hamburger SV,5,1,1,7
+RB Leipzig,1. FC Köln,9,5,2,16
+RB Leipzig,Werder Bremen,13,4,2,19
+RB Leipzig,VfL Wolfsburg,14,7,7,28
+RB Leipzig,1. FC Heidenheim 1846,7,4,1,12
+RB Leipzig,FC St. Pauli,4,2,3,9
+VfB Stuttgart,1899 Hoffenheim,12,12,8,32
+VfB Stuttgart,Bayer Leverkusen,25,24,45,95
+VfB Stuttgart,SC Freiburg,29,6,19,54
+VfB Stuttgart,Eintracht Frankfurt,61,29,55,145
+VfB Stuttgart,FC Augsburg,16,3,10,29
+VfB Stuttgart,1. FSV Mainz 05,18,10,13,41
+VfB Stuttgart,1. FC Union Berlin,5,8,4,17
+VfB Stuttgart,Bor. Mönchengladbach,47,30,37,114
+VfB Stuttgart,Hamburger SV,50,24,47,121
+VfB Stuttgart,1. FC Köln,40,27,41,108
+VfB Stuttgart,Werder Bremen,17,14,17,48
+VfB Stuttgart,VfL Wolfsburg,28,9,23,60
+VfB Stuttgart,1. FC Heidenheim 1846,4,3,3,10
+VfB Stuttgart,FC St. Pauli,16,5,4,25
+1899 Hoffenheim,Bayer Leverkusen,10,6,21,37
+1899 Hoffenheim,SC Freiburg,8,13,15,36
+1899 Hoffenheim,Eintracht Frankfurt,11,9,14,34
+1899 Hoffenheim,FC Augsburg,20,10,12,42
+1899 Hoffenheim,1. FSV Mainz 05,12,11,15,38
+1899 Hoffenheim,1. FC Union Berlin,6,2,6,14
+1899 Hoffenheim,Bor. Mönchengladbach,13,13,13,39
+1899 Hoffenheim,Hamburger SV,10,4,9,23
+1899 Hoffenheim,1. FC Köln,14,9,10,33
+1899 Hoffenheim,Werder Bremen,11,10,14,35
+1899 Hoffenheim,VfL Wolfsburg,11,10,18,39
+1899 Hoffenheim,1. FC Heidenheim 1846,4,3,1,8
+1899 Hoffenheim,FC St. Pauli,2,3,4,9
+Bayer Leverkusen,SC Freiburg,25,17,13,55
+Bayer Leverkusen,Eintracht Frankfurt,43,13,28,84
+Bayer Leverkusen,FC Augsburg,20,8,4,32
+Bayer Leverkusen,1. FSV Mainz 05,22,7,12,41
+Bayer Leverkusen,1. FC Union Berlin,10,5,2,17
+Bayer Leverkusen,Bor. Mönchengladbach,45,37,28,110
+Bayer Leverkusen,Hamburger SV,33,21,30,84
+Bayer Leverkusen,1. FC Köln,39,30,23,92
+Bayer Leverkusen,Werder Bremen,29,39,35,103
+Bayer Leverkusen,VfL Wolfsburg,29,11,21,61
+Bayer Leverkusen,1. FC Heidenheim 1846,5,1,1,7
+Bayer Leverkusen,FC St. Pauli,11,8,8,27
+SC Freiburg,Eintracht Frankfurt,15,13,21,49
+SC Freiburg,FC Augsburg,21,12,9,42
+SC Freiburg,1. FSV Mainz 05,17,17,17,51
+SC Freiburg,1. FC Union Berlin,5,6,9,20
+SC Freiburg,Bor. Mönchengladbach,19,18,13,50
+SC Freiburg,Hamburger SV,11,14,17,42
+SC Freiburg,1. FC Köln,23,9,16,48
+SC Freiburg,Werder Bremen,17,10,25,52
+SC Freiburg,VfL Wolfsburg,19,11,18,48
+SC Freiburg,1. FC Heidenheim 1846,5,1,2,8
+SC Freiburg,FC St. Pauli,13,8,10,31
+Eintracht Frankfurt,FC Augsburg,25,16,15,56
+Eintracht Frankfurt,1. FSV Mainz 05,17,19,12,48
+Eintracht Frankfurt,1. FC Union Berlin,10,7,5,22
+Eintracht Frankfurt,Bor. Mönchengladbach,44,32,38,114
+Eintracht Frankfurt,Hamburger SV,39,26,45,110
+Eintracht Frankfurt,1. FC Köln,39,33,43,115
+Eintracht Frankfurt,Werder Bremen,46,27,46,119
+Eintracht Frankfurt,VfL Wolfsburg,12,19,23,54
+Eintracht Frankfurt,1. FC Heidenheim 1846,6,1,0,7
+Eintracht Frankfurt,FC St. Pauli,10,9,5,24
+FC Augsburg,1. FSV Mainz 05,14,5,15,34
+FC Augsburg,1. FC Union Berlin,7,8,4,19
+FC Augsburg,Bor. Mönchengladbach,11,9,12,32
+FC Augsburg,Hamburger SV,9,2,6,17
+FC Augsburg,1. FC Köln,8,10,8,26
+FC Augsburg,Werder Bremen,14,5,13,32
+FC Augsburg,VfL Wolfsburg,13,10,9,32
+FC Augsburg,1. FC Heidenheim 1846,4,0,2,6
+FC Augsburg,FC St. Pauli,6,3,3,12
+1. FSV Mainz 05,1. FC Union Berlin,5,6,8,19
+1. FSV Mainz 05,Bor. Mönchengladbach,13,16,18,47
+1. FSV Mainz 05,Hamburger SV,9,9,10,28
+1. FSV Mainz 05,1. FC Köln,13,12,15,40
+1. FSV Mainz 05,Werder Bremen,13,8,20,41
+1. FSV Mainz 05,VfL Wolfsburg,7,14,14,35
+1. FSV Mainz 05,1. FC Heidenheim 1846,3,1,2,6
+1. FSV Mainz 05,FC St. Pauli,9,11,8,28
+1. FC Union Berlin,Bor. Mönchengladbach,7,4,4,15
+1. FC Union Berlin,Hamburger SV,1,2,2,5
+1. FC Union Berlin,1. FC Köln,10,4,6,20
+1. FC Union Berlin,Werder Bremen,6,1,5,12
+1. FC Union Berlin,VfL Wolfsburg,5,3,9,17
+1. FC Union Berlin,1. FC Heidenheim 1846,4,3,11,18
+1. FC Union Berlin,FC St. Pauli,14,7,10,31
+Bor. Mönchengladbach,Hamburger SV,36,30,43,109
+Bor. Mönchengladbach,1. FC Köln,61,25,47,133
+Bor. Mönchengladbach,Werder Bremen,47,29,42,118
+Bor. Mönchengladbach,VfL Wolfsburg,18,11,25,54
+Bor. Mönchengladbach,1. FC Heidenheim 1846,5,3,0,8
+Bor. Mönchengladbach,FC St. Pauli,15,8,6,29
+Hamburger SV,1. FC Köln,44,30,38,112
+Hamburger SV,Werder Bremen,52,43,60,155
+Hamburger SV,VfL Wolfsburg,22,16,20,58
+Hamburger SV,1. FC Heidenheim 1846,7,3,3,13
+Hamburger SV,FC St. Pauli,35,13,19,67
+1. FC Köln,Werder Bremen,40,32,40,112
+1. FC Köln,VfL Wolfsburg,11,12,19,42
+1. FC Köln,1. FC Heidenheim 1846,1,3,2,6
+1. FC Köln,FC St. Pauli,21,8,4,33
+Werder Bremen,VfL Wolfsburg,34,13,25,72
+Werder Bremen,1. FC Heidenheim 1846,4,4,4,12
+Werder Bremen,FC St. Pauli,22,9,12,43
+VfL Wolfsburg,1. FC Heidenheim 1846,6,1,1,8
+VfL Wolfsburg,FC St. Pauli,11,17,31,59
+1. FC Heidenheim 1846,FC St. Pauli,8,3,10,21
