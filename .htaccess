@@ -1,0 +1,36 @@
+DirectoryIndex index.html
+Options -Indexes
+
+# SPA fallback: cualquier ruta que no sea un archivo/carpeta real -> index.html
+# Necesario para que /comparador, /comparador?a=X&b=Y, etc. funcionen al acceder
+# directamente o al hacer F5 (sin esto Hostinger devuelve 404).
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+  <FilesMatch "^predictions\.json$">
+    Header set Cache-Control "public, max-age=300"
+  </FilesMatch>
+
+  # index.html no se cachea (SPA: cambios de JS/HTML llegan sin Ctrl+F5).
+  <FilesMatch "^index\.html$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType application/json "access plus 5 minutes"
+</IfModule>

@@ -1,0 +1,202 @@
+{
+  "schema_version": "1.1",
+  "generated_at_utc": "2026-06-01T19:32:51+00:00",
+  "dato_curioso": "Curazao se convierte en el país más pequeño en disputar un Mundial con solo 185.000 habitantes y 444 km². Messi y Cristiano Ronaldo jugarán su sexto Mundial 2026, récord histórico de participaciones en la competencia.",
+  "forma_reciente": [
+    {
+      "slug": "rm",
+      "nombre": "Real Madrid",
+      "pais": "España",
+      "escudo": "https://crests.football-data.org/86.svg",
+      "forma": [
+        "W",
+        "L",
+        "W",
+        "D",
+        "W"
+      ],
+      "wins": 3,
+      "draws": 1
+    },
+    {
+      "slug": "lfc",
+      "nombre": "Liverpool",
+      "pais": "Inglaterra",
+      "escudo": "https://crests.football-data.org/64.svg",
+      "forma": [
+        "D",
+        "L",
+        "W",
+        "L",
+        "W"
+      ],
+      "wins": 2,
+      "draws": 1
+    },
+    {
+      "slug": "psg",
+      "nombre": "PSG",
+      "pais": "Francia",
+      "escudo": "https://crests.football-data.org/524.svg",
+      "forma": [
+        "W",
+        "L",
+        "W",
+        "D",
+        "L"
+      ],
+      "wins": 2,
+      "draws": 1
+    },
+    {
+      "slug": "ars",
+      "nombre": "Arsenal",
+      "pais": "Inglaterra",
+      "escudo": "https://crests.football-data.org/57.svg",
+      "forma": [
+        "L",
+        "W",
+        "W",
+        "L",
+        "D"
+      ],
+      "wins": 2,
+      "draws": 1
+    },
+    {
+      "slug": "che",
+      "nombre": "Chelsea",
+      "pais": "Inglaterra",
+      "escudo": "https://crests.football-data.org/61.svg",
+      "forma": [
+        "L",
+        "W",
+        "L",
+        "L",
+        "W"
+      ],
+      "wins": 2,
+      "draws": 0
+    },
+    {
+      "slug": "int",
+      "nombre": "Inter Milán",
+      "pais": "Italia",
+      "escudo": "https://crests.football-data.org/108.svg",
+      "forma": [
+        "D",
+        "L",
+        "L",
+        "W",
+        "D"
+      ],
+      "wins": 1,
+      "draws": 2
+    },
+    {
+      "slug": "bvb",
+      "nombre": "Dortmund",
+      "pais": "Alemania",
+      "escudo": "https://crests.football-data.org/4.svg",
+      "forma": [
+        "L",
+        "L",
+        "D",
+        "W",
+        "L"
+      ],
+      "wins": 1,
+      "draws": 1
+    },
+    {
+      "slug": "fcb",
+      "nombre": "Barcelona",
+      "pais": "España",
+      "escudo": "https://crests.football-data.org/81.svg",
+      "forma": [
+        "L",
+        "L",
+        "L",
+        "D",
+        "W"
+      ],
+      "wins": 1,
+      "draws": 1
+    }
+  ],
+  "oportunidades": [],
+  "tendencias": [
+    {
+      "tipo": "racha_negativa",
+      "equipo": "Marsella",
+      "flag": "🇫🇷",
+      "texto": "Marsella en mala racha como local: 3 derrotas en sus últimos 5 partidos de Ligue 1 en abril-mayo 2026.",
+      "valor": 40,
+      "n": 5
+    },
+    {
+      "tipo": "racha_negativa",
+      "equipo": "Nantes",
+      "flag": "🇫🇷",
+      "texto": "Nantes sin victorias hace 5 jornadas con el ataque más débil de Ligue 1, complicando su pelea por la permanencia.",
+      "valor": 0,
+      "n": 5
+    },
+    {
+      "tipo": "over",
+      "equipo": "FC Barcelona",
+      "flag": "🇪🇸",
+      "texto": "Barcelona lidera La Liga 2025/26 con un promedio de 2.5 goles por partido, el más alto de la competencia.",
+      "valor": 83,
+      "n": 12
+    },
+    {
+      "tipo": "racha_positiva",
+      "equipo": "Lille",
+      "flag": "🇫🇷",
+      "texto": "Lille en racha positiva: 9 partidos sin perder en Ligue 1 hasta mayo 2026, peleando por el podio a un punto del Marsella.",
+      "valor": 100,
+      "n": 9
+    }
+  ],
+  "alertas": [
+    {
+      "tipo": "lesion",
+      "equipo": "Brasil",
+      "flag": "🇧🇷",
+      "texto": "Rodrygo descartado por rotura de ligamentos cruzados en marzo. Éder Militão operado del bíceps femoral izquierdo (21/04), ausente 5 meses.",
+      "nivel": "danger"
+    },
+    {
+      "tipo": "lesion",
+      "equipo": "Argentina",
+      "flag": "🇦🇷",
+      "texto": "Lionel Messi con lesión muscular muslo izquierdo, no jugará amistosos previos al Mundial. Cuti Romero con esguince de rodilla derecha, llegaría justo.",
+      "nivel": "warning"
+    },
+    {
+      "tipo": "lesion",
+      "equipo": "España",
+      "flag": "🇪🇸",
+      "texto": "Lamine Yamal con desgarro grado 2 bíceps femoral (22/04). Se perderá primeros partidos del Mundial, recuperación 6-8 semanas.",
+      "nivel": "warning"
+    },
+    {
+      "tipo": "lesion",
+      "equipo": "Inglaterra",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "texto": "Jack Grealish descartado definitivamente por fractura por estrés en pie izquierdo. Operado el 9 de febrero, sin fecha de regreso.",
+      "nivel": "danger"
+    }
+  ],
+  "xg_performance": [],
+  "meta": {
+    "n_partidos_analizados": 0,
+    "n_equipos_con_forma": 63,
+    "n_tendencias": 4,
+    "n_alertas": 4,
+    "n_oportunidades": 0,
+    "claude_used": true,
+    "claude_web_search": true
+  }
+}
