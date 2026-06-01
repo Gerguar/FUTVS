@@ -127,7 +127,7 @@ def load_equipos_supabase() -> dict[str, dict]:
 def _claude_request(messages: list[dict], tools: list[dict] | None = None, max_tokens: int = 1500) -> dict:
     """Llamada base a la API de Claude."""
     body: dict = {
-        "model": "claude-sonnet-4-20250514",
+        "model": "claude-sonnet-4-5",
         "max_tokens": max_tokens,
         "messages": messages,
     }
