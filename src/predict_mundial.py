@@ -52,6 +52,17 @@ MARKET_ODDS_PATH = Path("data/wc2026_market_odds.json")
 # Cuando uno de ellos participa, el partido NO es neutral y ese anfitrion es "local".
 HOST_TEAM_IDS = {130, 151, 135}
 
+# Importancia / fase. Los 72 partidos pre-cargados son fase de grupos.
+# Cuando se agreguen partidos de octavos/cuartos/etc, podemos detectar
+# por fecha (la eliminacion arranca despues del 28-29 de junio 2026).
+WC_GROUP_END_DATE = "2026-06-30"  # antes de esta fecha = grupos.
+
+# Multiplicadores sobre p_draw segun fase. En fase de grupos hay mas empates
+# (~30-35% historico) porque equipos pueden permitirse no ganar; en eliminacion
+# directa hay menos empates al 90' (~25%) porque tienen que definir.
+DRAW_BOOST_GROUPS = 1.10   # +10% relativo
+DRAW_BOOST_KNOCKOUT = 0.85  # -15% relativo
+
 # Pesos cuando hay cuotas de mercado (Pinnacle) para el partido.
 # Mercado pesa fuerte porque integra info que el modelo no ve (forma, lesiones, motivacion).
 W_DC_M, W_ELO_M, W_PLANT_M, W_MKT = 0.35, 0.20, 0.10, 0.35
@@ -227,6 +238,23 @@ def main() -> None:
         s = p_h + p_d + p_a
         p_h, p_d, p_a = p_h/s, p_d/s, p_a/s
 
+        # Ajuste por fase: grupos vs eliminacion. Decidido por fecha.
+        is_groups = m["fecha"][:10] < WC_GROUP_END_DATE
+        draw_mult = DRAW_BOOST_GROUPS if is_groups else DRAW_BOOST_KNOCKOUT
+        if draw_mult != 1.0:
+            p_d_new = p_d * draw_mult
+            # Renormalizar manteniendo proporcion H:A original
+            remaining = 1.0 - p_d_new
+            if p_h + p_a > 0:
+                p_h = remaining * (p_h / (p_h + p_a))
+                p_a = remaining * (p_a / (p_h + p_a))
+            else:
+                p_h = p_a = remaining / 2
+            p_d = p_d_new
+            # Renormalizar por seguridad
+            s = p_h + p_d + p_a
+            p_h, p_d, p_a = p_h/s, p_d/s, p_a/s
+
         # Factores (porcentajes 0-100 que el frontend muestra)
         elo_diff = (elo_h - elo_a) if (elo_h is not None and elo_a is not None) else 0
         xi_diff = ((xi_h or 0) - (xi_a or 0))
@@ -245,10 +273,11 @@ def main() -> None:
                 f"Mercado: {mk['p_market_home']:.0%}/{mk['p_market_draw']:.0%}/{mk['p_market_away']:.0%}"
             )
         if is_neutral:
-            notas_parts.append("Campo neutral.")
+            notas_parts.append("Campo neutral")
         else:
             host_nombre = id_to_nombre.get(host_local, "?")
-            notas_parts.append(f"Sede: {host_nombre} (local).")
+            notas_parts.append(f"Sede: {host_nombre} (local)")
+        notas_parts.append(f"Fase: {'grupos' if is_groups else 'eliminacion'}.")
         notas = ". ".join(notas_parts)
 
         # factor_localidad: signed, positivo si el anfitrion es el local en la DB
