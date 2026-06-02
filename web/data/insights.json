@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-01T19:32:51+00:00",
-  "dato_curioso": "Curazao se convierte en el país más pequeño en disputar un Mundial con solo 185.000 habitantes y 444 km². Messi y Cristiano Ronaldo jugarán su sexto Mundial 2026, récord histórico de participaciones en la competencia.",
+  "generated_at_utc": "2026-06-02T13:03:15+00:00",
+  "dato_curioso": "El Mundial 2026 será el más grande de la historia con 48 selecciones y 104 partidos, casi el doble que Qatar 2022. Nueva Zelanda fue el único equipo invicto en el Mundial 2010 pese a quedar eliminado en fase de grupos con 3 empates.",
   "forma_reciente": [
     {
       "slug": "rm",
@@ -109,16 +109,16 @@
       "draws": 1
     },
     {
-      "slug": "fcb",
-      "nombre": "Barcelona",
-      "pais": "España",
-      "escudo": "https://crests.football-data.org/81.svg",
+      "slug": "acm",
+      "nombre": "AC Milán",
+      "pais": "Italia",
+      "escudo": "https://crests.football-data.org/98.svg",
       "forma": [
         "L",
         "L",
+        "W",
         "L",
-        "D",
-        "W"
+        "D"
       ],
       "wins": 1,
       "draws": 1
@@ -127,66 +127,66 @@
   "oportunidades": [],
   "tendencias": [
     {
-      "tipo": "racha_negativa",
-      "equipo": "Marsella",
-      "flag": "🇫🇷",
-      "texto": "Marsella en mala racha como local: 3 derrotas en sus últimos 5 partidos de Ligue 1 en abril-mayo 2026.",
-      "valor": 40,
-      "n": 5
-    },
-    {
-      "tipo": "racha_negativa",
-      "equipo": "Nantes",
-      "flag": "🇫🇷",
-      "texto": "Nantes sin victorias hace 5 jornadas con el ataque más débil de Ligue 1, complicando su pelea por la permanencia.",
-      "valor": 0,
-      "n": 5
+      "tipo": "over",
+      "equipo": "UEFA Champions League",
+      "flag": "🇪🇺",
+      "texto": "La Champions presenta 75% de partidos con Over 2.5 goles en febrero 2026, el mejor registro entre ligas top.",
+      "valor": 75,
+      "n": 16
     },
     {
       "tipo": "over",
-      "equipo": "FC Barcelona",
-      "flag": "🇪🇸",
-      "texto": "Barcelona lidera La Liga 2025/26 con un promedio de 2.5 goles por partido, el más alto de la competencia.",
-      "valor": 83,
+      "equipo": "Bundesliga (Alemania)",
+      "flag": "🇩🇪",
+      "texto": "La Bundesliga mantiene su tradición goleadora con 57-61% de Over 2.5, la liga más ofensiva de Europa.",
+      "valor": 59,
+      "n": 306
+    },
+    {
+      "tipo": "defensa_fragil",
+      "equipo": "Burnley",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "texto": "Los Clarets perdieron todos sus partidos salvo 3 en las últimas 12 fechas, última victoria en febrero vs Palace.",
+      "valor": 75,
       "n": 12
     },
     {
-      "tipo": "racha_positiva",
-      "equipo": "Lille",
-      "flag": "🇫🇷",
-      "texto": "Lille en racha positiva: 9 partidos sin perder en Ligue 1 hasta mayo 2026, peleando por el podio a un punto del Marsella.",
+      "tipo": "invictos",
+      "equipo": "Indiana (NCAA)",
+      "flag": "🇺🇸",
+      "texto": "15-0 invictos como local bajo Curt Cignetti, la racha de invictos en casa más larga activa del fútbol americano.",
       "valor": 100,
-      "n": 9
+      "n": 15
     }
   ],
   "alertas": [
     {
       "tipo": "lesion",
-      "equipo": "Brasil",
-      "flag": "🇧🇷",
-      "texto": "Rodrygo descartado por rotura de ligamentos cruzados en marzo. Éder Militão operado del bíceps femoral izquierdo (21/04), ausente 5 meses.",
-      "nivel": "danger"
-    },
-    {
-      "tipo": "lesion",
-      "equipo": "Argentina",
-      "flag": "🇦🇷",
-      "texto": "Lionel Messi con lesión muscular muslo izquierdo, no jugará amistosos previos al Mundial. Cuti Romero con esguince de rodilla derecha, llegaría justo.",
-      "nivel": "warning"
-    },
-    {
-      "tipo": "lesion",
-      "equipo": "España",
-      "flag": "🇪🇸",
-      "texto": "Lamine Yamal con desgarro grado 2 bíceps femoral (22/04). Se perderá primeros partidos del Mundial, recuperación 6-8 semanas.",
-      "nivel": "warning"
-    },
-    {
-      "tipo": "lesion",
-      "equipo": "Inglaterra",
+      "equipo": "Manchester United",
       "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-      "texto": "Jack Grealish descartado definitivamente por fractura por estrés en pie izquierdo. Operado el 9 de febrero, sin fecha de regreso.",
-      "nivel": "danger"
+      "texto": "Matthijs de Ligt fuera del Mundial 2026 por cirugía de espalda, no volverá hasta inicios de temporada 2026-27.",
+      "nivel": "critico"
+    },
+    {
+      "tipo": "lesion",
+      "equipo": "Crystal Palace",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "texto": "Chris Richards (EEUU) sufrió rotura de dos ligamentos del tobillo, en duda para el Mundial que arranca en 3 semanas.",
+      "nivel": "warning"
+    },
+    {
+      "tipo": "mala_racha",
+      "equipo": "Tottenham Hotspur",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "texto": "Tardaron casi 4 meses en ganar su primer partido de 2026, hundidos en zona de descenso hasta la llegada de De Zerbi.",
+      "nivel": "warning"
+    },
+    {
+      "tipo": "mala_racha",
+      "equipo": "Chelsea",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "texto": "Seis derrotas consecutivas en Premier League incluyendo 3-1 vs Forest, con solo 1 gol en sus últimos 6 partidos.",
+      "nivel": "critico"
     }
   ],
   "xg_performance": [],
