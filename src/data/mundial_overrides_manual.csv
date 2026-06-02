@@ -1,0 +1,67 @@
+equipo_id,nombre,rating,pace,shooting,passing,dribbling,defending,physic,gk_diving,gk_handling,gk_kicking,gk_positioning,gk_reflexes,gk_speed,notas
+142,Son Heung-min,89,84,87,79,86,42,72,,,,,,Estrella Tottenham/LA Galaxy
+142,Cho Gue-sung,77,77,77,67,72,40,79,,,,,,Mainz
+142,Yang Hyun-jun,72,89,68,62,71,32,65,,,,,,Celtic
+161,Mohamed Salah,89,89,87,82,90,45,76,,,,,,Liverpool
+161,Mahmoud Trezeguet,77,82,75,72,79,42,73,,,,,,Trabzonspor
+161,Mostafa Mohamed,75,74,76,67,74,38,75,,,,,,Nantes
+161,Mohamed Elneny,75,58,55,75,72,77,71,,,,,,Al-Jazira
+161,Ahmed Hegazi,74,52,42,55,52,79,82,,,,,,Al-Ittihad
+123,Yuto Nagatomo,71,72,55,67,68,71,70,,,,,,FC Tokyo
+123,Takehiro Tomiyasu,80,74,40,68,69,82,80,,,,,,Arsenal
+123,Keisuke Osako,72,,,,,,,72,69,68,72,73,46,Sanfrecce Hiroshima
+141,Sardar Azmoun,80,79,82,72,79,38,77,,,,,,Shabab Al-Ahli
+141,Mehdi Taremi,82,75,84,74,80,43,82,,,,,,Inter Milan
+141,Alireza Jahanbakhsh,77,80,75,73,79,52,70,,,,,,Heerenveen
+141,Alireza Beiranvand,77,,,,,,,77,74,71,76,79,46,Persepolis
+141,Ehsan Hajsafi,76,72,55,74,73,76,70,,,,,,AEK Athens
+141,Saeid Ezatolahi,75,52,50,71,68,77,79,,,,,,Damac
+160,Musa Al-Taamari,79,89,75,75,82,50,68,,,,,,Montpellier
+160,Yazan Al-Naimat,75,77,75,68,75,42,76,,,,,,Al-Ahli SC
+181,Salem Al-Dawsari,84,80,82,82,87,40,72,,,,,,Al-Hilal
+181,Ali Al-Bulayhi,77,55,40,55,55,80,82,,,,,,Al-Hilal
+181,Mohammed Al-Owais,78,,,,,,,77,76,73,78,80,47,Al-Hilal
+181,Yasser Al-Shahrani,76,79,55,73,72,75,71,,,,,,Al-Hilal
+181,Feras Al-Brikan,74,77,75,65,73,40,76,,,,,,Al-Ahli SC
+189,Percy Tau,76,82,72,72,79,38,68,,,,,,Al-Ahli SC
+189,Themba Zwane,75,72,72,74,77,55,68,,,,,,Mamelodi Sundowns
+189,Lyle Foster,76,82,75,67,76,42,73,,,,,,Burnley
+189,Ricardo Goss,73,,,,,,,73,70,68,73,75,46,Supersport United
+130,Guillermo Ochoa,78,,,,,,,78,76,72,77,79,45,Salernitana
+130,Hirving Lozano,82,90,77,73,84,40,67,,,,,,PSV
+130,Edson Alvarez,82,68,68,75,73,82,82,,,,,,Fenerbahce
+148,Eldor Shomurodov,77,77,77,67,75,40,77,,,,,,Roma
+148,Khojimat Erkinov,73,72,68,68,72,55,72,,,,,,Iran Persepolis
+148,Otabek Shukurov,73,55,58,71,68,73,76,,,,,,Pakhtakor
+173,Aymen Hussein,76,77,77,67,73,40,77,,,,,,Qatar SC
+173,Jalal Hassan,73,,,,,,,73,70,68,73,75,46,Al-Shorta
+206,Tahith Chong,75,82,68,68,80,42,68,,,,,,Sheffield United
+206,Eloy Room,73,,,,,,,73,72,68,73,75,46,Cincinnati
+206,Leandro Bacuna,73,69,65,71,72,65,73,,,,,,Rotterdam
+187,Duckens Nazon,72,76,72,65,72,42,73,,,,,,Wisla Plock
+146,Adalberto Carrasquilla,76,68,68,73,73,68,73,,,,,,Houston Dynamo
+146,Michael Murillo,77,79,55,72,74,76,73,,,,,,Anderlecht
+211,Akram Afif,80,80,78,76,84,43,67,,,,,,Al-Sadd
+211,Almoez Ali,79,77,79,69,76,42,72,,,,,,Al-Duhail
+211,Meshaal Barsham,75,,,,,,,75,72,68,75,77,46,Al-Sadd
+198,Andre Ayew,76,72,75,76,77,55,72,,,,,,Nottingham Forest
+198,Jordan Ayew,76,77,75,68,76,53,71,,,,,,Leicester
+198,Mohammed Kudus,82,82,75,79,86,55,72,,,,,,West Ham
+198,Antoine Semenyo,77,82,75,68,77,55,77,,,,,,Bournemouth
+162,Sebastien Haller,79,74,80,68,77,42,80,,,,,,Borussia Dortmund
+162,Franck Kessie,82,68,77,80,77,79,80,,,,,,Al-Ahli SC
+162,Eric Bailly,77,72,40,55,55,80,80,,,,,,Besiktas
+192,Cedric Bakambu,77,72,77,68,72,42,77,,,,,,Real Betis
+192,Yoane Wissa,79,79,77,73,80,40,71,,,,,,Brentford
+192,Chancel Mbemba,77,68,40,55,52,80,82,,,,,,Marseille
+192,Theo Bongonda,75,82,75,68,77,45,68,,,,,,Spartak Moscow
+145,Riyad Mahrez,84,73,79,82,89,40,67,,,,,,Al-Ahli SC
+145,Ismael Bennacer,80,68,70,80,79,77,73,,,,,,AC Milan
+145,Houssem Aouar,77,72,77,77,82,55,68,,,,,,Al-Ittihad
+145,Said Benrahma,79,80,77,75,82,40,68,,,,,,Lyon
+168,Hannibal Mejbri,73,75,68,72,75,68,72,,,,,,Burnley
+168,Wahbi Khazri,77,72,77,75,80,40,67,,,,,,Montpellier
+168,Youssef Msakni,77,72,77,75,79,42,72,,,,,,Al-Arabi
+168,Aissa Laidouni,77,68,70,77,73,77,75,,,,,,Sevilla
+196,Ryan Mendes,75,77,75,73,78,55,68,,,,,,Al-Wakrah
+196,Garry Rodrigues,74,77,72,72,77,48,68,,,,,,Al-Khor
