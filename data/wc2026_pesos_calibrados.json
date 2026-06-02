@@ -1,0 +1,13 @@
+{
+  "w_dc": 0.54,
+  "w_elo": 0.26,
+  "w_plantilla": 0.2,
+  "log_loss": 0.99321,
+  "baseline_loss": 0.99364,
+  "improvement_pct": 0.043,
+  "info": {
+    "n_train": 5066,
+    "since": 2010,
+    "include_friendlies": true
+  }
+}
