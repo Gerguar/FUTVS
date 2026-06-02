@@ -36,16 +36,16 @@
     "top_xi_avg": 70.0
   },
   "arabia_saudita": {
-    "attack_score": 71.71,
-    "defense_score": 70.0,
+    "attack_score": 71.0,
+    "defense_score": 70.25,
     "n_players": 26,
-    "top_xi_avg": 71.0
+    "top_xi_avg": 71.57
   },
   "argelia": {
     "attack_score": 78.57,
-    "defense_score": 74.62,
+    "defense_score": 74.25,
     "n_players": 26,
-    "top_xi_avg": 76.86
+    "top_xi_avg": 76.71
   },
   "argentina": {
     "attack_score": 85.29,
@@ -90,13 +90,13 @@
     "top_xi_avg": 70.0
   },
   "australia": {
-    "attack_score": 71.57,
-    "defense_score": 70.12,
+    "attack_score": 70.43,
+    "defense_score": 69.75,
     "n_players": 26,
-    "top_xi_avg": 72.71
+    "top_xi_avg": 71.71
   },
   "austria": {
-    "attack_score": 77.05,
+    "attack_score": 76.29,
     "defense_score": 78.0,
     "n_players": 25,
     "top_xi_avg": 78.36
@@ -139,9 +139,9 @@
   },
   "bosnia_y_herzegovina": {
     "attack_score": 74.29,
-    "defense_score": 71.88,
+    "defense_score": 72.5,
     "n_players": 26,
-    "top_xi_avg": 73.36
+    "top_xi_avg": 73.64
   },
   "bournemouth": {
     "attack_score": 70.0,
@@ -150,10 +150,10 @@
     "top_xi_avg": 70.0
   },
   "brasil": {
-    "attack_score": 85.0,
-    "defense_score": 83.5,
+    "attack_score": 82.57,
+    "defense_score": 82.0,
     "n_players": 26,
-    "top_xi_avg": 85.14
+    "top_xi_avg": 83.86
   },
   "bremen": {
     "attack_score": 70.0,
@@ -186,10 +186,10 @@
     "top_xi_avg": 70.0
   },
   "cabo_verde": {
-    "attack_score": 71.86,
-    "defense_score": 70.25,
+    "attack_score": 71.43,
+    "defense_score": 70.88,
     "n_players": 26,
-    "top_xi_avg": 71.57
+    "top_xi_avg": 71.5
   },
   "cagliari": {
     "attack_score": 70.0,
@@ -198,10 +198,10 @@
     "top_xi_avg": 70.0
   },
   "canada": {
-    "attack_score": 75.57,
-    "defense_score": 74.5,
+    "attack_score": 75.29,
+    "defense_score": 74.38,
     "n_players": 26,
-    "top_xi_avg": 75.5
+    "top_xi_avg": 75.36
   },
   "celta": {
     "attack_score": 70.0,
@@ -223,9 +223,9 @@
   },
   "colombia": {
     "attack_score": 75.71,
-    "defense_score": 78.25,
+    "defense_score": 78.0,
     "n_players": 26,
-    "top_xi_avg": 78.43
+    "top_xi_avg": 78.29
   },
   "como": {
     "attack_score": 70.0,
@@ -235,15 +235,15 @@
   },
   "corea_del_sur": {
     "attack_score": 78.43,
-    "defense_score": 74.5,
+    "defense_score": 73.12,
     "n_players": 26,
-    "top_xi_avg": 76.5
+    "top_xi_avg": 75.79
   },
   "costa_de_marfil": {
-    "attack_score": 78.14,
+    "attack_score": 77.86,
     "defense_score": 75.25,
     "n_players": 26,
-    "top_xi_avg": 78.21
+    "top_xi_avg": 78.07
   },
   "cremonese": {
     "attack_score": 70.0,
@@ -265,9 +265,9 @@
   },
   "curazao": {
     "attack_score": 70.57,
-    "defense_score": 69.5,
+    "defense_score": 69.88,
     "n_players": 26,
-    "top_xi_avg": 70.57
+    "top_xi_avg": 71.0
   },
   "dortmund": {
     "attack_score": 70.0,
@@ -276,16 +276,16 @@
     "top_xi_avg": 70.0
   },
   "ecuador": {
-    "attack_score": 76.14,
-    "defense_score": 75.62,
+    "attack_score": 72.86,
+    "defense_score": 75.25,
     "n_players": 26,
-    "top_xi_avg": 77.14
+    "top_xi_avg": 75.14
   },
   "egipto": {
-    "attack_score": 77.86,
-    "defense_score": 71.5,
+    "attack_score": 77.29,
+    "defense_score": 70.5,
     "n_players": 26,
-    "top_xi_avg": 73.64
+    "top_xi_avg": 72.93
   },
   "eintracht_frankfurt": {
     "attack_score": 70.0,
@@ -303,13 +303,13 @@
     "attack_score": 76.86,
     "defense_score": 75.12,
     "n_players": 26,
-    "top_xi_avg": 76.71
+    "top_xi_avg": 76.57
   },
   "espana": {
     "attack_score": 86.71,
-    "defense_score": 83.88,
+    "defense_score": 83.62,
     "n_players": 26,
-    "top_xi_avg": 85.57
+    "top_xi_avg": 85.5
   },
   "espanyol": {
     "attack_score": 70.0,
@@ -397,7 +397,7 @@
   },
   "haiti": {
     "attack_score": 71.71,
-    "defense_score": 70.0,
+    "defense_score": 70.62,
     "n_players": 26,
     "top_xi_avg": 71.21
   },
@@ -432,28 +432,28 @@
     "top_xi_avg": 70.0
   },
   "irak": {
-    "attack_score": 69.0,
-    "defense_score": 68.75,
+    "attack_score": 69.57,
+    "defense_score": 69.25,
     "n_players": 26,
-    "top_xi_avg": 69.5
+    "top_xi_avg": 70.64
   },
   "iran": {
-    "attack_score": 75.71,
-    "defense_score": 73.88,
+    "attack_score": 72.86,
+    "defense_score": 71.62,
     "n_players": 26,
-    "top_xi_avg": 74.93
+    "top_xi_avg": 72.36
   },
   "japon": {
-    "attack_score": 77.29,
+    "attack_score": 76.71,
     "defense_score": 77.12,
     "n_players": 26,
     "top_xi_avg": 77.93
   },
   "jordania": {
-    "attack_score": 71.71,
-    "defense_score": 71.38,
+    "attack_score": 70.0,
+    "defense_score": 70.62,
     "n_players": 26,
-    "top_xi_avg": 71.64
+    "top_xi_avg": 70.36
   },
   "juventus": {
     "attack_score": 70.0,
@@ -576,10 +576,10 @@
     "top_xi_avg": 70.0
   },
   "mexico": {
-    "attack_score": 78.57,
-    "defense_score": 74.75,
+    "attack_score": 77.57,
+    "defense_score": 73.25,
     "n_players": 26,
-    "top_xi_avg": 77.14
+    "top_xi_avg": 76.43
   },
   "mgladbach": {
     "attack_score": 70.0,
@@ -618,10 +618,10 @@
     "top_xi_avg": 70.0
   },
   "noruega": {
-    "attack_score": 79.43,
-    "defense_score": 75.12,
+    "attack_score": 79.29,
+    "defense_score": 74.12,
     "n_players": 26,
-    "top_xi_avg": 77.57
+    "top_xi_avg": 77.14
   },
   "nottingham_forest": {
     "attack_score": 70.0,
@@ -631,9 +631,9 @@
   },
   "nueva_zelanda": {
     "attack_score": 70.29,
-    "defense_score": 68.5,
+    "defense_score": 68.62,
     "n_players": 26,
-    "top_xi_avg": 70.07
+    "top_xi_avg": 70.14
   },
   "olympiakos": {
     "attack_score": 70.0,
@@ -660,10 +660,10 @@
     "top_xi_avg": 83.29
   },
   "panama": {
-    "attack_score": 72.29,
-    "defense_score": 70.88,
+    "attack_score": 71.43,
+    "defense_score": 71.0,
     "n_players": 26,
-    "top_xi_avg": 72.07
+    "top_xi_avg": 71.43
   },
   "paphos": {
     "attack_score": 70.0,
@@ -672,10 +672,10 @@
     "top_xi_avg": 70.0
   },
   "paraguay": {
-    "attack_score": 75.57,
-    "defense_score": 74.12,
+    "attack_score": 75.43,
+    "defense_score": 72.25,
     "n_players": 26,
-    "top_xi_avg": 75.07
+    "top_xi_avg": 74.21
   },
   "paris": {
     "attack_score": 70.0,
@@ -714,10 +714,10 @@
     "top_xi_avg": 70.0
   },
   "qatar": {
-    "attack_score": 73.57,
-    "defense_score": 68.62,
+    "attack_score": 72.71,
+    "defense_score": 69.88,
     "n_players": 26,
-    "top_xi_avg": 71.86
+    "top_xi_avg": 71.79
   },
   "rayo_vallecano": {
     "attack_score": 70.0,
@@ -726,10 +726,10 @@
     "top_xi_avg": 70.0
   },
   "rd_del_congo": {
-    "attack_score": 76.0,
-    "defense_score": 74.12,
+    "attack_score": 76.14,
+    "defense_score": 73.62,
     "n_players": 26,
-    "top_xi_avg": 75.43
+    "top_xi_avg": 75.36
   },
   "real_betis": {
     "attack_score": 70.0,
@@ -763,7 +763,7 @@
   },
   "republica_checa": {
     "attack_score": 77.71,
-    "defense_score": 75.0,
+    "defense_score": 74.75,
     "n_players": 26,
     "top_xi_avg": 76.64
   },
@@ -828,10 +828,10 @@
     "top_xi_avg": 70.0
   },
   "sudafrica": {
-    "attack_score": 71.57,
-    "defense_score": 67.31,
+    "attack_score": 71.0,
+    "defense_score": 67.56,
     "n_players": 26,
-    "top_xi_avg": 70.64
+    "top_xi_avg": 70.71
   },
   "suecia": {
     "attack_score": 79.86,
@@ -840,10 +840,10 @@
     "top_xi_avg": 78.14
   },
   "suiza": {
-    "attack_score": 79.43,
+    "attack_score": 79.29,
     "defense_score": 77.75,
     "n_players": 26,
-    "top_xi_avg": 78.93
+    "top_xi_avg": 78.86
   },
   "sunderland": {
     "attack_score": 70.0,
@@ -870,16 +870,16 @@
     "top_xi_avg": 70.0
   },
   "tunez": {
-    "attack_score": 73.14,
+    "attack_score": 73.29,
     "defense_score": 71.12,
     "n_players": 26,
-    "top_xi_avg": 72.43
+    "top_xi_avg": 72.57
   },
   "turquia": {
     "attack_score": 80.29,
-    "defense_score": 76.44,
+    "defense_score": 76.31,
     "n_players": 26,
-    "top_xi_avg": 78.5
+    "top_xi_avg": 78.36
   },
   "udinese": {
     "attack_score": 70.0,
@@ -900,16 +900,16 @@
     "top_xi_avg": 70.0
   },
   "uruguay": {
-    "attack_score": 79.52,
+    "attack_score": 78.38,
     "defense_score": 79.25,
     "n_players": 26,
-    "top_xi_avg": 79.93
+    "top_xi_avg": 79.43
   },
   "uzbekistan": {
-    "attack_score": 73.1,
-    "defense_score": 71.88,
+    "attack_score": 71.19,
+    "defense_score": 70.88,
     "n_players": 26,
-    "top_xi_avg": 72.36
+    "top_xi_avg": 71.0
   },
   "valencia": {
     "attack_score": 70.0,
