@@ -47,6 +47,11 @@ DC_PATH = Path("data/dc_state_selecciones.json")
 TEAM_RATINGS_PATH = Path("data/team_ratings.json")
 MARKET_ODDS_PATH = Path("data/wc2026_market_odds.json")
 
+# Anfitriones Mundial 2026: México (130), USA (151), Canadá (135).
+# FIFA confirmó que cada anfitrión juega sus 3 partidos de grupos en su pais.
+# Cuando uno de ellos participa, el partido NO es neutral y ese anfitrion es "local".
+HOST_TEAM_IDS = {130, 151, 135}
+
 # Pesos cuando hay cuotas de mercado (Pinnacle) para el partido.
 # Mercado pesa fuerte porque integra info que el modelo no ve (forma, lesiones, motivacion).
 W_DC_M, W_ELO_M, W_PLANT_M, W_MKT = 0.35, 0.20, 0.10, 0.35
@@ -158,19 +163,42 @@ def main() -> None:
         h_slug = id_to_slug.get(h_id, "")
         a_slug = id_to_slug.get(a_id, "")
 
-        # DC (neutral)
+        # Sede: si participa un anfitrion, ese juega de local en su pais.
+        # Si nadie es anfitrion -> neutral.
+        host_local = None  # equipo_id del anfitrion como local, si aplica
+        if h_id in HOST_TEAM_IDS:
+            host_local = h_id
+        elif a_id in HOST_TEAM_IDS:
+            host_local = a_id
+        is_neutral = host_local is None
+
+        # DC con sede real cuando aplica
         if h_id in dc.attack and a_id in dc.attack:
-            dc_probs = dc.probs_1x2(h_id, a_id, is_neutral=True)
-            p_h_dc, p_d_dc, p_a_dc = dc_probs["H"], dc_probs["D"], dc_probs["A"]
+            if not is_neutral and host_local == a_id:
+                # El visitante en la DB es el anfitrion: invertimos para que DC entienda
+                # quien es "home". Despues invertimos las probabilidades.
+                dc_probs = dc.probs_1x2(a_id, h_id, is_neutral=False)
+                p_h_dc, p_d_dc, p_a_dc = dc_probs["A"], dc_probs["D"], dc_probs["H"]
+            else:
+                dc_probs = dc.probs_1x2(h_id, a_id, is_neutral=is_neutral)
+                p_h_dc, p_d_dc, p_a_dc = dc_probs["H"], dc_probs["D"], dc_probs["A"]
         else:
             skipped.append((h_name, a_name, "no_dc"))
             p_h_dc = p_d_dc = p_a_dc = 1/3
 
-        # Elo
+        # Elo (con bonus de ~50 pts para anfitrion como local)
         elo_h = elo_by_slug.get(h_slug)
         elo_a = elo_by_slug.get(a_slug)
         if elo_h is not None and elo_a is not None:
-            p_h_elo, p_d_elo, p_a_elo = elo_probs(elo_h, elo_a)
+            if host_local == h_id:
+                elo_h_eff = elo_h + 50
+                elo_a_eff = elo_a
+            elif host_local == a_id:
+                elo_h_eff = elo_h
+                elo_a_eff = elo_a + 50
+            else:
+                elo_h_eff, elo_a_eff = elo_h, elo_a
+            p_h_elo, p_d_elo, p_a_elo = elo_probs(elo_h_eff, elo_a_eff)
         else:
             p_h_elo = p_d_elo = p_a_elo = 1/3
 
@@ -216,20 +244,31 @@ def main() -> None:
             notas_parts.append(
                 f"Mercado: {mk['p_market_home']:.0%}/{mk['p_market_draw']:.0%}/{mk['p_market_away']:.0%}"
             )
-        notas_parts.append("Campo neutral.")
+        if is_neutral:
+            notas_parts.append("Campo neutral.")
+        else:
+            host_nombre = id_to_nombre.get(host_local, "?")
+            notas_parts.append(f"Sede: {host_nombre} (local).")
         notas = ". ".join(notas_parts)
 
+        # factor_localidad: signed, positivo si el anfitrion es el local en la DB
+        if is_neutral:
+            f_loc = 0.0
+        elif host_local == h_id:
+            f_loc = 1.0
+        else:
+            f_loc = -1.0
         payload = {
             "partido_id": m["id"],
             "prob_local":     round(p_h * 100, 1),
             "prob_empate":    round(p_d * 100, 1),
             "prob_visitante": round(p_a * 100, 1),
-            "factor_localidad": 0,             # neutral
-            "factor_forma":     round(xi_diff, 1),  # diff de XI
-            "factor_h2h":       0,             # reservado
-            "factor_tabla":     0,             # no aplica fase grupos
-            "factor_bajas":     0,             # reservado (paso futuro)
-            "factor_goles":     round(atk_h - atk_a, 1),  # diff de ataque
+            "factor_localidad": f_loc,
+            "factor_forma":     round(xi_diff, 1),
+            "factor_h2h":       0,
+            "factor_tabla":     0,
+            "factor_bajas":     0,
+            "factor_goles":     round(atk_h - atk_a, 1),
             "notas": notas,
         }
         payloads.append((m["id"], h_name, a_name, payload))
