@@ -45,7 +45,12 @@ from .team_normalize import canonical
 
 DC_PATH = Path("data/dc_state_selecciones.json")
 TEAM_RATINGS_PATH = Path("data/team_ratings.json")
+MARKET_ODDS_PATH = Path("data/wc2026_market_odds.json")
 
+# Pesos cuando hay cuotas de mercado (Pinnacle) para el partido.
+# Mercado pesa fuerte porque integra info que el modelo no ve (forma, lesiones, motivacion).
+W_DC_M, W_ELO_M, W_PLANT_M, W_MKT = 0.35, 0.20, 0.10, 0.35
+# Pesos cuando NO hay mercado (fallback original).
 W_DC, W_ELO, W_PLANTILLA = 0.55, 0.30, 0.15
 BASE_DRAW = 0.30  # baseline para empates antes de ajustar por brecha de favoritismo
 
@@ -123,6 +128,14 @@ def main() -> None:
     elo_by_slug = {r["slug"]: r["elo"] for r in elo_rows}
     print(f"[predict-mundial] elo: {len(elo_by_slug)} selecciones")
 
+    # 3b. Cuotas del mercado (Pinnacle) si las generamos
+    market_odds: dict[str, dict] = {}
+    if MARKET_ODDS_PATH.exists():
+        market_odds = json.loads(MARKET_ODDS_PATH.read_text(encoding="utf-8"))
+        print(f"[predict-mundial] market_odds: {len(market_odds)} partidos con cuotas")
+    else:
+        print(f"[predict-mundial] market_odds: sin archivo (correr ingest_pinnacle_wc primero)")
+
     # 4. Equipos (id -> nombre, slug)
     eq = sb_get("equipos?select=id,nombre&liga_id=eq.7")
     id_to_nombre = {e["id"]: e["nombre"] for e in eq}
@@ -168,10 +181,21 @@ def main() -> None:
         xi_a = tr_a.get("top_xi_avg")
         p_h_pl, p_d_pl, p_a_pl = plantilla_probs(xi_h, xi_a)
 
-        # Mix ponderado
-        p_h = W_DC*p_h_dc + W_ELO*p_h_elo + W_PLANTILLA*p_h_pl
-        p_d = W_DC*p_d_dc + W_ELO*p_d_elo + W_PLANTILLA*p_d_pl
-        p_a = W_DC*p_a_dc + W_ELO*p_a_elo + W_PLANTILLA*p_a_pl
+        # Mercado (Pinnacle) si hay
+        mk = market_odds.get(str(m["id"]))
+        if mk:
+            p_h_mk = mk["p_market_home"]
+            p_d_mk = mk["p_market_draw"]
+            p_a_mk = mk["p_market_away"]
+            p_h = W_DC_M*p_h_dc + W_ELO_M*p_h_elo + W_PLANT_M*p_h_pl + W_MKT*p_h_mk
+            p_d = W_DC_M*p_d_dc + W_ELO_M*p_d_elo + W_PLANT_M*p_d_pl + W_MKT*p_d_mk
+            p_a = W_DC_M*p_a_dc + W_ELO_M*p_a_elo + W_PLANT_M*p_a_pl + W_MKT*p_a_mk
+            mix_label = f"4-fuentes (peso mercado={W_MKT:.2f})"
+        else:
+            p_h = W_DC*p_h_dc + W_ELO*p_h_elo + W_PLANTILLA*p_h_pl
+            p_d = W_DC*p_d_dc + W_ELO*p_d_elo + W_PLANTILLA*p_d_pl
+            p_a = W_DC*p_a_dc + W_ELO*p_a_elo + W_PLANTILLA*p_a_pl
+            mix_label = "3-fuentes (sin mercado)"
         s = p_h + p_d + p_a
         p_h, p_d, p_a = p_h/s, p_d/s, p_a/s
 
@@ -183,12 +207,17 @@ def main() -> None:
         dfn_h = tr_h.get("defense_score") or 0
         dfn_a = tr_a.get("defense_score") or 0
 
-        notas = (
-            f"DC: {p_h_dc:.0%}/{p_d_dc:.0%}/{p_a_dc:.0%}. "
-            f"Elo: {p_h_elo:.0%}/{p_d_elo:.0%}/{p_a_elo:.0%} (Δ{elo_diff:+.0f}). "
-            f"Plantilla: {p_h_pl:.0%}/{p_d_pl:.0%}/{p_a_pl:.0%} (XIΔ{xi_diff:+.1f}). "
-            f"Campo neutral."
-        )
+        notas_parts = [
+            f"DC: {p_h_dc:.0%}/{p_d_dc:.0%}/{p_a_dc:.0%}",
+            f"Elo: {p_h_elo:.0%}/{p_d_elo:.0%}/{p_a_elo:.0%} (Δ{elo_diff:+.0f})",
+            f"Plantilla: {p_h_pl:.0%}/{p_d_pl:.0%}/{p_a_pl:.0%} (XIΔ{xi_diff:+.1f})",
+        ]
+        if mk:
+            notas_parts.append(
+                f"Mercado: {mk['p_market_home']:.0%}/{mk['p_market_draw']:.0%}/{mk['p_market_away']:.0%}"
+            )
+        notas_parts.append("Campo neutral.")
+        notas = ". ".join(notas_parts)
 
         payload = {
             "partido_id": m["id"],
