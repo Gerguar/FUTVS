@@ -2445,10 +2445,20 @@ function renderDetailBody(m) {
     topAvgRating(m.away.players,'MED',5),
     topAvgRating(m.away.players,'POR',2),
   ]
-  // Rango: 50-95 cubre el espectro tipico de ratings EA FC sin dejar el
-  // grafico chiquito en el medio. Si algun promedio fuera <50 (selecciones
-  // muy debiles con default 70 dominando), igual entra porque min=50.
-  radarChart=new Chart(ctx,{type:'radar',data:{labels,datasets:[{label:m.home.name,data:dH,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.12)',borderWidth:2,pointBackgroundColor:'#22c55e',pointRadius:3},{label:m.away.name,data:dA,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.1)',borderWidth:2,pointBackgroundColor:'#ef4444',pointRadius:3,borderDash:[5,3]}]},options:{responsive:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#0d1014',borderColor:'#2e3848',borderWidth:1,titleColor:'#e8eaed',bodyColor:'#6b7280',callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw}`}}},scales:{r:{min:50,max:95,backgroundColor:'transparent',grid:{color:'rgba(255,255,255,.06)'},angleLines:{color:'rgba(255,255,255,.06)'},ticks:{display:false},pointLabels:{color:'#6b7280',font:{size:10,family:'JetBrains Mono'}}}}}})
+  // Rango DINAMICO ajustado al partido: zoom-in donde estan los valores
+  // para magnificar diferencias chicas (ratings de seleciones tipicamente
+  // caen en 75-90, en un eje 50-95 se veian casi iguales).
+  // Se calcula min/max de los 8 valores + padding del 20% del spread.
+  const allValues = [...dH, ...dA].filter(v => v > 0)
+  const dataMin = allValues.length ? Math.min(...allValues) : 50
+  const dataMax = allValues.length ? Math.max(...allValues) : 95
+  const spread = Math.max(4, dataMax - dataMin)
+  const pad = spread * 0.20
+  const axisMin = Math.max(40, Math.floor(dataMin - pad))
+  const axisMax = Math.min(99, Math.ceil(dataMax + pad))
+  // Etiquetas con valor numerico al lado para reforzar diferencias.
+  const labelsWithVals = labels.map((l,i) => `${l}  ${dH[i]} vs ${dA[i]}`)
+  radarChart=new Chart(ctx,{type:'radar',data:{labels:labelsWithVals,datasets:[{label:m.home.name,data:dH,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.12)',borderWidth:2,pointBackgroundColor:'#22c55e',pointRadius:3},{label:m.away.name,data:dA,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.1)',borderWidth:2,pointBackgroundColor:'#ef4444',pointRadius:3,borderDash:[5,3]}]},options:{responsive:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#0d1014',borderColor:'#2e3848',borderWidth:1,titleColor:'#e8eaed',bodyColor:'#6b7280',callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw}`}}},scales:{r:{min:axisMin,max:axisMax,backgroundColor:'transparent',grid:{color:'rgba(255,255,255,.06)'},angleLines:{color:'rgba(255,255,255,.06)'},ticks:{display:false},pointLabels:{color:'#9ca3af',font:{size:9,family:'JetBrains Mono'}}}}}})
   document.getElementById('radar-legend').innerHTML=`<div class="rl-item"><div class="rl-dot" style="background:#22c55e"></div><span style="color:#22c55e">${m.home.name}</span></div><div class="rl-item"><div class="rl-dot" style="background:#ef4444;outline:2px dashed #ef4444;outline-offset:2px"></div><span style="color:#ef4444">${m.away.name}</span></div>`
 
   // Lineup compare
