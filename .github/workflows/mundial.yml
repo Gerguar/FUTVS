@@ -47,24 +47,30 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python -m src.ingest_pinnacle_wc --save
 
-      - name: Re-predict Mundial (DC + Elo + Plantilla + Mercado + Sede + Fase)
+      - name: Integrar lesiones desde insights (Claude)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.integrate_lesiones_mundial || echo "[lesiones] fallo no critico"
+
+      - name: Re-predict Mundial (DC + Elo + Plantilla + Mercado + Sede + Fase + Lesiones)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python -m src.predict_mundial
 
-      - name: Commit cuotas (si cambian)
+      - name: Commit cuotas + ajustes (si cambian)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/wc2026_market_odds.json || true
+          git add data/wc2026_market_odds.json data/wc2026_ajustes_lesiones.json || true
           if ! git diff --cached --quiet; then
             git stash
             git pull --rebase origin main
             git stash pop
-            git add data/wc2026_market_odds.json || true
-            git commit -m "chore: refresh Pinnacle WC odds $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git add data/wc2026_market_odds.json data/wc2026_ajustes_lesiones.json || true
+            git commit -m "chore: refresh Pinnacle WC odds + lesiones $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             git push origin main
           else
-            echo "no changes in cuotas"
+            echo "no changes"
           fi

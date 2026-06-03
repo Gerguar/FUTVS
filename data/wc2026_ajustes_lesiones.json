@@ -1,0 +1,26 @@
+{
+  "86": {
+    "p_local_delta": -1.5,
+    "p_empate_delta": 0.75,
+    "p_visitante_delta": 0.75,
+    "reasons": [
+      "España sin Lamine Yamal (-1.5pp)"
+    ]
+  },
+  "110": {
+    "p_local_delta": -1.5,
+    "p_empate_delta": 0.75,
+    "p_visitante_delta": 0.75,
+    "reasons": [
+      "España sin Lamine Yamal (-1.5pp)"
+    ]
+  },
+  "136": {
+    "p_local_delta": 0.75,
+    "p_empate_delta": 0.75,
+    "p_visitante_delta": -1.5,
+    "reasons": [
+      "España sin Lamine Yamal (-1.5pp)"
+    ]
+  }
+}

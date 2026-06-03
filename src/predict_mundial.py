@@ -46,6 +46,7 @@ from .team_normalize import canonical
 DC_PATH = Path("data/dc_state_selecciones.json")
 TEAM_RATINGS_PATH = Path("data/team_ratings.json")
 MARKET_ODDS_PATH = Path("data/wc2026_market_odds.json")
+LESIONES_AJUSTES_PATH = Path("data/wc2026_ajustes_lesiones.json")
 
 # Anfitriones Mundial 2026: México (130), USA (151), Canadá (135).
 # FIFA confirmó que cada anfitrión juega sus 3 partidos de grupos en su pais.
@@ -152,6 +153,12 @@ def main() -> None:
     else:
         print(f"[predict-mundial] market_odds: sin archivo (correr ingest_pinnacle_wc primero)")
 
+    # 3c. Ajustes por lesiones (desde insights de Claude)
+    ajustes_lesiones: dict[str, dict] = {}
+    if LESIONES_AJUSTES_PATH.exists():
+        ajustes_lesiones = json.loads(LESIONES_AJUSTES_PATH.read_text(encoding="utf-8"))
+        print(f"[predict-mundial] ajustes_lesiones: {len(ajustes_lesiones)} partidos afectados")
+
     # 4. Equipos (id -> nombre, slug)
     eq = sb_get("equipos?select=id,nombre&liga_id=eq.7")
     id_to_nombre = {e["id"]: e["nombre"] for e in eq}
@@ -255,6 +262,21 @@ def main() -> None:
             s = p_h + p_d + p_a
             p_h, p_d, p_a = p_h/s, p_d/s, p_a/s
 
+        # Ajuste por lesiones (insights de Claude). Deltas vienen en puntos
+        # porcentuales (-3.0 = restar 3pp). Se clampea a [0.5%, 99%] por seguridad.
+        lesion = ajustes_lesiones.get(str(m["id"]))
+        lesion_reasons: list[str] = []
+        if lesion:
+            p_h_pct = p_h * 100 + lesion.get("p_local_delta", 0.0)
+            p_d_pct = p_d * 100 + lesion.get("p_empate_delta", 0.0)
+            p_a_pct = p_a * 100 + lesion.get("p_visitante_delta", 0.0)
+            p_h = max(0.5, min(99, p_h_pct)) / 100
+            p_d = max(0.5, min(99, p_d_pct)) / 100
+            p_a = max(0.5, min(99, p_a_pct)) / 100
+            s = p_h + p_d + p_a
+            p_h, p_d, p_a = p_h/s, p_d/s, p_a/s
+            lesion_reasons = lesion.get("reasons", [])
+
         # Factores (porcentajes 0-100 que el frontend muestra)
         elo_diff = (elo_h - elo_a) if (elo_h is not None and elo_a is not None) else 0
         xi_diff = ((xi_h or 0) - (xi_a or 0))
@@ -277,8 +299,10 @@ def main() -> None:
         else:
             host_nombre = id_to_nombre.get(host_local, "?")
             notas_parts.append(f"Sede: {host_nombre} (local)")
-        notas_parts.append(f"Fase: {'grupos' if is_groups else 'eliminacion'}.")
-        notas = ". ".join(notas_parts)
+        notas_parts.append(f"Fase: {'grupos' if is_groups else 'eliminacion'}")
+        if lesion_reasons:
+            notas_parts.append("Lesiones: " + "; ".join(lesion_reasons))
+        notas = ". ".join(notas_parts) + "."
 
         # factor_localidad: signed, positivo si el anfitrion es el local en la DB
         if is_neutral:
@@ -296,7 +320,7 @@ def main() -> None:
             "factor_forma":     round(xi_diff, 1),
             "factor_h2h":       0,
             "factor_tabla":     0,
-            "factor_bajas":     0,
+            "factor_bajas":     round((lesion.get("p_local_delta", 0) - lesion.get("p_visitante_delta", 0)) if lesion else 0, 1),
             "factor_goles":     round(atk_h - atk_a, 1),
             "notas": notas,
         }

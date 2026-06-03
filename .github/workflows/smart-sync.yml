@@ -99,7 +99,13 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python -m src.ingest_elo_selecciones || echo "[elo] fallo no critico"
 
-      - name: Re-predict Mundial (despues de updates de partidos + Elo)
+      - name: Integrar lesiones desde insights (Claude)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.integrate_lesiones_mundial || echo "[lesiones] fallo no critico"
+
+      - name: Re-predict Mundial (despues de updates de partidos + Elo + Lesiones)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
