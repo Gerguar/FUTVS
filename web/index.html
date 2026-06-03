@@ -1716,8 +1716,19 @@ const LEAGUE_KEYS = {
   'Selecciones FIFA':'mundial'
 }
 
+// Los ISO de Supabase vienen como '2026-06-17T01:00:00' SIN sufijo de zona.
+// Son UTC implicito (lo que `ingest_*` recibe de la API ya viene en UTC con Z,
+// pero Supabase guarda como `timestamp without timezone` y come la Z al devolver).
+// Agregamos Z manualmente para que `new Date()` lo trate como UTC y luego
+// .getHours()/.getDate() devuelvan automaticamente la hora local del browser.
+function _asUTC(iso) {
+  if (!iso) return new Date(NaN)
+  if (/[Z+-]\d{2}:?\d{2}$/.test(iso) || iso.endsWith('Z')) return new Date(iso)
+  return new Date(iso + 'Z')
+}
+
 function formatDate(iso) {
-  const d = new Date(iso)
+  const d = _asUTC(iso)
   const days  = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB']
   const months= ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC']
   return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`
@@ -1748,7 +1759,7 @@ function currentSeasonShort() {
   if (yearEl) yearEl.textContent = new Date().getFullYear()
 })()
 function formatTime(iso) {
-  const d = new Date(iso)
+  const d = _asUTC(iso)
   return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
 }
 
