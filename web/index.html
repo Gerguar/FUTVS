@@ -819,6 +819,10 @@ button,a{touch-action:manipulation}
 .pg-btn:disabled{opacity:.3;cursor:not-allowed}
 .pg-btn-arrow{width:36px;height:36px;font-size:1rem}
 .pg-info{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--faint);letter-spacing:1px;margin:0 .4rem}
+.matches-section-label{grid-column:1/-1;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:2px;color:var(--green);text-transform:uppercase;padding:.2rem .3rem .6rem;font-weight:700}
+.matches-grid-inner{max-width:1100px;margin:0 auto;padding:.3rem 1.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;width:100%}
+@media(max-width:900px){.matches-grid-inner{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.matches-grid-inner{grid-template-columns:1fr;padding:.3rem .8rem}}
 /* ── FIN PAGINACIÓN CSS ── */
 </style>
 </head>
@@ -892,6 +896,8 @@ button,a{touch-action:manipulation}
   </div>
   
   <div id="pagination-bar" class="pagination" style="display:none"></div>
+  <div id="finished-section" style="display:none;position:relative;z-index:1"></div>
+  <div id="pagination-bar-fin" class="pagination" style="display:none"></div>
   <!-- CTA -->
   <div style="position:relative;z-index:1;background:var(--surface);border-top:1px solid var(--border);padding:5rem 2rem 5.5rem;text-align:center">
     <div style="max-width:700px;margin:0 auto">
@@ -2025,13 +2031,13 @@ function matchCardHtml(m) {
 let currentGroupFilter = 'all'  // 'all' | 'A'..'L'  (solo aplica cuando esta activo el filtro Mundial)
 
 // ── PAGINACIÓN ──
-const PAGE_SIZE = 9
-let currentPage = 1
+const PAGE_SIZE = 6
+let currentPageUp = 1
+let currentPageFin = 1
 let currentFilter = 'all'
-
 function renderMatches(filter) {
   const c = document.getElementById('matches-container')
-  if (filter !== undefined) { currentFilter = filter; currentPage = 1 }
+  if (filter !== undefined) { currentFilter = filter; currentPageUp = 1; currentPageFin = 1 }
   let list = currentFilter==='all' ? matches : matches.filter(m=>m.leagueKey===currentFilter)
   if (currentFilter === 'mundial' && currentGroupFilter !== 'all') {
     list = list.filter(m => m.grupo === currentGroupFilter)
@@ -2044,49 +2050,60 @@ function renderMatches(filter) {
       : 'No hay partidos disponibles'
     c.innerHTML = `<div class="loader" style="color:var(--faint);text-align:center;padding:2rem">${msg}</div>`
     document.getElementById('pagination-bar').style.display = 'none'
+    document.getElementById('pagination-bar-fin').style.display = 'none'
     return
   }
   const upcoming = list.filter(m => m.status !== 'finalizado')
   const finished = list.filter(m => m.status === 'finalizado')
     .sort((a,b) => new Date(b.kickoffIso) - new Date(a.kickoffIso))
-  const allSorted = [...upcoming, ...finished]
-  const totalPages = Math.ceil(allSorted.length / PAGE_SIZE)
-  if (currentPage > totalPages) currentPage = totalPages
-  const start = (currentPage - 1) * PAGE_SIZE
-  const pageItems = allSorted.slice(start, start + PAGE_SIZE)
-  const pageUpcoming = pageItems.filter(m => m.status !== 'finalizado')
-  const pageFinished = pageItems.filter(m => m.status === 'finalizado')
-  let html = pageUpcoming.map(matchCardHtml).join('')
-  if (pageFinished.length) {
-    html += `<div class="matches-divider">Finalizados (últimos 7 días) · ${pageFinished.length}</div>`
-    html += pageFinished.map(matchCardHtml).join('')
+  const totalPagesUp = Math.max(1, Math.ceil(upcoming.length / PAGE_SIZE))
+  if (currentPageUp > totalPagesUp) currentPageUp = totalPagesUp
+  const pageUpcoming = upcoming.slice((currentPageUp-1)*PAGE_SIZE, currentPageUp*PAGE_SIZE)
+  const totalPagesFin = Math.max(1, Math.ceil(finished.length / PAGE_SIZE))
+  if (currentPageFin > totalPagesFin) currentPageFin = totalPagesFin
+  const pageFinished = finished.slice((currentPageFin-1)*PAGE_SIZE, currentPageFin*PAGE_SIZE)
+  let html = ''
+  if (upcoming.length) {
+    html += `<div class="matches-section-label">PRÓXIMOS · ${upcoming.length}</div>`
+    html += pageUpcoming.map(matchCardHtml).join('')
   }
   c.innerHTML = html
-  renderPagination(totalPages, allSorted.length)
+  renderPagination('pagination-bar', totalPagesUp, currentPageUp, upcoming.length, 'Up')
+  const finSection = document.getElementById('finished-section')
+  if (finished.length) {
+    finSection.innerHTML = `<div class="matches-divider">FINALIZADOS · ${finished.length}</div><div class="matches-grid-inner">${pageFinished.map(matchCardHtml).join('')}</div>`
+    finSection.style.display = 'block'
+    renderPagination('pagination-bar-fin', totalPagesFin, currentPageFin, finished.length, 'Fin')
+  } else {
+    finSection.style.display = 'none'
+    document.getElementById('pagination-bar-fin').style.display = 'none'
+  }
 }
 
-function goToPage(p) {
-  currentPage = p
+function goToPage(p, section) {
+  if (section === 'Up') currentPageUp = p
+  else currentPageFin = p
   renderMatches()
   document.getElementById('matches-container').scrollIntoView({behavior:'smooth', block:'start'})
 }
 
-function renderPagination(totalPages, total) {
-  const bar = document.getElementById('pagination-bar')
+function renderPagination(barId, totalPages, currentPage, total, section) {
+  const bar = document.getElementById(barId)
+  if (!bar) return
   if (totalPages <= 1) { bar.style.display = 'none'; return }
   bar.style.display = 'flex'
-  const start = (currentPage - 1) * PAGE_SIZE + 1
-  const end = Math.min(currentPage * PAGE_SIZE, total)
+  const start = (currentPage-1)*PAGE_SIZE+1
+  const end = Math.min(currentPage*PAGE_SIZE, total)
   let html = ''
-  html += `<button class="pg-btn" onclick="goToPage(${currentPage-1})" ${currentPage===1?'disabled':''}>&#8249;</button>`
+  html += `<button class="pg-btn" onclick="goToPage(${currentPage-1},'${section}')" ${currentPage===1?'disabled':''}>&#8249;</button>`
   for (let i = 1; i <= totalPages; i++) {
     if (totalPages > 7) {
       const show = i===1 || i===totalPages || Math.abs(i-currentPage)<=1
-      if (!show) { if (i===2 || i===totalPages-1) html += `<span class="pg-info">…</span>`; continue }
+      if (!show) { if (i===2||i===totalPages-1) html += `<span class="pg-info">…</span>`; continue }
     }
-    html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`
+    html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="goToPage(${i},'${section}')">${i}</button>`
   }
-  html += `<button class="pg-btn" onclick="goToPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>&#8250;</button>`
+  html += `<button class="pg-btn" onclick="goToPage(${currentPage+1},'${section}')" ${currentPage===totalPages?'disabled':''}>&#8250;</button>`
   html += `<span class="pg-info">${start}–${end} de ${total}</span>`
   bar.innerHTML = html
 }
