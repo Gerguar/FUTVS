@@ -2421,14 +2421,30 @@ function renderDetailBody(m) {
   // ATAQUE = avg(rating DEL), DEFENSA = avg(rating DEF), MEDIOCAMPO = avg(rating MED).
   const ctx=document.getElementById('radarChart').getContext('2d')
   if(radarChart)radarChart.destroy()
-  const avgRating = (players, pos) => {
-    const filt = (players || []).filter(p => p.pos === pos && p.rating != null)
+  // Promedio del top-N por posicion (rating descendente).
+  // DEL/DEF/MED: top 5 (titulares + 1 banco fuerte).
+  // POR: top 2 (titular + suplente principal).
+  const topAvgRating = (players, pos, n) => {
+    const filt = (players || [])
+      .filter(p => p.pos === pos && p.rating != null)
+      .sort((a,b) => b.rating - a.rating)
+      .slice(0, n)
     if (!filt.length) return 0
     return Math.round(filt.reduce((s,p) => s + p.rating, 0) / filt.length * 10) / 10
   }
   const labels = ['ATAQUE','DEFENSA','MEDIOCAMPO','ARQUERO']
-  const dH = [avgRating(m.home.players,'DEL'), avgRating(m.home.players,'DEF'), avgRating(m.home.players,'MED'), avgRating(m.home.players,'POR')]
-  const dA = [avgRating(m.away.players,'DEL'), avgRating(m.away.players,'DEF'), avgRating(m.away.players,'MED'), avgRating(m.away.players,'POR')]
+  const dH = [
+    topAvgRating(m.home.players,'DEL',5),
+    topAvgRating(m.home.players,'DEF',5),
+    topAvgRating(m.home.players,'MED',5),
+    topAvgRating(m.home.players,'POR',2),
+  ]
+  const dA = [
+    topAvgRating(m.away.players,'DEL',5),
+    topAvgRating(m.away.players,'DEF',5),
+    topAvgRating(m.away.players,'MED',5),
+    topAvgRating(m.away.players,'POR',2),
+  ]
   // Rango: 50-95 cubre el espectro tipico de ratings EA FC sin dejar el
   // grafico chiquito en el medio. Si algun promedio fuera <50 (selecciones
   // muy debiles con default 70 dominando), igual entra porque min=50.
