@@ -97,11 +97,12 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .detail-final-strip{background:rgba(239,68,68,.08);border-bottom:1px solid rgba(239,68,68,.28);padding:.65rem 1rem;text-align:center;display:flex;align-items:center;justify-content:center;gap:14px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;font-weight:800;font-size:.78rem;color:var(--red);position:relative;z-index:2}
 .detail-final-strip-score{font-size:1.1rem;color:var(--text);background:rgba(239,68,68,.18);padding:4px 14px;border-radius:8px;border:1px solid rgba(239,68,68,.4)}
 .league-badge{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--green);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-align:center}
-.teams-col{display:flex;flex-direction:column;align-items:center;gap:.5rem;width:100%}
-.team-row{display:flex;align-items:center;gap:.7rem;width:100%;padding:0 .3rem}
+.teams-col{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:.4rem;width:100%}
+.team-row{display:flex;align-items:center;gap:.5rem;flex:1;min-width:0;padding:0}
+.teams-col .team-row:last-child{flex-direction:row-reverse;text-align:right}
 .crest-img{width:36px;height:36px;object-fit:contain;flex-shrink:0}
-.team-name-card{font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vs-col{font-family:'JetBrains Mono',monospace;color:var(--border2);font-size:.75rem;font-weight:700;letter-spacing:2px}
+.team-name-card{font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.vs-col{font-family:'JetBrains Mono',monospace;color:var(--border2);font-size:.75rem;font-weight:700;letter-spacing:2px;flex-shrink:0;padding:0 .2rem}
 .card-meta{font-size:.75rem;color:var(--muted);text-align:center;font-family:'JetBrains Mono',monospace}
 .mini-bar{height:12px;border-radius:5px;background:var(--surface2);display:flex;overflow:hidden;width:100%}
 .mini-seg{height:100%}
@@ -350,9 +351,9 @@ body{overflow-x:hidden}
 }
 @media(max-width:540px){
   .matches-grid{grid-template-columns:1fr;padding:.5rem .8rem 2rem}
-  .match-card{flex-direction:row;align-items:center;gap:.8rem;padding:1rem}
+  .match-card{flex-direction:column;align-items:center;gap:.7rem;padding:1rem}
   .teams-col{gap:.3rem}
-  .team-name-card{font-size:.82rem}
+  .team-name-card{font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .crest-img{width:28px;height:28px}
 }
 
@@ -525,12 +526,12 @@ button,a{touch-action:manipulation}
     padding:1rem;
     border-radius:16px;
   }
-  .league-badge{text-align:left;width:100%;font-size:.62rem;letter-spacing:1.2px}
-  .teams-col{align-items:stretch;gap:.42rem}
-  .team-row{padding:0;min-width:0;gap:.65rem}
-  .team-name-card{font-size:.9rem;min-width:0;white-space:normal;line-height:1.18;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-  .crest-img{width:34px;height:34px}
-  .vs-col{text-align:left;padding-left:41px;font-size:.65rem;line-height:1}
+  .league-badge{text-align:center;width:100%;font-size:.62rem;letter-spacing:1.2px}
+  .teams-col{flex-direction:row;align-items:center;justify-content:space-between;gap:.4rem}
+  .team-row{padding:0;min-width:0;gap:.4rem;flex:1}
+  .team-name-card{font-size:.78rem;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.18}
+  .crest-img{width:30px;height:30px}
+  .vs-col{text-align:center;padding:0 .15rem;font-size:.65rem;line-height:1;flex-shrink:0}
   .card-meta{text-align:left;font-size:.68rem;line-height:1.35}
   .mini-bar{height:8px}
   .mini-probs{font-size:.7rem}
