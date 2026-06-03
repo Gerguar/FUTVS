@@ -106,7 +106,8 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .card-meta{font-size:.75rem;color:var(--muted);text-align:center;font-family:'JetBrains Mono',monospace}
 .mini-bar{height:12px;border-radius:5px;background:var(--surface2);display:flex;overflow:hidden;width:100%}
 .mini-seg{height:100%}
-.mini-probs{display:flex;justify-content:space-between;width:100%;font-size:.72rem;font-family:'JetBrains Mono',monospace;font-weight:700}
+.mini-probs{position:relative;width:100%;height:1rem;font-size:.72rem;font-family:'JetBrains Mono',monospace;font-weight:700}
+.mini-probs span{position:absolute;transform:translateX(-50%);white-space:nowrap;top:0}
 .back-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.82rem;font-family:'JetBrains Mono',monospace;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
 .back-btn:hover{border-color:var(--green);color:var(--green)}
 /* loading */
@@ -2082,9 +2083,9 @@ function matchCardHtml(m) {
         <div class="mini-seg" style="background:var(--red);width:${m.prob.away}%"></div>
       </div>
       <div class="mini-probs">
-        <span style="color:var(--green)">${m.prob.home}%</span>
-        <span style="color:var(--amber)">${m.prob.draw}%</span>
-        <span style="color:var(--red)">${m.prob.away}%</span>
+        <span style="left:${m.prob.home/2}%;color:var(--green)">${m.prob.home}%</span>
+        <span style="left:${m.prob.home + m.prob.draw/2}%;color:var(--amber)">${m.prob.draw}%</span>
+        <span style="left:${m.prob.home + m.prob.draw + m.prob.away/2}%;color:var(--red)">${m.prob.away}%</span>
       </div>
       ${scoreRow}
     </div>`
