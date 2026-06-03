@@ -41,6 +41,12 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
+      - name: Refresh partidos selecciones 2025 (martj42 -> Supabase)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.ingest_partidos_selecciones_2025 || echo "[partidos-sel] fallo no critico"
+
       - name: Refresh Pinnacle WC odds
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
