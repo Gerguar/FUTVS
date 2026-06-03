@@ -2426,9 +2426,9 @@ function renderDetailBody(m) {
     if (!filt.length) return 0
     return Math.round(filt.reduce((s,p) => s + p.rating, 0) / filt.length * 10) / 10
   }
-  const labels = ['ATAQUE','DEFENSA','MEDIOCAMPO']
-  const dH = [avgRating(m.home.players,'DEL'), avgRating(m.home.players,'DEF'), avgRating(m.home.players,'MED')]
-  const dA = [avgRating(m.away.players,'DEL'), avgRating(m.away.players,'DEF'), avgRating(m.away.players,'MED')]
+  const labels = ['ATAQUE','DEFENSA','MEDIOCAMPO','ARQUERO']
+  const dH = [avgRating(m.home.players,'DEL'), avgRating(m.home.players,'DEF'), avgRating(m.home.players,'MED'), avgRating(m.home.players,'POR')]
+  const dA = [avgRating(m.away.players,'DEL'), avgRating(m.away.players,'DEF'), avgRating(m.away.players,'MED'), avgRating(m.away.players,'POR')]
   // Rango: 50-95 cubre el espectro tipico de ratings EA FC sin dejar el
   // grafico chiquito en el medio. Si algun promedio fuera <50 (selecciones
   // muy debiles con default 70 dominando), igual entra porque min=50.
