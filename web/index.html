@@ -45,7 +45,7 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .group-btn{padding:5px 12px;border-radius:14px;border:1px solid rgba(212,160,23,.3);background:transparent;color:#9c8a5a;cursor:pointer;font-size:.72rem;font-weight:700;transition:all .15s;font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
 .group-btn:hover{border-color:#d4a017;color:#e6b94c}
 .group-btn.active{background:rgba(212,160,23,.15);border-color:#d4a017;color:#f0c44f}
-.matches-grid{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 3rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;position:relative;z-index:1;width:100%}
+.matches-grid{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 3rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;position:relative;z-index:1;width:100%}
 /* Layout del home con sidebar flotante a la izquierda */
 .home-main{max-width:1380px;margin:0 auto;display:grid;grid-template-columns:160px 1fr;gap:1.6rem;padding:.5rem 1.5rem 0 .25rem;position:relative;z-index:1}
 .home-main .matches-grid{max-width:none;padding:.5rem 0 3rem;margin:0;grid-template-columns:repeat(3,1fr)}
@@ -516,7 +516,7 @@ button,a{touch-action:manipulation}
   .filters{padding:.85rem .85rem .7rem;gap:.45rem}
   .filter-btn{min-height:34px;padding:7px 14px}
 
-  .matches-grid{grid-template-columns:1fr;padding:.65rem .85rem 2rem;gap:.85rem}
+  .matches-grid{grid-template-columns:1fr;padding:.65rem .85rem 2rem;gap:1.3rem}
   .match-card{
     display:grid;
     grid-template-columns:1fr;
@@ -821,7 +821,7 @@ button,a{touch-action:manipulation}
 .pg-btn-arrow{width:36px;height:36px;font-size:1rem}
 .pg-info{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--faint);letter-spacing:1px;margin:0 .4rem}
 .matches-section-label{grid-column:1/-1;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:2px;color:var(--green);text-transform:uppercase;padding:.2rem .3rem .6rem;font-weight:700}
-.matches-grid-inner{max-width:1100px;margin:0 auto;padding:.3rem 1.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;width:100%}
+.matches-grid-inner{max-width:1100px;margin:0 auto;padding:.3rem 1.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;width:100%}
 @media(max-width:900px){.matches-grid-inner{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:540px){.matches-grid-inner{grid-template-columns:1fr;padding:.3rem .8rem}}
 /* ── FIN PAGINACIÓN CSS ── */
@@ -2093,7 +2093,7 @@ function matchCardHtml(m) {
 let currentGroupFilter = 'all'  // 'all' | 'A'..'L'  (solo aplica cuando esta activo el filtro Mundial)
 
 // ── PAGINACIÓN ──
-const PAGE_SIZE = 6
+const PAGE_SIZE = 9
 let currentPageUp = 1
 let currentPageFin = 1
 let currentFilter = 'all'
