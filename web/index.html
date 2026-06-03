@@ -2368,12 +2368,14 @@ function renderDetailBody(m) {
       const minPlayed = Math.min(seasonH.played, seasonA.played)
       titleEl.innerHTML = `📊 Estadísticas de la temporada ${currentSeason()} <span style="opacity:.6;font-size:.85em;margin-left:6px">(${minPlayed}+ PJ)</span>`
     }
-    // Maximos comunes para escalar las barras: +20% del mayor valor para
-    // que ni siquiera el lider llegue al 100% (queda ~83% lleno) y deje
-    // espacio visual de respiro.
-    const maxGF  = Math.max(seasonH.gf, seasonA.gf, 1) * 1.20
-    const maxGC  = Math.max(seasonH.gc, seasonA.gc, 1) * 1.20
-    const maxRat = Math.max(ratH, ratA, 1) * 1.20
+    // Escalas absolutas por stat: cada variable tiene su propio "techo
+    // razonable" para que las barras se diferencien visualmente entre si
+    // (un 26 en GOLES no se ve igual que un 78 en RATING XI).
+    // Si algun valor supera el techo razonable, se expande con +20%
+    // para que no quede pegado al 100%.
+    const maxGF  = Math.max(50, Math.max(seasonH.gf, seasonA.gf) * 1.20)
+    const maxGC  = Math.max(50, Math.max(seasonH.gc, seasonA.gc) * 1.20)
+    const maxRat = 95  // techo natural de ratings EA FC
     const buildSide = (season, rat, form, col, name) => {
       const dots = (form || []).map(r =>
         `<div class="fdot ${r==='W'?'fdot-w':r==='D'?'fdot-d':'fdot-l'}">${r==='W'?'V':r==='D'?'E':'D'}</div>`
