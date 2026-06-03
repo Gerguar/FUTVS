@@ -2083,9 +2083,9 @@ function matchCardHtml(m) {
         <div class="mini-seg" style="background:var(--red);width:${m.prob.away}%"></div>
       </div>
       <div class="mini-probs">
-        <span style="left:${m.prob.home/2}%;color:var(--green)">${m.prob.home}%</span>
-        <span style="left:${m.prob.home + m.prob.draw/2}%;color:var(--amber)">${m.prob.draw}%</span>
-        <span style="left:${m.prob.home + m.prob.draw + m.prob.away/2}%;color:var(--red)">${m.prob.away}%</span>
+        ${m.prob.home >= 5 ? `<span style="left:${m.prob.home/2}%;color:var(--green)">${m.prob.home}%</span>` : ''}
+        ${m.prob.draw >= 5 ? `<span style="left:${m.prob.home + m.prob.draw/2}%;color:var(--amber)">${m.prob.draw}%</span>` : ''}
+        ${m.prob.away >= 5 ? `<span style="left:${m.prob.home + m.prob.draw + m.prob.away/2}%;color:var(--red)">${m.prob.away}%</span>` : ''}
       </div>
       ${scoreRow}
     </div>`
