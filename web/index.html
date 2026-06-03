@@ -2393,7 +2393,7 @@ function renderDetailBody(m) {
       }).join('')
       return `<div><div class="d-card-title" style="margin-bottom:.5rem">${name}</div><div class="form-dots-d">${dots}</div>${barsHtml}</div>`
     }
-    document.getElementById('detail-metrics').innerHTML = `<div class="stats-2col">
+    document.getElementById('detail-metrics').innerHTML = `<div class="stats-2col" style="grid-column:1/-1;width:100%">
       ${buildSide(seasonH, ratH, m.home.form, '#22c55e', m.home.name.toUpperCase())}
       ${buildSide(seasonA, ratA, m.away.form, '#ef4444', m.away.name.toUpperCase())}
     </div>`
