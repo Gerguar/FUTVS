@@ -50,6 +50,7 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .home-main{max-width:1380px;margin:0 auto;display:grid;grid-template-columns:160px 1fr;gap:1.6rem;padding:.5rem 1.5rem 0 .25rem;position:relative;z-index:1}
 .home-main .matches-grid{max-width:none;padding:.5rem 0 3rem;margin:0;grid-template-columns:repeat(3,1fr)}
 .stats-sidebar{display:flex;flex-direction:column;gap:1.8rem;position:sticky;top:88px;align-self:start;padding:.4rem 0 0 0;margin-left:-150px}
+.home-right-col{display:flex;flex-direction:column;gap:0;min-width:0}
 .stat-fl{padding:0;text-align:left}
 .stat-fl-num{font-family:'JetBrains Mono',monospace;font-size:2.8rem;font-weight:900;line-height:1}
 .stat-fl-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--faint);letter-spacing:1.8px;text-transform:uppercase;margin-top:6px}
@@ -953,14 +954,15 @@ button,a{touch-action:manipulation}
         <div class="stat-fl-sub" id="stat-fallidos-sub"></div>
       </div>
     </aside>
-    <div class="matches-grid" id="matches-container">
-      <div class="loader"><div class="loader-spin"></div>CARGANDO PARTIDOS...</div>
+    <div class="home-right-col">
+      <div class="matches-grid" id="matches-container">
+        <div class="loader"><div class="loader-spin"></div>CARGANDO PARTIDOS...</div>
+      </div>
+      <div id="pagination-bar" class="pagination" style="display:none"></div>
+      <div id="finished-section" style="display:none;position:relative;z-index:1"></div>
+      <div id="pagination-bar-fin" class="pagination" style="display:none"></div>
     </div>
   </div>
-  
-  <div id="pagination-bar" class="pagination" style="display:none"></div>
-  <div id="finished-section" style="display:none;position:relative;z-index:1"></div>
-  <div id="pagination-bar-fin" class="pagination" style="display:none"></div>
   <!-- CTA -->
   <div style="position:relative;z-index:1;background:var(--surface);border-top:1px solid var(--border);padding:5rem 2rem 5.5rem;text-align:center">
     <div style="max-width:700px;margin:0 auto">
@@ -2145,7 +2147,7 @@ function renderMatches(filter) {
   renderPagination('pagination-bar', totalPagesUp, currentPageUp, upcoming.length, 'Up')
   const finSection = document.getElementById('finished-section')
   if (finished.length) {
-    finSection.innerHTML = `<div class="matches-divider">FINALIZADOS · ${finished.length}</div><div class="matches-grid-inner">${pageFinished.map(matchCardHtml).join('')}</div>`
+    finSection.innerHTML = `<div class="matches-divider">FINALIZADOS · ${finished.length}</div><div class="matches-grid">${pageFinished.map(matchCardHtml).join('')}</div>`
     finSection.style.display = 'block'
     renderPagination('pagination-bar-fin', totalPagesFin, currentPageFin, finished.length, 'Fin')
   } else {
