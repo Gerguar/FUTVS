@@ -2290,7 +2290,8 @@ function renderBanner(m) {
   setTimeout(()=>{
     ;['home','draw','away'].forEach(k=>{
       document.getElementById('dps-'+k).style.width=m.prob[k]+'%'
-      document.getElementById('dps-'+k).textContent=m.prob[k]+'%'
+      // Ocultar el texto si el porcentaje es <5% (evita amontonamiento).
+      document.getElementById('dps-'+k).textContent = m.prob[k] >= 5 ? m.prob[k]+'%' : ''
     })
   },150)
 }
