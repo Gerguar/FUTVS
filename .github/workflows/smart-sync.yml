@@ -99,6 +99,12 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python -m src.ingest_elo_selecciones || echo "[elo] fallo no critico"
 
+      - name: Re-predict Mundial (despues de updates de partidos + Elo)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.predict_mundial || echo "[predict-mundial] fallo no critico"
+
       - name: Commit parquet actualizado (si hubo cambios)
         run: |
           git config user.name "github-actions[bot]"

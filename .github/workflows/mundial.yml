@@ -1,0 +1,70 @@
+name: mundial (Pinnacle + predict cada 6h)
+
+# Refresca cuotas de Pinnacle del Mundial 2026 y re-genera pronosticos cada 6h.
+#
+# Hace:
+# 1. Bajar cuotas H/D/A de la API guest de Pinnacle (sin auth).
+# 2. Guardar data/wc2026_market_odds.json.
+# 3. Re-correr predict_mundial.py que combina DC + Elo + Plantilla + Mercado
+#    y upsertea filas en pronosticos (tabla Supabase).
+# 4. Commit + push del JSON (si cambio).
+#
+# El frontend ya consume pronosticos automaticamente desde Supabase
+# via loadMatches(), asi que no hace falta tocar HTML.
+
+on:
+  schedule:
+    - cron: "20 */6 * * *"  # Cada 6h, a los :20 (offset vs insights que corre :10)
+  workflow_dispatch: {}
+
+concurrency:
+  group: git-push
+  cancel-in-progress: false
+
+jobs:
+  mundial:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Refresh Pinnacle WC odds
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.ingest_pinnacle_wc --save
+
+      - name: Re-predict Mundial (DC + Elo + Plantilla + Mercado + Sede + Fase)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.predict_mundial
+
+      - name: Commit cuotas (si cambian)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/wc2026_market_odds.json || true
+          if ! git diff --cached --quiet; then
+            git stash
+            git pull --rebase origin main
+            git stash pop
+            git add data/wc2026_market_odds.json || true
+            git commit -m "chore: refresh Pinnacle WC odds $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push origin main
+          else
+            echo "no changes in cuotas"
+          fi
