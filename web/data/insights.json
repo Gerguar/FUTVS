@@ -1,8 +1,113 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-03T00:16:34+00:00",
-  "dato_curioso": "Brasil, la máxima ganadora de la historia con 5 Mundiales, nunca pudo vencerle a Noruega en ningún enfrentamiento oficial. Javier Mascherano mantiene el récord de más faltas cometidas en Mundiales con 50 infracciones desde 1966.",
+  "generated_at_utc": "2026-06-03T20:02:12+00:00",
+  "dato_curioso": "Javier Mascherano es el jugador con más faltas cometidas en la historia de los Mundiales con 50 infracciones desde 1966, superando a Klose (49) y Zmuda (48). El Mundial 2026 será el primero con 48 selecciones y 104 partidos, y tendrá 1.248 futbolistas inscriptos, récord absoluto.",
   "forma_reciente": [
+    {
+      "slug": "de",
+      "nombre": "Alemania",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/de.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "wins": 5,
+      "draws": 0
+    },
+    {
+      "slug": "jp",
+      "nombre": "Japón",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/jp.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "wins": 5,
+      "draws": 0
+    },
+    {
+      "slug": "fr",
+      "nombre": "Francia",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/fr.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "D",
+        "W"
+      ],
+      "wins": 4,
+      "draws": 1
+    },
+    {
+      "slug": "tr",
+      "nombre": "Turquía",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/tr.png",
+      "forma": [
+        "W",
+        "D",
+        "W",
+        "W",
+        "W"
+      ],
+      "wins": 4,
+      "draws": 1
+    },
+    {
+      "slug": "ma",
+      "nombre": "Marruecos",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/ma.png",
+      "forma": [
+        "W",
+        "D",
+        "W",
+        "D",
+        "W"
+      ],
+      "wins": 3,
+      "draws": 2
+    },
+    {
+      "slug": "es",
+      "nombre": "España",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/es.png",
+      "forma": [
+        "D",
+        "W",
+        "D",
+        "W",
+        "W"
+      ],
+      "wins": 3,
+      "draws": 2
+    },
+    {
+      "slug": "mx",
+      "nombre": "México",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/mx.png",
+      "forma": [
+        "W",
+        "W",
+        "D",
+        "D",
+        "W"
+      ],
+      "wins": 3,
+      "draws": 2
+    },
     {
       "slug": "rm",
       "nombre": "Real Madrid",
@@ -17,182 +122,77 @@
       ],
       "wins": 3,
       "draws": 1
-    },
-    {
-      "slug": "lfc",
-      "nombre": "Liverpool",
-      "pais": "Inglaterra",
-      "escudo": "https://crests.football-data.org/64.svg",
-      "forma": [
-        "D",
-        "L",
-        "W",
-        "L",
-        "W"
-      ],
-      "wins": 2,
-      "draws": 1
-    },
-    {
-      "slug": "psg",
-      "nombre": "PSG",
-      "pais": "Francia",
-      "escudo": "https://crests.football-data.org/524.svg",
-      "forma": [
-        "W",
-        "L",
-        "W",
-        "D",
-        "L"
-      ],
-      "wins": 2,
-      "draws": 1
-    },
-    {
-      "slug": "ars",
-      "nombre": "Arsenal",
-      "pais": "Inglaterra",
-      "escudo": "https://crests.football-data.org/57.svg",
-      "forma": [
-        "L",
-        "W",
-        "W",
-        "L",
-        "D"
-      ],
-      "wins": 2,
-      "draws": 1
-    },
-    {
-      "slug": "che",
-      "nombre": "Chelsea",
-      "pais": "Inglaterra",
-      "escudo": "https://crests.football-data.org/61.svg",
-      "forma": [
-        "L",
-        "W",
-        "L",
-        "L",
-        "W"
-      ],
-      "wins": 2,
-      "draws": 0
-    },
-    {
-      "slug": "int",
-      "nombre": "Inter Milán",
-      "pais": "Italia",
-      "escudo": "https://crests.football-data.org/108.svg",
-      "forma": [
-        "D",
-        "L",
-        "L",
-        "W",
-        "D"
-      ],
-      "wins": 1,
-      "draws": 2
-    },
-    {
-      "slug": "bvb",
-      "nombre": "Dortmund",
-      "pais": "Alemania",
-      "escudo": "https://crests.football-data.org/4.svg",
-      "forma": [
-        "L",
-        "L",
-        "D",
-        "W",
-        "L"
-      ],
-      "wins": 1,
-      "draws": 1
-    },
-    {
-      "slug": "acm",
-      "nombre": "AC Milán",
-      "pais": "Italia",
-      "escudo": "https://crests.football-data.org/98.svg",
-      "forma": [
-        "L",
-        "L",
-        "W",
-        "L",
-        "D"
-      ],
-      "wins": 1,
-      "draws": 1
     }
   ],
   "oportunidades": [],
   "tendencias": [
     {
-      "tipo": "goleador",
-      "equipo": "Noruega",
-      "flag": "🇳🇴",
-      "texto": "Erling Haaland llega como máximo goleador de eliminatorias UEFA con 16 goles, incluyendo un partido de 5 tantos ante Moldavia.",
-      "valor": 16,
+      "tipo": "over",
+      "equipo": "Ligas Europeas",
+      "flag": "🇪🇺",
+      "texto": "La Premier League mantiene un promedio de 2.96 goles por partido en la temporada 2025/2026, siendo una de las ligas más ofensivas.",
+      "valor": 56,
       "n": 10
+    },
+    {
+      "tipo": "lesiones",
+      "equipo": "Mundial 2026",
+      "flag": "⚽",
+      "texto": "Al menos 16 jugadores de élite descartados del Mundial por lesiones. La sobrecarga de partidos en 2025/26 generó una epidemia física sin precedentes.",
+      "valor": 85,
+      "n": 16
+    },
+    {
+      "tipo": "over",
+      "equipo": "Europa Conference League",
+      "flag": "🏆",
+      "texto": "El 54.5% de los partidos de la Europa Conference League 2025/2026 terminaron con más de 2.5 goles, con tendencia al alza en febrero.",
+      "valor": 54,
+      "n": 760
     },
     {
       "tipo": "debut",
       "equipo": "Curazao",
       "flag": "🇨🇼",
-      "texto": "Curazao se convierte en el país más pequeño en población (185.000 habitantes) que disputa un Mundial en toda la historia.",
-      "valor": 185000,
+      "texto": "Curazao clasificó históricamente con solo 185.000 habitantes y 444 km². Es el país más pequeño en población que jamás disputó un Mundial.",
+      "valor": 100,
       "n": 1
-    },
-    {
-      "tipo": "record",
-      "equipo": "Mundial 2026",
-      "flag": "🏆",
-      "texto": "Con 104 partidos programados, se proyectan más de 200 goles totales, superando el récord de Qatar 2022 que tuvo 172 anotaciones.",
-      "valor": 200,
-      "n": 104
-    },
-    {
-      "tipo": "histórico",
-      "equipo": "Portugal y Argentina",
-      "flag": "⚽",
-      "texto": "Messi y Cristiano Ronaldo jugarán su sexto Mundial, récord absoluto superando a Matthäus, Buffon, Márquez y Guardado.",
-      "valor": 6,
-      "n": 2
     }
   ],
   "alertas": [
     {
       "tipo": "lesion",
+      "equipo": "España",
+      "flag": "🇪🇸",
+      "texto": "Lamine Yamal sufrió rotura del bíceps femoral y llega con lo justo al Mundial tras no jugar con Barcelona desde abril. Riesgo de recaída del 30%.",
+      "nivel": "warning"
+    },
+    {
+      "tipo": "lesion",
+      "equipo": "Argentina",
+      "flag": "🇦🇷",
+      "texto": "Cuti Romero recibió alta médica tras lesión de ligamento lateral en rodilla hace 50 días, pero aún no participa de entrenamientos exigentes con la Selección.",
+      "nivel": "warning"
+    },
+    {
+      "tipo": "lesion",
       "equipo": "Brasil",
       "flag": "🇧🇷",
-      "texto": "Rodrygo confirmado fuera del Mundial 2026 por rotura de ligamento cruzado y menisco. Militão tampoco se recuperó a tiempo.",
+      "texto": "Rodrygo confirmado afuera del Mundial por rotura de ligamento cruzado en marzo. Militão también duda tras reabrirse lesión en bíceps femoral.",
       "nivel": "danger"
     },
     {
       "tipo": "lesion",
-      "equipo": "Argentina",
-      "flag": "🇦🇷",
-      "texto": "Juan Foyth se pierde el Mundial por rotura del tendón de Aquiles. Joaquín Panichelli también descartado por ligamento cruzado.",
+      "equipo": "Alemania",
+      "flag": "🇩🇪",
+      "texto": "Serge Gnabry descartado por desgarro en aductor. Jamal Musiala no recuperó nivel tras fractura de peroné en Mundial de Clubes hace 4 meses.",
       "nivel": "warning"
-    },
-    {
-      "tipo": "lesion",
-      "equipo": "España",
-      "flag": "🇪🇸",
-      "texto": "Lamine Yamal llega muy justo con desgarro de grado 2 en bíceps femoral. Se perderá los primeros partidos de la fase de grupos.",
-      "nivel": "warning"
-    },
-    {
-      "tipo": "suspension",
-      "equipo": "Argentina",
-      "flag": "🇦🇷",
-      "texto": "FIFA revocó la suspensión de Otamendi y Caicedo por rojas en clasificatorias. Podrán jugar el debut en el Mundial 2026.",
-      "nivel": "info"
     }
   ],
   "xg_performance": [],
   "meta": {
     "n_partidos_analizados": 0,
-    "n_equipos_con_forma": 63,
+    "n_equipos_con_forma": 143,
     "n_tendencias": 4,
     "n_alertas": 4,
     "n_oportunidades": 0,
