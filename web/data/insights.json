@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-04T11:39:42+00:00",
-  "dato_curioso": "El Mundial 2026 será el más grande de la historia: 48 selecciones, 104 partidos (40 más que Qatar 2022) en 16 estadios cruzando 6 zonas horarias. Harry Kane tiene más goles este año (31 en 26 juegos) que derrotas totales de Kirby Smart en Georgia (20 derrotas vs 21 picks de primera ronda enviados a la NFL).",
+  "generated_at_utc": "2026-06-04T19:51:18+00:00",
+  "dato_curioso": "El francés Just Fontaine marcó 13 goles en una sola edición (Suecia 1958), récord vigente hace 68 años que parece inalcanzable. Hungría anotó 27 goles en el Mundial 1954, la mayor cantidad de una selección en un solo torneo.",
   "forma_reciente": [
     {
       "slug": "de",
@@ -127,36 +127,36 @@
   "oportunidades": [],
   "tendencias": [
     {
-      "tipo": "goleador",
-      "equipo": "Inglaterra",
-      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-      "texto": "Harry Kane lidera Europa con 31 goles en 26 partidos para Bayern en 2026 (más de un gol por partido). Llega al Mundial en estado de gracia absoluto tras hat-trick en final de Copa.",
+      "tipo": "epidemia_lesiones",
+      "equipo": "Selecciones Mundialistas",
+      "flag": "🌍",
+      "texto": "Al menos 16 figuras confirmadas fuera del Mundial 2026 por lesiones. Roturas de ligamentos cruzados es la lesión más recurrente: Rodrygo, Xavi Simons, Hugo Ekitiké, entre otros.",
       "valor": 100,
-      "n": 26
+      "n": 16
     },
     {
-      "tipo": "over",
-      "equipo": "Premier League 2025-26",
-      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-      "texto": "La Premier League registró 55% de partidos con Over 2.5 goles esta temporada. Arsenal coronado campeón con récord de 19 goles de córner y 25 de pelotas paradas.",
-      "valor": 55,
-      "n": 380
+      "tipo": "formato_historico",
+      "equipo": "Mundial 2026",
+      "flag": "🏆",
+      "texto": "Primer Mundial con 48 selecciones: se disputarán 104 partidos en 39 días. Las tarjetas amarillas se borrarán dos veces: tras fase de grupos y tras cuartos de final.",
+      "valor": 48,
+      "n": 104
     },
     {
-      "tipo": "over",
-      "equipo": "La Liga 2025-26",
-      "flag": "🇪🇸",
-      "texto": "La Liga tuvo exactamente 50% de partidos con Over 2.5 goles. Barcelona con promedio de 3.45 goles totales por partido, el más alto de la competición.",
-      "valor": 50,
-      "n": 380
-    },
-    {
-      "tipo": "defensa",
-      "equipo": "Arsenal",
-      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-      "texto": "Arsenal se convirtió en el primer equipo de la historia de la Premier League en completar una temporada sin recibir penales en contra y sin expulsiones. Campeón invicto en disciplina.",
+      "tipo": "reglas_disciplinarias",
+      "equipo": "FIFA",
+      "flag": "⚖️",
+      "texto": "Nueva regla FIFA: tarjeta roja directa para jugadores que se cubran la boca durante discusiones o abandonen el campo en protesta. VAR podrá revisar segundas amarillas que deriven en expulsión.",
       "valor": 100,
-      "n": 38
+      "n": 1
+    },
+    {
+      "tipo": "juventud_veterania",
+      "equipo": "Jugadores Mundial 2026",
+      "flag": "👥",
+      "texto": "Contrastes extremos: Gilberto Mora (México) es el más joven con 17 años, mientras que Craig Gordon (Escocia) el mayor con 43 años. Cristiano Ronaldo jugará su sexto Mundial a los 41 años.",
+      "valor": 26,
+      "n": 1248
     }
   ],
   "alertas": [
@@ -164,29 +164,29 @@
       "tipo": "lesion",
       "equipo": "Brasil",
       "flag": "🇧🇷",
-      "texto": "Brasil sin Rodrygo (ACL) y Estêvão (isquiotibiales) para el Mundial 2026. Ancelotti pierde a dos titulares ofensivos clave en un equipo que no anotó con fluidez en la clasificación.",
+      "texto": "Brasil llega muy golpeado por las lesiones: Rodrygo, Militão y Estêvão quedan fuera del Mundial tras roturas de ligamentos. Tres bajas sensibles para el ataque y defensa de la Canarinha.",
       "nivel": "danger"
     },
     {
       "tipo": "lesion",
-      "equipo": "Países Bajos",
-      "flag": "🇳🇱",
-      "texto": "Matthijs de Ligt descartado del Mundial tras cirugía de espalda. Sin jugar desde noviembre, no volverá hasta el inicio de temporada 2026-27.",
+      "equipo": "Argentina",
+      "flag": "🇦🇷",
+      "texto": "Leandro Paredes sufre desgarro en el isquiotibial y se pierde los amistosos previos. Cristian Romero llega con escaso ritmo tras semanas sin jugar por lesión en la rodilla.",
       "nivel": "warning"
     },
     {
       "tipo": "lesion",
-      "equipo": "España",
-      "flag": "🇪🇸",
-      "texto": "Lamine Yamal se lesionó en isquiotibiales a fines de la Premier League. Barcelona confirmó que debería estar listo para el Mundial, pero sigue siendo duda con 4-6 semanas de recuperación.",
+      "equipo": "México",
+      "flag": "🇲🇽",
+      "texto": "Cuatro jugadores clave del Tri trabajan por separado: César Montes, Edson Álvarez, Luis Chávez y Alexis Vega llegan tocados físicamente al debut mundialista contra Sudáfrica.",
       "nivel": "warning"
     },
     {
       "tipo": "lesion",
-      "equipo": "Inglaterra",
-      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-      "texto": "Ben White con lesión significativa en ligamentos de rodilla, descartado del resto de temporada con Arsenal. Su presencia en el Mundial es incierta tras reincorporarse a la selección de Tuchel.",
-      "nivel": "warning"
+      "equipo": "Austria",
+      "flag": "🇦🇹",
+      "texto": "Christoph Baumgartner, figura del Leipzig y clave para Austria, queda descartado del Mundial tras lesionarse en el calentamiento del amistoso ante Túnez. Baja confirmada hace 24 horas.",
+      "nivel": "danger"
     }
   ],
   "xg_performance": [],
