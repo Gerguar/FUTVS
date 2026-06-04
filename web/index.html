@@ -849,21 +849,42 @@ button,a{touch-action:manipulation}
 @media(max-width:700px){.hero-inner{padding:2.5rem 1rem}}
 /* ── FIN HERO CARDS CSS ── */
 
-/* ── FACTS SECTION ─────────────────────────── */
-.facts-section{position:relative;z-index:1;padding:2.5rem 1rem 5.5rem;text-align:center}
-.facts-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:2.5px;color:var(--green);text-transform:uppercase;margin-bottom:1.2rem;font-weight:700}
-.fact-card{max-width:720px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.8rem 2rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s}
+/* ── FACTS + NEWS SECTION ───────────────────── */
+.facts-section{position:relative;z-index:1;padding:2.5rem 1.5rem 4rem}
+.facts-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;align-items:start}
+/* columna izquierda: dato histórico */
+.fact-col{}
+.facts-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:2.5px;color:var(--green);text-transform:uppercase;margin-bottom:1rem;font-weight:700}
+.fact-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.6rem 1.8rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s;height:100%}
 .fact-card:hover{border-color:rgba(34,197,94,.35)}
 .fact-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent)}
-.fact-emoji{font-size:2rem;margin-bottom:.7rem;display:block;line-height:1}
-.fact-text{font-size:1.05rem;font-weight:700;color:#fff;line-height:1.55;margin-bottom:.9rem}
+.fact-emoji{font-size:1.8rem;margin-bottom:.6rem;display:block;line-height:1}
+.fact-text{font-size:1rem;font-weight:700;color:#fff;line-height:1.55;margin-bottom:.8rem}
 .fact-text em{color:var(--green);font-style:normal}
 .fact-meta{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--faint);letter-spacing:1.5px;text-transform:uppercase}
-.fact-nav{display:flex;align-items:center;justify-content:center;gap:.6rem;margin-top:1rem}
+.fact-nav{display:flex;align-items:center;gap:.5rem;margin-top:.9rem}
 .fact-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);cursor:pointer;transition:background .2s}
 .fact-dot.active{background:var(--green)}
-.fact-hint{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--faint);margin-top:.8rem;letter-spacing:1px}
-@media(max-width:600px){.fact-card{padding:1.4rem 1.2rem}.fact-text{font-size:.95rem}}
+.fact-hint{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--faint);margin-top:.7rem;letter-spacing:1px}
+/* columna derecha: insight de la semana */
+.news-col{}
+.news-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:2.5px;color:var(--amber);text-transform:uppercase;margin-bottom:1rem;font-weight:700}
+.news-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.2rem 1.6rem;position:relative;overflow:hidden}
+.news-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--amber),transparent)}
+.news-week{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--faint);letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem}
+.news-item{padding:.75rem 0;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:.3rem}
+.news-item:last-child{border-bottom:none;padding-bottom:0}
+.news-item-title{font-size:.88rem;font-weight:700;color:var(--text);line-height:1.4}
+.news-item-title a{color:var(--text);text-decoration:none;transition:color .2s}
+.news-item-title a:hover{color:var(--amber)}
+.news-item-meta{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--faint);letter-spacing:.5px;display:flex;gap:.7rem}
+.news-item-resumen{font-size:.78rem;color:var(--muted);line-height:1.45}
+.news-loading{text-align:center;padding:2rem;color:var(--faint);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:1px}
+@media(max-width:800px){
+  .facts-inner{grid-template-columns:1fr}
+  .facts-section{padding:2rem 1rem 3rem}
+}
+@media(max-width:600px){.fact-card{padding:1.3rem 1.2rem}.fact-text{font-size:.95rem}}
 /* ── FIN FACTS CSS ── */
 
 /* ── RANKING PAGE ────────────────────────────────────── */
@@ -1022,14 +1043,28 @@ button,a{touch-action:manipulation}
   
 <!-- FACTS SECTION -->
 <div class="facts-section">
-  <div class="facts-eyebrow">&#128200; Dato hist&#243;rico</div>
-  <div class="fact-card" onclick="nextFact()" title="Click para ver otro dato">
-    <span class="fact-emoji" id="fact-emoji">&#9917;</span>
-    <div class="fact-text" id="fact-text">Cargando...</div>
-    <div class="fact-meta" id="fact-meta"></div>
+  <div class="facts-inner">
+    <!-- Dato histórico -->
+    <div class="fact-col">
+      <div class="facts-eyebrow">&#128200; Dato hist&#243;rico</div>
+      <div class="fact-card" onclick="nextFact()" title="Click para ver otro dato">
+        <span class="fact-emoji" id="fact-emoji">&#9917;</span>
+        <div class="fact-text" id="fact-text">Cargando...</div>
+        <div class="fact-meta" id="fact-meta"></div>
+        <div class="fact-nav" id="fact-nav"></div>
+        <div class="fact-hint">&#128073; Click para ver otro dato</div>
+      </div>
+    </div>
+    <!-- Insight de la semana -->
+    <div class="news-col">
+      <div class="news-eyebrow">&#9889; Insight de la semana</div>
+      <div class="news-card">
+        <div id="news-content">
+          <div class="news-loading">CARGANDO NOTICIAS...</div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="fact-nav" id="fact-nav"></div>
-  <div class="fact-hint">&#128073; Click para ver otro dato</div>
 </div>
 <!-- /FACTS SECTION -->
   <!-- CTA -->
@@ -4047,6 +4082,44 @@ document.addEventListener('DOMContentLoaded', () => {
   const card = document.querySelector('.fact-card')
   if (card) { card.style.transition = 'opacity .3s,transform .3s'; renderFact() }
 })
+
+// ── NEWS SECTION ──────────────────────────────────────────────
+async function loadWeeklyNews() {
+  const container = document.getElementById('news-content')
+  if (!container) return
+  try {
+    const r = await fetch('/data/insights_semana.json?t=' + Date.now())
+    if (!r.ok) throw new Error('HTTP ' + r.status)
+    const data = await r.json()
+    const noticias = data.noticias || []
+    if (!noticias.length) throw new Error('Sin noticias')
+
+    const weekHtml = data.week
+      ? `<div class="news-week">Semana: ${data.week}</div>` : ''
+
+    const itemsHtml = noticias.map(n => {
+      const fecha = n.fecha
+        ? new Date(n.fecha + 'T12:00:00Z').toLocaleDateString('es-AR', {day:'numeric',month:'short'})
+        : ''
+      return `<div class="news-item">
+        <div class="news-item-title">
+          <a href="${n.url}" target="_blank" rel="noopener">${n.titulo}</a>
+        </div>
+        ${n.resumen ? `<div class="news-item-resumen">${n.resumen}</div>` : ''}
+        <div class="news-item-meta">
+          <span>${n.fuente || ''}</span>
+          ${fecha ? `<span>${fecha}</span>` : ''}
+        </div>
+      </div>`
+    }).join('')
+
+    container.innerHTML = weekHtml + itemsHtml
+  } catch(e) {
+    container.innerHTML = `<div class="news-loading">No hay noticias disponibles esta semana.<br><span style="font-size:.6rem;opacity:.6">${e.message}</span></div>`
+  }
+}
+loadWeeklyNews()
+// ── FIN NEWS JS ──
 // ── FIN FACTS JS ──
 
 </script>
