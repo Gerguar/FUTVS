@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-03T20:02:12+00:00",
-  "dato_curioso": "Javier Mascherano es el jugador con más faltas cometidas en la historia de los Mundiales con 50 infracciones desde 1966, superando a Klose (49) y Zmuda (48). El Mundial 2026 será el primero con 48 selecciones y 104 partidos, y tendrá 1.248 futbolistas inscriptos, récord absoluto.",
+  "generated_at_utc": "2026-06-04T11:39:42+00:00",
+  "dato_curioso": "El Mundial 2026 será el más grande de la historia: 48 selecciones, 104 partidos (40 más que Qatar 2022) en 16 estadios cruzando 6 zonas horarias. Harry Kane tiene más goles este año (31 en 26 juegos) que derrotas totales de Kirby Smart en Georgia (20 derrotas vs 21 picks de primera ronda enviados a la NFL).",
   "forma_reciente": [
     {
       "slug": "de",
@@ -127,65 +127,65 @@
   "oportunidades": [],
   "tendencias": [
     {
-      "tipo": "over",
-      "equipo": "Ligas Europeas",
-      "flag": "🇪🇺",
-      "texto": "La Premier League mantiene un promedio de 2.96 goles por partido en la temporada 2025/2026, siendo una de las ligas más ofensivas.",
-      "valor": 56,
-      "n": 10
-    },
-    {
-      "tipo": "lesiones",
-      "equipo": "Mundial 2026",
-      "flag": "⚽",
-      "texto": "Al menos 16 jugadores de élite descartados del Mundial por lesiones. La sobrecarga de partidos en 2025/26 generó una epidemia física sin precedentes.",
-      "valor": 85,
-      "n": 16
-    },
-    {
-      "tipo": "over",
-      "equipo": "Europa Conference League",
-      "flag": "🏆",
-      "texto": "El 54.5% de los partidos de la Europa Conference League 2025/2026 terminaron con más de 2.5 goles, con tendencia al alza en febrero.",
-      "valor": 54,
-      "n": 760
-    },
-    {
-      "tipo": "debut",
-      "equipo": "Curazao",
-      "flag": "🇨🇼",
-      "texto": "Curazao clasificó históricamente con solo 185.000 habitantes y 444 km². Es el país más pequeño en población que jamás disputó un Mundial.",
+      "tipo": "goleador",
+      "equipo": "Inglaterra",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "texto": "Harry Kane lidera Europa con 31 goles en 26 partidos para Bayern en 2026 (más de un gol por partido). Llega al Mundial en estado de gracia absoluto tras hat-trick en final de Copa.",
       "valor": 100,
-      "n": 1
+      "n": 26
+    },
+    {
+      "tipo": "over",
+      "equipo": "Premier League 2025-26",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "texto": "La Premier League registró 55% de partidos con Over 2.5 goles esta temporada. Arsenal coronado campeón con récord de 19 goles de córner y 25 de pelotas paradas.",
+      "valor": 55,
+      "n": 380
+    },
+    {
+      "tipo": "over",
+      "equipo": "La Liga 2025-26",
+      "flag": "🇪🇸",
+      "texto": "La Liga tuvo exactamente 50% de partidos con Over 2.5 goles. Barcelona con promedio de 3.45 goles totales por partido, el más alto de la competición.",
+      "valor": 50,
+      "n": 380
+    },
+    {
+      "tipo": "defensa",
+      "equipo": "Arsenal",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "texto": "Arsenal se convirtió en el primer equipo de la historia de la Premier League en completar una temporada sin recibir penales en contra y sin expulsiones. Campeón invicto en disciplina.",
+      "valor": 100,
+      "n": 38
     }
   ],
   "alertas": [
     {
       "tipo": "lesion",
-      "equipo": "España",
-      "flag": "🇪🇸",
-      "texto": "Lamine Yamal sufrió rotura del bíceps femoral y llega con lo justo al Mundial tras no jugar con Barcelona desde abril. Riesgo de recaída del 30%.",
-      "nivel": "warning"
-    },
-    {
-      "tipo": "lesion",
-      "equipo": "Argentina",
-      "flag": "🇦🇷",
-      "texto": "Cuti Romero recibió alta médica tras lesión de ligamento lateral en rodilla hace 50 días, pero aún no participa de entrenamientos exigentes con la Selección.",
-      "nivel": "warning"
-    },
-    {
-      "tipo": "lesion",
       "equipo": "Brasil",
       "flag": "🇧🇷",
-      "texto": "Rodrygo confirmado afuera del Mundial por rotura de ligamento cruzado en marzo. Militão también duda tras reabrirse lesión en bíceps femoral.",
+      "texto": "Brasil sin Rodrygo (ACL) y Estêvão (isquiotibiales) para el Mundial 2026. Ancelotti pierde a dos titulares ofensivos clave en un equipo que no anotó con fluidez en la clasificación.",
       "nivel": "danger"
     },
     {
       "tipo": "lesion",
-      "equipo": "Alemania",
-      "flag": "🇩🇪",
-      "texto": "Serge Gnabry descartado por desgarro en aductor. Jamal Musiala no recuperó nivel tras fractura de peroné en Mundial de Clubes hace 4 meses.",
+      "equipo": "Países Bajos",
+      "flag": "🇳🇱",
+      "texto": "Matthijs de Ligt descartado del Mundial tras cirugía de espalda. Sin jugar desde noviembre, no volverá hasta el inicio de temporada 2026-27.",
+      "nivel": "warning"
+    },
+    {
+      "tipo": "lesion",
+      "equipo": "España",
+      "flag": "🇪🇸",
+      "texto": "Lamine Yamal se lesionó en isquiotibiales a fines de la Premier League. Barcelona confirmó que debería estar listo para el Mundial, pero sigue siendo duda con 4-6 semanas de recuperación.",
+      "nivel": "warning"
+    },
+    {
+      "tipo": "lesion",
+      "equipo": "Inglaterra",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "texto": "Ben White con lesión significativa en ligamentos de rodilla, descartado del resto de temporada con Arsenal. Su presencia en el Mundial es incierta tras reincorporarse a la selección de Tuchel.",
       "nivel": "warning"
     }
   ],
