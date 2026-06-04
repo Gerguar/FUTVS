@@ -22,53 +22,5 @@
     "reasons": [
       "España sin Lamine Yamal (-1.5pp)"
     ]
-  },
-  "92": {
-    "p_local_delta": -1.5,
-    "p_empate_delta": 0.75,
-    "p_visitante_delta": 0.75,
-    "reasons": [
-      "Argentina sin Cristian Romero (-1.5pp)"
-    ]
-  },
-  "114": {
-    "p_local_delta": -1.5,
-    "p_empate_delta": 0.75,
-    "p_visitante_delta": 0.75,
-    "reasons": [
-      "Argentina sin Cristian Romero (-1.5pp)"
-    ]
-  },
-  "144": {
-    "p_local_delta": 0.75,
-    "p_empate_delta": 0.75,
-    "p_visitante_delta": -1.5,
-    "reasons": [
-      "Argentina sin Cristian Romero (-1.5pp)"
-    ]
-  },
-  "82": {
-    "p_local_delta": -1.5,
-    "p_empate_delta": 0.75,
-    "p_visitante_delta": 0.75,
-    "reasons": [
-      "Alemania sin Jamal Musiala (-1.5pp)"
-    ]
-  },
-  "107": {
-    "p_local_delta": -1.5,
-    "p_empate_delta": 0.75,
-    "p_visitante_delta": 0.75,
-    "reasons": [
-      "Alemania sin Jamal Musiala (-1.5pp)"
-    ]
-  },
-  "128": {
-    "p_local_delta": 0.75,
-    "p_empate_delta": 0.75,
-    "p_visitante_delta": -1.5,
-    "reasons": [
-      "Alemania sin Jamal Musiala (-1.5pp)"
-    ]
   }
 }
