@@ -1,0 +1,34 @@
+{
+  "updated": "2026-06-04T08:00:00Z",
+  "week": "1 jun – 7 jun 2026",
+  "noticias": [
+    {
+      "titulo": "México vs Sudáfrica abre el Mundial 2026 el 11 de junio",
+      "resumen": "El partido inaugural del primer Mundial de 48 equipos se jugará en el Estadio Azteca. México debuta como local ante Sudáfrica en lo que será un hito histórico para el fútbol.",
+      "fuente": "FIFA",
+      "url": "https://www.fifa.com/es/tournaments/mens/worldcup/2026",
+      "fecha": "2026-06-04"
+    },
+    {
+      "titulo": "Argentina, vigente campeona, debuta ante Arabia Saudita el 14 de junio",
+      "resumen": "La Scaloneta defenderá el título obtenido en Qatar 2022. Messi lidera a la selección en lo que podría ser su último Mundial, con el grupo C como primer desafío.",
+      "fuente": "AFA",
+      "url": "https://www.afa.com.ar",
+      "fecha": "2026-06-03"
+    },
+    {
+      "titulo": "Brasil y Francia, favoritos según las casas de apuestas para ganar el Mundial",
+      "resumen": "Con Mbappé liderando a Francia y Vinicius Jr. encabezando a Brasil, ambas selecciones aparecen como las más cotizadas para alzar la copa en la final del 19 de julio en Nueva Jersey.",
+      "fuente": "ESPN",
+      "url": "https://www.espn.com.ar",
+      "fecha": "2026-06-02"
+    },
+    {
+      "titulo": "48 selecciones, 3 países sede: así es el Mundial más grande de la historia",
+      "resumen": "Estados Unidos, México y Canadá organizan el torneo más ambicioso de la historia. 104 partidos, 16 grupos de 3 equipos y un nuevo formato de eliminación directa desde los 32avos de final.",
+      "fuente": "Marca",
+      "url": "https://www.marca.com",
+      "fecha": "2026-06-01"
+    }
+  ]
+}
