@@ -2869,7 +2869,7 @@ function showPlayer(matchId,playerIdx,side){
     <div class="pstat-card">${hasRadar ? `<div class="pstat-title">📡 Radar de habilidades</div><canvas id="player-radar" width="540" height="380" style="width:100%;border-radius:6px;display:block;background:#080c10"></canvas><div id="player-radar-bars" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center;margin-top:6px">atributos oficiales EA FC 26</div>` : `<div class="pstat-title">📡 Radar de habilidades</div><div style="text-align:center;color:var(--faint);padding:3rem 1rem;font-size:.85rem">Sin atributos EA FC cargados para este jugador.</div>`}</div>
     <div class="form-row-full" style="flex-direction:column;gap:.6rem">
       <div class="pstat-title" style="margin-bottom:0">🗺️ Zonas de influencia</div>
-      <canvas id="player-heatmap" width="540" height="340" style="width:100%;border-radius:6px;display:block"></canvas>
+      <canvas id="player-heatmap" width="540" height="340" style="width:100%;max-width:420px;margin:0 auto;border-radius:6px;display:block"></canvas>
       <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">zonas típicas según posición · modelo heurístico</div>
     </div>
     ${(hasMarket || hasMinutes) ? `<div class="pstat-card" style="grid-column:1/-1">${switcherTabsHtml}${marketPaneHtml}${minutesPaneHtml}</div>` : ''}
