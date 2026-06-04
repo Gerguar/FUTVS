@@ -1,0 +1,83 @@
+name: twitter
+
+# Bot de tweets automaticos. Cada 15 min:
+#   - lesiones nuevas (sin throttle)
+#   - 1 post-mortem si hay finalizado nuevo (gap natural = 15 min)
+#   - 1 pre-match si pasaron >=30 min del ultimo y hay partido en ventana [now, now+4h]
+#
+# Requiere secrets:
+#   TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_SECRET
+#   SUPABASE_URL, SUPABASE_SERVICE_KEY
+#
+# Si los 4 secrets de Twitter no estan cargados, el job no postea (sale en error
+# controlado al instanciar tweepy). Para testear sin secrets cargados, correr a
+# mano con workflow_dispatch + DRY_RUN=true.
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry-run (no postea, solo imprime)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+concurrency:
+  group: git-push
+  cancel-in-progress: false
+
+jobs:
+  tweet:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Run twitter bot
+        env:
+          SUPABASE_URL:          ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY:  ${{ secrets.SUPABASE_SERVICE_KEY }}
+          TWITTER_API_KEY:       ${{ secrets.TWITTER_API_KEY }}
+          TWITTER_API_SECRET:    ${{ secrets.TWITTER_API_SECRET }}
+          TWITTER_ACCESS_TOKEN:  ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
+        run: |
+          DRY="${{ github.event.inputs.dry_run }}"
+          if [ "$DRY" = "true" ]; then
+            python -m src.twitter_bot --mode all --dry-run
+          else
+            python -m src.twitter_bot --mode all
+          fi
+
+      - name: Commit twitter state
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/twitter_state.json || true
+          if ! git diff --cached --quiet; then
+            git stash
+            git pull --rebase origin main
+            git stash pop
+            git add data/twitter_state.json || true
+            git commit -m "chore: twitter state $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push origin main
+          else
+            echo "no state changes"
+          fi
