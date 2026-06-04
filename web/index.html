@@ -1084,21 +1084,21 @@ button,a{touch-action:manipulation}
       </div>
     </div>
 
-    <!-- Tabla de comparación -->
+    <!-- Tablas de comparación -->
     <div class="d-card" style="padding:1.5rem;margin-bottom:1.5rem">
-      <div class="d-card-title" style="font-size:1.1rem;margin-bottom:1.2rem">🥇 Trofeos individuales</div>
-      <div id="goat-individual"></div>
-    </div>
-    <div class="d-card" style="padding:1.5rem;margin-bottom:1.5rem">
-      <div class="d-card-title" style="font-size:1.1rem;margin-bottom:1.2rem">⚽ Producción ofensiva (carrera)</div>
+      <div class="d-card-title" style="font-size:1.1rem;margin-bottom:.4rem">⚽ Producción ofensiva (carrera)</div>
       <div id="goat-stats"></div>
     </div>
     <div class="d-card" style="padding:1.5rem;margin-bottom:1.5rem">
-      <div class="d-card-title" style="font-size:1.1rem;margin-bottom:1.2rem">🏆 Títulos colectivos</div>
+      <div class="d-card-title" style="font-size:1.1rem;margin-bottom:.4rem">🥇 Trofeos individuales</div>
+      <div id="goat-individual"></div>
+    </div>
+    <div class="d-card" style="padding:1.5rem;margin-bottom:1.5rem">
+      <div class="d-card-title" style="font-size:1.1rem;margin-bottom:.4rem">🏆 Títulos colectivos</div>
       <div id="goat-titles"></div>
     </div>
     <div class="d-card" style="padding:1.5rem;margin-bottom:1.5rem">
-      <div class="d-card-title" style="font-size:1.1rem;margin-bottom:1.2rem">🌍 A nivel selección</div>
+      <div class="d-card-title" style="font-size:1.1rem;margin-bottom:.4rem">🌍 A nivel selección</div>
       <div id="goat-nation"></div>
     </div>
 
@@ -3350,46 +3350,75 @@ async function renderComparador() {
 // /comparador                → vista comparador
 // /comparador?a=X&b=Y        → comparador con par preseleccionado (slugs de nombre)
 // Soporta back/forward del navegador via popstate.
-// Render de las 4 tablas comparativas de la pagina /goat (Messi vs Cristiano).
-// Idempotente: si ya estan llenas, no hace nada. Los datos son estaticos.
+// Render de las 4 tablas comparativas de /goat (Messi vs Cristiano).
 let _goatRendered = false
 function renderGoatTables() {
   if (_goatRendered) return
-  const M = '#22c55e', C = '#f59e0b', R = '#ef4444'
-  const row = (cat, va, vb, ca, cb) =>
-    `<div style="display:grid;grid-template-columns:1fr auto auto;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border);align-items:center">
-      <span style="color:#9ca3af;font-size:.86rem">${cat}</span>
-      <span style="color:${ca||M};font-weight:900;font-family:'JetBrains Mono',monospace;font-size:.95rem;min-width:60px;text-align:right">${va}</span>
-      <span style="color:${cb||C};font-weight:900;font-family:'JetBrains Mono',monospace;font-size:.95rem;min-width:60px;text-align:right">${vb}</span>
+  const M = '#22c55e', C = '#f59e0b'
+  // Parsea "850+", "1 (2022)", "—" a numero para la barra proporcional.
+  // Si no se puede, devuelve 0 (la barra queda 50/50).
+  const toNum = v => {
+    if (v == null) return 0
+    const m = String(v).match(/[\d.]+/)
+    return m ? parseFloat(m[0]) : 0
+  }
+  // Fila comparativa: categoria centrada arriba, valores grandes a los
+  // lados, barra proporcional al medio mostrando el dominio relativo.
+  const row = (cat, va, vb) => {
+    const a = toNum(va), b = toNum(vb)
+    const tot = a + b
+    const wA = tot > 0 ? Math.max(2, Math.round(a / tot * 100)) : 50
+    const wB = 100 - wA
+    return `<div style="padding:1.25rem 0;border-bottom:1px solid var(--border)">
+      <div style="text-align:center;color:#9ca3af;font-size:.78rem;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;margin-bottom:.85rem;text-transform:uppercase">${cat}</div>
+      <div style="display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center">
+        <span style="color:${M};font-weight:900;font-family:'JetBrains Mono',monospace;font-size:1.55rem;min-width:72px;text-align:left;line-height:1">${va}</span>
+        <div style="display:flex;height:10px;border-radius:5px;overflow:hidden;background:rgba(255,255,255,.04)">
+          <div style="background:${M};width:${wA}%;transition:width .6s ease"></div>
+          <div style="background:${C};width:${wB}%;transition:width .6s ease"></div>
+        </div>
+        <span style="color:${C};font-weight:900;font-family:'JetBrains Mono',monospace;font-size:1.55rem;min-width:72px;text-align:right;line-height:1">${vb}</span>
+      </div>
     </div>`
-  const header = `<div style="display:grid;grid-template-columns:1fr auto auto;gap:1rem;padding:.5rem 0 .8rem;border-bottom:2px solid var(--border2);align-items:center;margin-bottom:.4rem">
+  }
+  const header = `<div style="display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;align-items:center;padding:.4rem 0 1rem;border-bottom:2px solid var(--border2);margin-bottom:.2rem">
+      <span style="color:${M};font-weight:900;font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:2px;min-width:72px;text-align:left">MESSI</span>
       <span></span>
-      <span style="color:${M};font-weight:900;font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:1px;min-width:60px;text-align:right">MESSI</span>
-      <span style="color:${C};font-weight:900;font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:1px;min-width:60px;text-align:right">CR7</span>
+      <span style="color:${C};font-weight:900;font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:2px;min-width:72px;text-align:right">CR7</span>
     </div>`
+
+  // 1. Produccion ofensiva
+  document.getElementById('goat-stats').innerHTML = header +
+    row('⚽ Goles oficiales', '850+', '930+') +
+    row('🎯 Goles de penal', 110, 170) +
+    row('🎯 Asistencias', '380+', '250+') +
+    row('🎮 Hat-tricks oficiales', 60, 65) +
+    row('🆓 Tiros libres convertidos', '65+', '60+') +
+    row('⚡ Goles en clásicos (Barça/Real)', 26, 20)
+
+  // 2. Trofeos individuales
   document.getElementById('goat-individual').innerHTML = header +
     row('🏆 Balones de Oro', 8, 5) +
     row('🦶 Botas de Oro', 6, 4) +
     row('🌎 The Best (FIFA)', 3, 1) +
     row('⭐ Equipo ideal FIFPro', 18, 17)
-  document.getElementById('goat-stats').innerHTML = header +
-    row('⚽ Goles oficiales', '850+', '930+') +
-    row('🎯 Asistencias', '380+', '250+') +
-    row('🎮 Hat-tricks oficiales', 60, 65) +
-    row('🆓 Tiros libres convertidos', '65+', '60+') +
-    row('⚡ Goles en clásicos (Barça/Real)', 26, 20)
+
+  // 3. Titulos colectivos
   document.getElementById('goat-titles').innerHTML = header +
     row('🏆 Champions League', 4, 5) +
-    row('🥇 Ligas (La Liga / Premier / Serie A / Saudi)', 12, 7) +
+    row('🥇 Ligas (LaLiga / Premier / Serie A / Saudi)', 12, 7) +
     row('👑 Copas nacionales', 8, 4) +
     row('🌐 Mundial de Clubes', 4, 4) +
     row('📊 Total títulos oficiales', 45, 35)
+
+  // 4. A nivel seleccion
   document.getElementById('goat-nation').innerHTML = header +
-    row('🇦🇷 / 🇵🇹 Copa del Mundo', '1 (2022)', '— (0)', M, R) +
-    row('🏆 Continental (Copa América / Euro)', '2', '1') +
+    row('🇦🇷 / 🇵🇹 Copa del Mundo', '1 (2022)', '— (0)') +
+    row('🏆 Continental (Copa América / Euro)', 2, 1) +
     row('🥈 Finalista Copa del Mundo', 1, 0) +
     row('⚽ Goles con la selección', '112+', '136+') +
     row('🎯 Partidos jugados', '195+', '220+')
+
   _goatRendered = true
 }
 
