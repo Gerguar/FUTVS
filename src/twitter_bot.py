@@ -363,20 +363,30 @@ def run_lesiones(state: dict, dry_run: bool, now: datetime) -> int:
         print("[lesiones] sin lesiones nuevas")
         return 0
 
-    # Severidad inferida de magnitud (delta >=3 -> danger; sino warning)
-    for eq_id, jugador, total_pp, eq_name in items:
-        sev = "danger" if total_pp >= 3.0 else "warning"
-        text = tt.tweet_lesion(
-            jugador=jugador, equipo_name=eq_name,
-            severidad=sev, delta_pp=total_pp,
-        )
-        print(f"[lesiones] {eq_name} <- {jugador} ({sev}, -{total_pp:.1f}pp)")
-        tweet_id = post_tweet(text, dry_run=dry_run)
-        if tweet_id:
-            posted_keys.add(f"{eq_id}|{jugador}")
-            new_count += 1
+    # 1 lesion por run para distribuir en el tiempo (evita burst de 3 tweets
+    # seguidos en cuentas nuevas + se ven mejor espaciados en el timeline).
+    # En el dry-run posteamos todos para que se vea el output completo.
+    eq_id, jugador, total_pp, eq_name = items[0]
+    sev = "danger" if total_pp >= 3.0 else "warning"
+    text = tt.tweet_lesion(
+        jugador=jugador, equipo_name=eq_name,
+        severidad=sev, delta_pp=total_pp,
+    )
+    print(f"[lesiones] {eq_name} <- {jugador} ({sev}, -{total_pp:.1f}pp) "
+          f"[+{len(items)-1} en cola]")
+    tweet_id = post_tweet(text, dry_run=dry_run)
+    if tweet_id:
+        posted_keys.add(f"{eq_id}|{jugador}")
+        new_count += 1
+        state["lesion_posted_keys"] = sorted(posted_keys)
 
-    state["lesion_posted_keys"] = sorted(posted_keys)
+    if dry_run and len(items) > 1:
+        # En dry-run mostramos las que quedarian en cola para los proximos runs.
+        print(f"\n[lesiones] (dry-run) {len(items)-1} mas se postearian en runs siguientes:")
+        for eq_id_q, jug_q, pp_q, eq_q in items[1:]:
+            sev_q = "danger" if pp_q >= 3.0 else "warning"
+            print(f"  - {eq_q} <- {jug_q} ({sev_q}, -{pp_q:.1f}pp)")
+
     return new_count
 
 
