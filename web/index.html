@@ -900,25 +900,11 @@ button,a{touch-action:manipulation}
         <p>Análisis inteligente para los próximos partidos de élite</p>
         <div class="hero-sub">DATOS ACTUALIZADOS · FACTORES PONDERADOS · ESTADÍSTICAS REALES</div>
       </div>
-      <div class="cmp-card" style="margin-right:-60px">
-        <div class="cmp-header">
-          <div class="cmp-players">
-            <div class="cmp-dot" style="background:#22c55e"></div>
-            <span class="cmp-name">Messi</span>
-            <span class="cmp-sep">vs</span>
-            <span class="cmp-name" style="color:#f59e0b">Cristiano</span>
-            <div class="cmp-dot" style="background:#f59e0b"></div>
-          </div>
-          <span class="cmp-badge">GOAT</span>
-        </div>
-        <div class="cmp-row"><span class="cmp-cat">&#127941; Ball&#243;n de Oro</span><span class="cmp-val" style="color:#22c55e">8</span><span class="cmp-val" style="color:#f59e0b">5</span></div>
-        <div class="cmp-row"><span class="cmp-cat">&#9917; Goles oficiales</span><span class="cmp-val" style="color:#22c55e">850+</span><span class="cmp-val" style="color:#f59e0b">930+</span></div>
-        <div class="cmp-row"><span class="cmp-cat">&#127919; Asistencias</span><span class="cmp-val" style="color:#22c55e">380+</span><span class="cmp-val" style="color:#f59e0b">250+</span></div>
-        <div class="cmp-row"><span class="cmp-cat">&#127462;&#127479; Copa del Mundo</span><span class="cmp-val" style="color:#22c55e">&#127462;&#127479; 1</span><span class="cmp-val" style="color:#ef4444">&#10006; 0</span></div>
-        <div class="cmp-row"><span class="cmp-cat">&#127942; Champions</span><span class="cmp-val" style="color:#22c55e">4</span><span class="cmp-val" style="color:#f59e0b">5</span></div>
-        <div class="cmp-row"><span class="cmp-cat">&#127941; T&#237;tulos totales</span><span class="cmp-val" style="color:#22c55e">45+</span><span class="cmp-val" style="color:#f59e0b">35+</span></div>
-        <div class="cmp-footer">M&#225;s goles: <strong style="color:#f59e0b">Cristiano</strong><br>M&#225;s asistencias: <strong style="color:#22c55e">Messi</strong></div>
-      </div>
+      <a href="/goat" onclick="nav('/goat');return false" class="cmp-card cmp-card-teaser" style="margin-right:-30px;width:231px;text-align:center;text-decoration:none;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:.7rem">
+        <span class="cmp-badge" style="background:rgba(245,158,11,.16);color:#f59e0b">&#127942; GOAT HIST&#211;RICO</span>
+        <div style="font-family:'Inter',sans-serif;font-size:1.02rem;font-weight:800;color:#e8eaed;line-height:1.3;margin:.2rem 0">&#191;Qui&#233;n es el GOAT hist&#243;rico?<br><span style="color:#22c55e">Messi</span> o <span style="color:#f59e0b">Cristiano</span></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#22c55e;letter-spacing:1px;border:1px solid rgba(34,197,94,.4);padding:.4rem .8rem;border-radius:6px">VER COMPARACI&#211;N &#x2192;</div>
+      </a>
     </div>
   </div>
   <div class="filters">
@@ -1073,6 +1059,60 @@ button,a{touch-action:manipulation}
   </div>
 </div>
 <!-- /INSIGHTS -->
+
+
+<!-- GOAT: Messi vs Cristiano -->
+<div id="goat" class="page" style="position:relative;z-index:1">
+  <div style="max-width:1100px;margin:0 auto;padding:1.5rem 1.5rem 4rem">
+    <button class="back-btn" onclick="nav('/')" style="margin-bottom:1.5rem">← Inicio</button>
+    <div style="text-align:center;margin-bottom:2.4rem">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#f59e0b;letter-spacing:3px;font-weight:800;margin-bottom:.6rem">🏆 EL DEBATE ETERNO</div>
+      <h1 style="font-size:2.6rem;font-weight:900;line-height:1.15;margin:0 0 .6rem"><span style="color:#22c55e">Messi</span> vs <span style="color:#f59e0b">Cristiano</span></h1>
+      <p style="color:#9ca3af;font-size:1rem;margin:0">¿Quién es el GOAT histórico del fútbol? Los números mano a mano.</p>
+    </div>
+
+    <!-- Resumen visual -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem">
+      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:14px;padding:1.4rem;text-align:center">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#22c55e;letter-spacing:2px;margin-bottom:.5rem">🇦🇷 ARGENTINA</div>
+        <div style="font-size:1.6rem;font-weight:900;color:#22c55e">Lionel Messi</div>
+        <div style="color:#6b7280;font-size:.78rem;margin-top:.4rem;font-family:'JetBrains Mono',monospace">1987 · Inter Miami</div>
+      </div>
+      <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:14px;padding:1.4rem;text-align:center">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#f59e0b;letter-spacing:2px;margin-bottom:.5rem">🇵🇹 PORTUGAL</div>
+        <div style="font-size:1.6rem;font-weight:900;color:#f59e0b">Cristiano Ronaldo</div>
+        <div style="color:#6b7280;font-size:.78rem;margin-top:.4rem;font-family:'JetBrains Mono',monospace">1985 · Al-Nassr</div>
+      </div>
+    </div>
+
+    <!-- Tabla de comparación -->
+    <div class="d-card" style="padding:1.5rem;margin-bottom:1.5rem">
+      <div class="d-card-title" style="font-size:1.1rem;margin-bottom:1.2rem">🥇 Trofeos individuales</div>
+      <div id="goat-individual"></div>
+    </div>
+    <div class="d-card" style="padding:1.5rem;margin-bottom:1.5rem">
+      <div class="d-card-title" style="font-size:1.1rem;margin-bottom:1.2rem">⚽ Producción ofensiva (carrera)</div>
+      <div id="goat-stats"></div>
+    </div>
+    <div class="d-card" style="padding:1.5rem;margin-bottom:1.5rem">
+      <div class="d-card-title" style="font-size:1.1rem;margin-bottom:1.2rem">🏆 Títulos colectivos</div>
+      <div id="goat-titles"></div>
+    </div>
+    <div class="d-card" style="padding:1.5rem;margin-bottom:1.5rem">
+      <div class="d-card-title" style="font-size:1.1rem;margin-bottom:1.2rem">🌍 A nivel selección</div>
+      <div id="goat-nation"></div>
+    </div>
+
+    <!-- Veredicto -->
+    <div style="background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(245,158,11,.1));border:1px solid rgba(245,158,11,.3);border-radius:14px;padding:2rem;text-align:center">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#f59e0b;letter-spacing:3px;margin-bottom:.8rem">VEREDICTO</div>
+      <div style="font-size:1.2rem;font-weight:800;line-height:1.5;color:#e8eaed;max-width:680px;margin:0 auto">
+        <span style="color:#22c55e">Messi</span> lidera en Balones de Oro (8 vs 5), asistencias y el único trofeo que le faltaba: <strong>la Copa del Mundo 2022</strong>. <span style="color:#f59e0b">Cristiano</span> aventaja en goles oficiales totales (930+ vs 850+) y Champions ganadas (5 vs 4). El debate sigue abierto, pero los datos más recientes inclinan ligeramente la balanza hacia <span style="color:#22c55e;font-weight:900">Messi</span>.
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /GOAT -->
 
 
 <!-- ESTADISTICAS (redirect a insights) -->
@@ -3311,6 +3351,49 @@ async function renderComparador() {
 // /comparador                → vista comparador
 // /comparador?a=X&b=Y        → comparador con par preseleccionado (slugs de nombre)
 // Soporta back/forward del navegador via popstate.
+// Render de las 4 tablas comparativas de la pagina /goat (Messi vs Cristiano).
+// Idempotente: si ya estan llenas, no hace nada. Los datos son estaticos.
+let _goatRendered = false
+function renderGoatTables() {
+  if (_goatRendered) return
+  const M = '#22c55e', C = '#f59e0b', R = '#ef4444'
+  const row = (cat, va, vb, ca, cb) =>
+    `<div style="display:grid;grid-template-columns:1fr auto auto;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border);align-items:center">
+      <span style="color:#9ca3af;font-size:.86rem">${cat}</span>
+      <span style="color:${ca||M};font-weight:900;font-family:'JetBrains Mono',monospace;font-size:.95rem;min-width:60px;text-align:right">${va}</span>
+      <span style="color:${cb||C};font-weight:900;font-family:'JetBrains Mono',monospace;font-size:.95rem;min-width:60px;text-align:right">${vb}</span>
+    </div>`
+  const header = `<div style="display:grid;grid-template-columns:1fr auto auto;gap:1rem;padding:.5rem 0 .8rem;border-bottom:2px solid var(--border2);align-items:center;margin-bottom:.4rem">
+      <span></span>
+      <span style="color:${M};font-weight:900;font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:1px;min-width:60px;text-align:right">MESSI</span>
+      <span style="color:${C};font-weight:900;font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:1px;min-width:60px;text-align:right">CR7</span>
+    </div>`
+  document.getElementById('goat-individual').innerHTML = header +
+    row('🏆 Balones de Oro', 8, 5) +
+    row('🦶 Botas de Oro', 6, 4) +
+    row('🌎 The Best (FIFA)', 3, 1) +
+    row('⭐ Equipo ideal FIFPro', 18, 17)
+  document.getElementById('goat-stats').innerHTML = header +
+    row('⚽ Goles oficiales', '850+', '930+') +
+    row('🎯 Asistencias', '380+', '250+') +
+    row('🎮 Hat-tricks oficiales', 60, 65) +
+    row('🆓 Tiros libres convertidos', '65+', '60+') +
+    row('⚡ Goles en clásicos (Barça/Real)', 26, 20)
+  document.getElementById('goat-titles').innerHTML = header +
+    row('🏆 Champions League', 4, 5) +
+    row('🥇 Ligas (La Liga / Premier / Serie A / Saudi)', 12, 7) +
+    row('👑 Copas nacionales', 8, 4) +
+    row('🌐 Mundial de Clubes', 4, 4) +
+    row('📊 Total títulos oficiales', 45, 35)
+  document.getElementById('goat-nation').innerHTML = header +
+    row('🇦🇷 / 🇵🇹 Copa del Mundo', '1 (2022)', '— (0)', M, R) +
+    row('🏆 Continental (Copa América / Euro)', '2', '1') +
+    row('🥈 Finalista Copa del Mundo', 1, 0) +
+    row('⚽ Goles con la selección', '112+', '136+') +
+    row('🎯 Partidos jugados', '195+', '220+')
+  _goatRendered = true
+}
+
 const NavRouter = {
   _suppress: false,
   slugify(s) {
@@ -3357,6 +3440,11 @@ const NavRouter = {
     }
     if (path === '/insights' || path === '/insights/') {
       showPage('insights')   // el wrapper de showPage dispara loadInsights()
+      return
+    }
+    if (path === '/goat' || path === '/goat/') {
+      showPage('goat')
+      renderGoatTables()
       return
     }
     // default: home
