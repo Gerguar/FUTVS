@@ -1611,13 +1611,6 @@ button,a{touch-action:manipulation}
     <div class="detail-main">
       <div class="d-card"><div class="d-card-title" id="detail-metrics-title">📊 Estadísticas de la temporada</div><div class="metrics-row" id="detail-metrics"></div></div>
       <div class="d-card" id="detail-factors-card"><div class="d-card-title">🔍 ¿Cómo se llegó a esta probabilidad?</div><div class="factor-grid" id="detail-factors"></div></div>
-      <div class="d-card">
-        <div class="d-card-title">📈 Últimos 5 partidos</div>
-        <div class="stats-2col">
-          <div><div class="d-card-title" id="stats-title-home" style="margin-bottom:.5rem"></div><div class="form-dots-d" id="form-home"></div><div id="stat-bars-home"></div></div>
-          <div><div class="d-card-title" id="stats-title-away" style="margin-bottom:.5rem"></div><div class="form-dots-d" id="form-away"></div><div id="stat-bars-away"></div></div>
-        </div>
-      </div>
       <div class="radar-wrap"><div class="radar-legend" id="radar-legend"></div><canvas id="radarChart" width="300" height="240"></canvas></div>
       <div class="d-card"><div class="d-card-title">⚽ Comparativa por línea</div><div id="lineup-compare"></div></div>
     </div>
@@ -2414,15 +2407,8 @@ function renderDetailBody(m) {
       <div class="factor-desc">${f.desc}</div>
     </div>`).join('')
 
-  // Últimos 5
-  document.getElementById('stats-title-home').textContent = m.home.name.toUpperCase()
-  document.getElementById('stats-title-away').textContent = m.away.name.toUpperCase()
-  const renderForm=(cid,form)=>{ document.getElementById(cid).innerHTML=form.map(r=>`<div class="fdot ${r==='W'?'fdot-w':r==='D'?'fdot-d':'fdot-l'}">${r==='W'?'V':r==='D'?'E':'D'}</div>`).join('') }
-  renderForm('form-home',m.home.form)
-  renderForm('form-away',m.away.form)
-  const renderBars=(cid,stats,col)=>{ document.getElementById(cid).innerHTML=[{n:'GOLES',v:stats.goles,max:20},{n:'RECIBIDOS',v:stats.recibidos,max:20},{n:'POSESIÓN',v:parseFloat(stats.posesion),max:100},{n:'REMATES',v:stats.remates,max:25}].map(s=>`<div class="stat-row-d"><div class="stat-top-d"><span class="stat-name-d">${s.n}</span><span class="stat-val-d" style="color:${col}">${s.v}</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(s.v/s.max*100)}%;background:${col}"></div></div></div>`).join('') }
-  renderBars('stat-bars-home',m.home.stats,'#22c55e')
-  renderBars('stat-bars-away',m.away.stats,'#ef4444')
+  // (Cuadro "Ultimos 5 partidos" removido: las stats de temporada de
+  // arriba ya muestran V/E/D + form dots, era redundante.)
 
   // Radar: 3 vertices con promedio real de rating por posicion.
   // ATAQUE = avg(rating DEL), DEFENSA = avg(rating DEF), MEDIOCAMPO = avg(rating MED).
