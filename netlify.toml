@@ -16,3 +16,13 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+  from = "/ranking"
+  to = "/ranking.html"
+  status = 200
+
+[[redirects]]
+  from = "/ranking/"
+  to = "/ranking.html"
+  status = 200
