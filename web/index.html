@@ -2853,17 +2853,26 @@ function showPlayer(matchId,playerIdx,side){
 
   const hasRadar = hasFullEafcRadar(p.eafc, p.pos)
 
+  const hasMarket = !!(p.market?.length)
+  const hasMinutes = !!mby.length
+  const marketPaneHtml = hasMarket
+    ? `<div id="pane-market"><div class="player-chart-box player-market-chart"><canvas id="marketChart"></canvas></div><div class="min-strip">${p.market.map(d=>`<div class="min-chip"><span class="min-chip-yr">${d.y} · ${d.club}</span><span class="min-chip-val" style="color:${col}">€${d.v}M</span></div>`).join('')}</div></div>` : ''
+  const minutesPaneHtml = hasMinutes
+    ? `<div id="pane-minutes" style="${hasMarket ? 'display:none' : ''}"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:.7rem"><div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:900;color:${col}">${totalMin.toLocaleString()} min TOTAL</div></div><div class="chart-tabs"><button class="chart-tab active" id="tab-annual" onclick="switchMinTab('annual','${col}')">Por año</button><button class="chart-tab" id="tab-accum" onclick="switchMinTab('accum','${col}')">Acumulado</button></div><div class="player-chart-box player-minutes-chart"><canvas id="minutesChart"></canvas></div><div class="min-strip">${mby.map(d=>`<div class="min-chip"><span class="min-chip-yr">${d.y}</span><span class="min-chip-val" style="color:${col}">${d.m.toLocaleString()}'</span></div>`).join('')}</div></div>` : ''
+  const switcherTabsHtml = (hasMarket && hasMinutes)
+    ? `<div class="chart-tabs" style="margin-bottom:1rem"><button class="chart-tab active" id="ptab-market" onclick="switchPlayerChart('market','${col}')">💰 Valor de mercado</button><button class="chart-tab" id="ptab-minutes" onclick="switchPlayerChart('minutes','${col}')">⏱️ Minutos por temporada</button></div>`
+    : (hasMarket
+        ? `<div class="pstat-title">💰 Evolución del valor de mercado</div>`
+        : (hasMinutes ? `<div class="pstat-title">⏱️ Minutos por temporada</div>` : ''))
   document.getElementById('player-stats-grid').innerHTML=`
     <div class="pstat-card"><div class="pstat-title">📊 Estadísticas de temporada</div>${[['Partidos jugados',p.stats.partidos],['Goles',p.stats.goles],['Asistencias',p.stats.asistencias],['Amarillas',p.stats.amarillas],['Rojas',p.stats.rojas]].map(([k,v])=>`<div class="pstat-row"><span class="pstat-k">${k}</span><span class="pstat-v" style="color:${col}">${v}</span></div>`).join('')}</div>
     <div class="pstat-card">${hasRadar ? `<div class="pstat-title">📡 Radar de habilidades</div><canvas id="player-radar" width="540" height="380" style="width:100%;border-radius:6px;display:block;background:#080c10"></canvas><div id="player-radar-bars" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center;margin-top:6px">atributos oficiales EA FC 26</div>` : `<div class="pstat-title">📡 Radar de habilidades</div><div style="text-align:center;color:var(--faint);padding:3rem 1rem;font-size:.85rem">Sin atributos EA FC cargados para este jugador.</div>`}</div>
-    <div class="form-row-full"><div class="pstat-title" style="margin-bottom:0">Forma reciente — ${team.name}</div><div class="form-dots-big">${team.form.map(r=>`<div class="fdot-big ${r==='W'?'fdot-w':r==='D'?'fdot-d':'fdot-l'}">${r==='W'?'V':r==='D'?'E':'D'}</div>`).join('')}</div></div>
-    ${p.market?.length?`<div class="pstat-card" style="grid-column:1/-1"><div class="pstat-title">💰 Evolución del valor de mercado</div><div class="player-chart-box player-market-chart"><canvas id="marketChart"></canvas></div><div class="min-strip">${p.market.map(d=>`<div class="min-chip"><span class="min-chip-yr">${d.y} · ${d.club}</span><span class="min-chip-val" style="color:${col}">€${d.v}M</span></div>`).join('')}</div></div>`:''}
-    ${mby.length?`<div class="pstat-card" style="grid-column:1/-1"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem"><div class="pstat-title" style="margin-bottom:0">⏱️ Minutos por temporada</div><div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:900;color:${col}">${totalMin.toLocaleString()} min TOTAL</div></div><div class="chart-tabs"><button class="chart-tab active" id="tab-annual" onclick="switchMinTab('annual','${col}')">Por año</button><button class="chart-tab" id="tab-accum" onclick="switchMinTab('accum','${col}')">Acumulado</button></div><div class="player-chart-box player-minutes-chart"><canvas id="minutesChart"></canvas></div><div class="min-strip">${mby.map(d=>`<div class="min-chip"><span class="min-chip-yr">${d.y}</span><span class="min-chip-val" style="color:${col}">${d.m.toLocaleString()}'</span></div>`).join('')}</div></div>`:''}
     <div class="form-row-full" style="flex-direction:column;gap:.6rem">
       <div class="pstat-title" style="margin-bottom:0">🗺️ Zonas de influencia</div>
       <canvas id="player-heatmap" width="540" height="340" style="width:100%;border-radius:6px;display:block"></canvas>
       <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">zonas típicas según posición · modelo heurístico</div>
     </div>
+    ${(hasMarket || hasMinutes) ? `<div class="pstat-card" style="grid-column:1/-1">${switcherTabsHtml}${marketPaneHtml}${minutesPaneHtml}</div>` : ''}
   `
 
   showPage('player')
@@ -2896,6 +2905,23 @@ function buildMinutesChart(mby,mbyAcc,col,mode){
 }
 
 function switchMinTab(mode,col){document.getElementById('tab-annual').classList.toggle('active',mode==='annual');document.getElementById('tab-accum').classList.toggle('active',mode==='accum');buildMinutesChart(_currentMinData.mby,_currentMinData.mbyAcc,col,mode)}
+
+// Cambia entre los paneles de Mercado y Minutos en el detalle del jugador.
+function switchPlayerChart(which,col){
+  const market=document.getElementById('pane-market'), minutes=document.getElementById('pane-minutes')
+  const tM=document.getElementById('ptab-market'), tm=document.getElementById('ptab-minutes')
+  if(which==='market'){
+    if(market) market.style.display=''
+    if(minutes) minutes.style.display='none'
+    if(tM) tM.classList.add('active'); if(tm) tm.classList.remove('active')
+  } else {
+    if(market) market.style.display='none'
+    if(minutes) minutes.style.display=''
+    if(tM) tM.classList.remove('active'); if(tm) tm.classList.add('active')
+    // Re-render del chart de minutos por si el canvas estaba oculto al armarse
+    if(_currentMinData) buildMinutesChart(_currentMinData.mby,_currentMinData.mbyAcc,col,'annual')
+  }
+}
 
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
 
