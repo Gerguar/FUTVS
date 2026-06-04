@@ -865,6 +865,68 @@ button,a{touch-action:manipulation}
 .fact-hint{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--faint);margin-top:.8rem;letter-spacing:1px}
 @media(max-width:600px){.fact-card{padding:1.4rem 1.2rem}.fact-text{font-size:.95rem}}
 /* ── FIN FACTS CSS ── */
+
+/* ── RANKING PAGE ────────────────────────────────────── */
+.rank-page{max-width:1100px;margin:0 auto;padding:0 1.5rem 4rem;position:relative;z-index:1}
+.rank-hero-section{text-align:center;padding:3.5rem 1rem 2rem;position:relative;z-index:1}
+.rank-hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2.5px;color:var(--amber);text-transform:uppercase;margin-bottom:10px}
+.rank-hero-section h2{font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:.5rem}
+.rank-hero-section h2 span{color:var(--amber)}
+.rank-hero-section p{color:#c9d1d9;font-size:1rem}
+.rank-tabs{display:flex;gap:.5rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.rank-tab{padding:8px 20px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.82rem;font-weight:700;transition:all .2s;font-family:'Inter',sans-serif}
+.rank-tab:hover{border-color:var(--amber);color:var(--amber)}
+.rank-tab.active{background:rgba(245,158,11,.12);border-color:var(--amber);color:var(--amber)}
+.rank-filters{display:flex;gap:.7rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center}
+.rank-select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:10px;font-size:.82rem;font-family:'Inter',sans-serif;cursor:pointer;outline:none;transition:border-color .2s}
+.rank-select:focus{border-color:var(--amber)}
+.rank-search-inp{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:10px;font-size:.82rem;font-family:'Inter',sans-serif;outline:none;width:200px;transition:border-color .2s}
+.rank-search-inp::placeholder{color:var(--faint)}
+.rank-search-inp:focus{border-color:var(--amber)}
+.rank-count-lbl{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--faint);margin-left:auto}
+.rank-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.rank-thead{display:grid;grid-template-columns:52px 2.2fr 90px 110px 130px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.rank-thead span{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--faint);text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
+.rank-row{display:grid;grid-template-columns:52px 2.2fr 90px 110px 130px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border);transition:background .15s}
+.rank-row:last-child{border-bottom:none}
+.rank-row:hover{background:var(--surface2)}
+.rank-num{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700;color:var(--faint);text-align:center}
+.rank-num.rk-gold{color:var(--amber);font-size:1rem}
+.rank-num.rk-silver{color:#94a3b8;font-size:1rem}
+.rank-num.rk-bronze{color:#cd7c4a;font-size:1rem}
+.rank-player-cell{display:flex;align-items:center;gap:10px;min-width:0}
+.rank-crest{width:26px;height:26px;object-fit:contain;flex-shrink:0;border-radius:3px}
+.rank-crest-fb{width:26px;height:26px;flex-shrink:0;border-radius:3px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--muted)}
+.rank-player-info{min-width:0;display:flex;flex-direction:column;gap:2px}
+.rank-player-name{font-size:.9rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-player-club{font-size:.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk-pos-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:.5px}
+.rk-pos-DEL{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+.rk-pos-MED{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.25)}
+.rk-pos-DEF{background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.2)}
+.rk-pos-POR{background:rgba(245,158,11,.12);color:#fbbf24;border:1px solid rgba(245,158,11,.2)}
+.rank-nat-cell{font-size:.82rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-rating-cell{display:flex;align-items:center;gap:8px}
+.rank-rating-val{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:900;color:var(--text);min-width:26px;text-align:right;line-height:1}
+.rank-bar-bg{flex:1;height:4px;background:var(--border);border-radius:3px}
+.rank-bar-fill{height:4px;border-radius:3px;background:var(--amber)}
+.rank-pag{display:flex;align-items:center;justify-content:center;gap:.4rem;padding:1.4rem 0 0}
+.rank-section-hdr{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--amber);letter-spacing:2px;text-transform:uppercase;padding:1.2rem 0 .7rem 16px;font-weight:700;border-bottom:1px solid var(--border);background:var(--surface2)}
+.rank-loader-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 1rem;gap:1rem}
+.rank-spin{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--amber);border-radius:50%;animation:spin .8s linear infinite}
+.rank-empty{text-align:center;padding:3rem 1rem;color:var(--faint);font-size:.88rem}
+@media(max-width:700px){
+  .rank-thead{display:none}
+  .rank-row{grid-template-columns:40px 1fr 60px;gap:0 8px;padding:10px 12px}
+  .rank-cell-pos,.rank-cell-nat{display:none}
+  .rank-rating-val{font-size:.9rem}
+  .rank-search-inp{width:130px}
+}
+@media(max-width:480px){
+  .rank-page{padding:0 .85rem 3rem}
+  .rank-tabs{gap:.35rem}
+  .rank-tab{padding:6px 14px;font-size:.76rem}
+}
 </style>
 </head>
 <body>
@@ -874,7 +936,7 @@ button,a{touch-action:manipulation}
   <div class="nav-links">
     <a href="/" onclick="nav('/');return false">Pronósticos 📈</a>
     <a href="/comparador" onclick="nav('/comparador');return false">Comparador ⚖️</a>
-    <a href="/ranking">Ranking 🏆</a>
+    <a href="/ranking" onclick="nav('/ranking');return false">Ranking 🏆</a>
     <a href="/insights" onclick="nav('/insights');return false">Insights ✦</a>
   </div>
   <div class="live-badge"><div class="live-dot"></div>Temporada <span id="current-season">…</span></div>
@@ -1059,6 +1121,45 @@ button,a{touch-action:manipulation}
   </div>
 </div>
 <!-- /INSIGHTS -->
+
+<!-- RANKING -->
+<div id="ranking" class="page" style="position:relative;z-index:1">
+  <div class="rank-hero-section">
+    <div class="rank-hero-eyebrow">FutVS · EA FC 26 OVR</div>
+    <h2>Ranking de <span>Jugadores</span></h2>
+    <p>Los mejores del mundo ordenados por rating · Temporada 2024/25</p>
+  </div>
+  <div class="rank-page">
+    <div class="rank-tabs">
+      <button class="rank-tab active" onclick="rkSetTab('mundial',this)">🌍 Top mundial</button>
+      <button class="rank-tab" onclick="rkSetTab('posicion',this)">Por posición</button>
+      <button class="rank-tab" onclick="rkSetTab('pais',this)">Por país</button>
+    </div>
+    <div class="rank-filters">
+      <input class="rank-search-inp" id="rk-search" type="text" placeholder="Buscar jugador..." oninput="rkOnSearch()">
+      <select class="rank-select" id="rk-filter-pos" style="display:none" onchange="rkApplyFilters()">
+        <option value="">Todas las posiciones</option>
+        <option value="DEL">Delantero</option>
+        <option value="MED">Mediocampista</option>
+        <option value="DEF">Defensor</option>
+        <option value="POR">Portero</option>
+      </select>
+      <select class="rank-select" id="rk-filter-pais" style="display:none" onchange="rkApplyFilters()">
+        <option value="">Todos los países</option>
+      </select>
+      <span class="rank-count-lbl" id="rk-count"></span>
+    </div>
+    <div class="rank-table-wrap" id="rk-table">
+      <div class="rank-loader-wrap"><div class="rank-spin"></div><div style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--faint);letter-spacing:2px">CARGANDO RANKING...</div></div>
+    </div>
+    <div class="rank-pag" id="rk-pag"></div>
+    <div style="margin-top:2rem;text-align:center">
+      <button onclick="nav('/')" style="background:transparent;color:var(--green);border:1px solid var(--green);padding:10px 28px;border-radius:30px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">← Volver al inicio</button>
+    </div>
+  </div>
+</div>
+<!-- /RANKING -->
+
 
 
 <!-- GOAT: Messi vs Cristiano -->
@@ -3431,6 +3532,185 @@ function renderGoatTables() {
   _goatRendered = true
 }
 
+
+// ══════════════════════════════════════════
+// RANKING — carga jugadores desde Supabase
+// ══════════════════════════════════════════
+const RK_PAGE_SIZE = 25
+let rkAllPlayers = []
+let rkFiltered = []
+let rkTab = 'mundial'
+let rkPage = 1
+let rkLoaded = false
+let rkSearchTimer = null
+
+async function loadRanking() {
+  if (rkLoaded) { rkRender(); return }
+  try {
+    const [jugadores, equipos] = await Promise.all([
+      sb('jugadores?select=id,nombre,posicion,nacionalidad,rating,equipo_id&rating=not.is.null&rating=gte.70&order=rating.desc&limit=1000'),
+      sb('equipos?select=id,nombre,escudo_url')
+    ])
+    const eqMap = {}
+    equipos.forEach(e => { eqMap[e.id] = e })
+    rkAllPlayers = jugadores
+      .filter(j => j.rating && j.nombre)
+      .map((j, i) => ({ ...j, equipo: eqMap[j.equipo_id] || null, globalRank: i + 1 }))
+
+    // Poblar países
+    const paises = [...new Set(rkAllPlayers.map(p => p.nacionalidad).filter(Boolean))].sort()
+    const sel = document.getElementById('rk-filter-pais')
+    if (sel && sel.options.length <= 1) {
+      paises.forEach(p => {
+        const o = document.createElement('option')
+        o.value = p; o.textContent = p
+        sel.appendChild(o)
+      })
+    }
+    rkLoaded = true
+    rkApplyFilters()
+  } catch(e) {
+    const t = document.getElementById('rk-table')
+    if (t) t.innerHTML = `<div class="rank-empty">😕 No se pudo cargar el ranking.<br><span style="font-size:.75rem;color:var(--faint)">${e.message}</span></div>`
+  }
+}
+
+function rkSetTab(tab, btn) {
+  rkTab = tab; rkPage = 1
+  document.querySelectorAll('.rank-tab').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  document.getElementById('rk-filter-pos').style.display = tab === 'posicion' ? '' : 'none'
+  document.getElementById('rk-filter-pais').style.display = tab === 'pais' ? '' : 'none'
+  document.getElementById('rk-filter-pos').value = ''
+  document.getElementById('rk-filter-pais').value = ''
+  rkApplyFilters()
+}
+
+function rkOnSearch() {
+  clearTimeout(rkSearchTimer)
+  rkSearchTimer = setTimeout(() => { rkPage = 1; rkApplyFilters() }, 200)
+}
+
+function rkApplyFilters() {
+  rkPage = 1
+  const search = (document.getElementById('rk-search')?.value || '').toLowerCase().trim()
+  const pos = document.getElementById('rk-filter-pos')?.value || ''
+  const pais = document.getElementById('rk-filter-pais')?.value || ''
+  rkFiltered = rkAllPlayers.filter(p => {
+    if (pos && p.posicion !== pos) return false
+    if (pais && p.nacionalidad !== pais) return false
+    if (search && !p.nombre.toLowerCase().includes(search) &&
+        !(p.equipo?.nombre || '').toLowerCase().includes(search)) return false
+    return true
+  })
+  const lbl = document.getElementById('rk-count')
+  if (lbl) lbl.textContent = `${rkFiltered.length} jugador${rkFiltered.length !== 1 ? 'es' : ''}`
+  rkRender()
+}
+
+function rkRender() {
+  if (rkTab === 'posicion' || rkTab === 'pais') {
+    rkRenderGroups()
+  } else {
+    rkRenderFlat()
+  }
+}
+
+function rkRenderFlat() {
+  const table = document.getElementById('rk-table')
+  const start = (rkPage - 1) * RK_PAGE_SIZE
+  const page = rkFiltered.slice(start, start + RK_PAGE_SIZE)
+  if (!page.length) {
+    table.innerHTML = '<div class="rank-empty">No se encontraron jugadores.</div>'
+    document.getElementById('rk-pag').innerHTML = ''
+    return
+  }
+  table.innerHTML = `
+    <div class="rank-thead">
+      <span style="text-align:center">#</span><span>Jugador</span>
+      <span>Pos.</span><span>País</span><span style="text-align:right">Rating</span>
+    </div>
+    ${page.map((p, i) => rkRowHTML(p, start + i + 1)).join('')}`
+  rkRenderPag(rkFiltered.length)
+}
+
+function rkRenderGroups() {
+  const table = document.getElementById('rk-table')
+  document.getElementById('rk-pag').innerHTML = ''
+  if (!rkFiltered.length) { table.innerHTML = '<div class="rank-empty">No se encontraron jugadores.</div>'; return }
+  const field = rkTab === 'posicion' ? 'posicion' : 'nacionalidad'
+  const groups = {}
+  rkFiltered.forEach(p => {
+    const key = p[field] || (rkTab === 'posicion' ? 'SIN' : 'Desconocido')
+    if (!groups[key]) groups[key] = []
+    groups[key].push(p)
+  })
+  const posOrder = ['DEL','MED','DEF','POR']
+  const posLabels = { DEL:'Delanteros', MED:'Mediocampistas', DEF:'Defensores', POR:'Porteros' }
+  const keys = rkTab === 'posicion'
+    ? posOrder.filter(k => groups[k])
+    : Object.keys(groups).sort((a,b) => groups[b][0].rating - groups[a][0].rating)
+
+  let html = `<div class="rank-thead">
+    <span style="text-align:center">#</span><span>Jugador</span>
+    <span>Pos.</span><span>País</span><span style="text-align:right">Rating</span>
+  </div>`
+  keys.forEach(key => {
+    const label = rkTab === 'posicion' ? (posLabels[key] || key) : `🌍 ${key}`
+    const members = groups[key].slice(0, 10)
+    html += `<div class="rank-section-hdr">${label} · top ${members.length}</div>`
+    members.forEach((p, i) => { html += rkRowHTML(p, i + 1) })
+  })
+  table.innerHTML = html
+}
+
+function rkRowHTML(p, rank) {
+  const pct = Math.round(((p.rating - 70) / (99 - 70)) * 100)
+  const medalClass = rank === 1 ? 'rk-gold' : rank === 2 ? 'rk-silver' : rank === 3 ? 'rk-bronze' : ''
+  const rankLabel = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank
+  const escudo = p.equipo?.escudo_url
+    ? `<img class="rank-crest" src="${p.equipo.escudo_url}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+    : ''
+  const fallback = `<div class="rank-crest-fb" ${p.equipo?.escudo_url ? 'style="display:none"' : ''}>${(p.equipo?.nombre||'?').substring(0,3).toUpperCase()}</div>`
+  return `<div class="rank-row">
+    <div class="rank-num ${medalClass}">${rankLabel}</div>
+    <div class="rank-player-cell">${escudo}${fallback}
+      <div class="rank-player-info">
+        <span class="rank-player-name">${p.nombre}</span>
+        <span class="rank-player-club">${p.equipo?.nombre || '—'}</span>
+      </div>
+    </div>
+    <div class="rank-cell-pos"><span class="rk-pos-badge rk-pos-${p.posicion||'MED'}">${p.posicion||'?'}</span></div>
+    <div class="rank-cell-nat rank-nat-cell">${p.nacionalidad||'—'}</div>
+    <div class="rank-rating-cell">
+      <span class="rank-rating-val">${p.rating}</span>
+      <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%"></div></div>
+    </div>
+  </div>`
+}
+
+function rkRenderPag(total) {
+  const totalPages = Math.ceil(total / RK_PAGE_SIZE)
+  const pag = document.getElementById('rk-pag')
+  if (totalPages <= 1) { pag.innerHTML = ''; return }
+  let html = `<button class="pg-btn" onclick="rkGoPage(${rkPage-1})" ${rkPage===1?'disabled':''}>&#8249;</button>`
+  for (let i = 1; i <= totalPages; i++) {
+    if (totalPages > 7) {
+      const show = i===1 || i===totalPages || Math.abs(i-rkPage)<=1
+      if (!show) { if (i===2||i===totalPages-1) html+=`<span class="pg-info">…</span>`; continue }
+    }
+    html += `<button class="pg-btn ${i===rkPage?'active':''}" onclick="rkGoPage(${i})">${i}</button>`
+  }
+  html += `<button class="pg-btn" onclick="rkGoPage(${rkPage+1})" ${rkPage===totalPages?'disabled':''}>&#8250;</button>`
+  html += `<span class="pg-info">${(rkPage-1)*RK_PAGE_SIZE+1}–${Math.min(rkPage*RK_PAGE_SIZE,total)} de ${total}</span>`
+  pag.innerHTML = html
+}
+
+function rkGoPage(p) {
+  rkPage = p; rkRender()
+  document.getElementById('rk-table').scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
 const NavRouter = {
   _suppress: false,
   slugify(s) {
@@ -3473,6 +3753,11 @@ const NavRouter = {
           }
         }
       } finally { this._suppress = false }
+      return
+    }
+    if (path === '/ranking' || path === '/ranking/') {
+      showPage('ranking')
+      loadRanking()
       return
     }
     if (path === '/insights' || path === '/insights/') {
