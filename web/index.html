@@ -2851,11 +2851,11 @@ function showPlayer(matchId,playerIdx,side){
     <div style="flex:1;min-width:0"><div class="pbi-name" style="color:${col}">${p.name}</div><div class="pbi-meta">${p.pos} · ${team.name.toUpperCase()} · ${m.league}</div><div class="pbi-notes">${p.stats.notas}</div></div>
     <div style="text-align:right;flex-shrink:0"><div class="ovr-num" style="color:${col}">${p.rating}</div><div class="ovr-lbl">RATING OVR</div></div>`
 
-  const bars=[{n:'GOLES',v:p.stats.goles,max:35},{n:'ASISTENCIAS',v:p.stats.asistencias,max:20},{n:'PARTIDOS',v:p.stats.partidos,max:34},{n:'MINUTOS',v:p.stats.minutos,max:3060},{n:'INTERCEP/P',v:p.stats.intercep,max:4},{n:'AMARILLAS',v:p.stats.amarillas,max:10}]
+  const hasRadar = hasFullEafcRadar(p.eafc, p.pos)
 
   document.getElementById('player-stats-grid').innerHTML=`
-    <div class="pstat-card"><div class="pstat-title">📊 Estadísticas de temporada</div>${[['Partidos jugados',p.stats.partidos],['Goles',p.stats.goles],['Asistencias',p.stats.asistencias],['Minutos jugados',p.stats.minutos],['Amarillas',p.stats.amarillas],['Rojas',p.stats.rojas],['Precisión pase',p.stats.pasos],p.pos==='POR'?['Paradas %',p.stats.paradas]:['Duelos ganados',p.stats.duelosGanados],['Intercep/partido',p.stats.intercep]].map(([k,v])=>`<div class="pstat-row"><span class="pstat-k">${k}</span><span class="pstat-v" style="color:${col}">${v}</span></div>`).join('')}</div>
-    <div class="pstat-card"><div class="pstat-title">📈 Rendimiento visual</div>${bars.map(s=>`<div class="pstat-bar-row"><div class="pstat-bar-top"><span class="pstat-bar-lbl">${s.n}</span><span class="pstat-bar-val" style="color:${col}">${s.v}</span></div><div class="pstat-track"><div class="pstat-fill" style="width:${Math.min(Math.round(s.v/s.max*100),100)}%;background:${col}"></div></div></div>`).join('')}</div>
+    <div class="pstat-card"><div class="pstat-title">📊 Estadísticas de temporada</div>${[['Partidos jugados',p.stats.partidos],['Goles',p.stats.goles],['Asistencias',p.stats.asistencias],['Amarillas',p.stats.amarillas],['Rojas',p.stats.rojas]].map(([k,v])=>`<div class="pstat-row"><span class="pstat-k">${k}</span><span class="pstat-v" style="color:${col}">${v}</span></div>`).join('')}</div>
+    <div class="pstat-card">${hasRadar ? `<div class="pstat-title">📡 Radar de habilidades</div><canvas id="player-radar" width="540" height="380" style="width:100%;border-radius:6px;display:block;background:#080c10"></canvas><div id="player-radar-bars" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center;margin-top:6px">atributos oficiales EA FC 26</div>` : `<div class="pstat-title">📡 Radar de habilidades</div><div style="text-align:center;color:var(--faint);padding:3rem 1rem;font-size:.85rem">Sin atributos EA FC cargados para este jugador.</div>`}</div>
     <div class="form-row-full"><div class="pstat-title" style="margin-bottom:0">Forma reciente — ${team.name}</div><div class="form-dots-big">${team.form.map(r=>`<div class="fdot-big ${r==='W'?'fdot-w':r==='D'?'fdot-d':'fdot-l'}">${r==='W'?'V':r==='D'?'E':'D'}</div>`).join('')}</div></div>
     ${p.market?.length?`<div class="pstat-card" style="grid-column:1/-1"><div class="pstat-title">💰 Evolución del valor de mercado</div><div class="player-chart-box player-market-chart"><canvas id="marketChart"></canvas></div><div class="min-strip">${p.market.map(d=>`<div class="min-chip"><span class="min-chip-yr">${d.y} · ${d.club}</span><span class="min-chip-val" style="color:${col}">€${d.v}M</span></div>`).join('')}</div></div>`:''}
     ${mby.length?`<div class="pstat-card" style="grid-column:1/-1"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem"><div class="pstat-title" style="margin-bottom:0">⏱️ Minutos por temporada</div><div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:900;color:${col}">${totalMin.toLocaleString()} min TOTAL</div></div><div class="chart-tabs"><button class="chart-tab active" id="tab-annual" onclick="switchMinTab('annual','${col}')">Por año</button><button class="chart-tab" id="tab-accum" onclick="switchMinTab('accum','${col}')">Acumulado</button></div><div class="player-chart-box player-minutes-chart"><canvas id="minutesChart"></canvas></div><div class="min-strip">${mby.map(d=>`<div class="min-chip"><span class="min-chip-yr">${d.y}</span><span class="min-chip-val" style="color:${col}">${d.m.toLocaleString()}'</span></div>`).join('')}</div></div>`:''}
@@ -2864,13 +2864,6 @@ function showPlayer(matchId,playerIdx,side){
       <canvas id="player-heatmap" width="540" height="340" style="width:100%;border-radius:6px;display:block"></canvas>
       <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">zonas típicas según posición · modelo heurístico</div>
     </div>
-    ${hasFullEafcRadar(p.eafc, p.pos) ? `
-    <div class="form-row-full" style="flex-direction:column;gap:.6rem">
-      <div class="pstat-title" style="margin-bottom:0">📡 Radar de habilidades</div>
-      <canvas id="player-radar" width="540" height="380" style="width:100%;border-radius:6px;display:block;background:#080c10"></canvas>
-      <div id="player-radar-bars" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center">atributos oficiales EA FC 26</div>
-    </div>` : ''}
   `
 
   showPage('player')
