@@ -283,6 +283,9 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .lc-players-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1rem}
 .lc-team-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.45rem}
 .lc-pcard{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 10px;margin-bottom:.35rem}
+.lc-pcard-top{border-color:rgba(245,158,11,.45);background:linear-gradient(90deg,rgba(245,158,11,.07) 0%,rgba(13,16,20,.6) 50%)}
+.lc-top-mark{color:#f59e0b;font-size:.7rem;margin-left:.25rem}
+.lc-avg-hint{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--faint);margin-top:.5rem;letter-spacing:.5px}
 .lc-pcard:last-child{margin-bottom:0}
 .lc-pcard-name{font-size:.75rem;font-weight:700}
 .lc-pcard-pos{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--faint);margin-top:1px}
@@ -2963,20 +2966,29 @@ function togglePlayers(side, restCount) {
 function avgStat(players,fn){ if(!players.length)return 0; return Math.round(players.map(fn).map(v=>parseFloat(v)||0).reduce((a,b)=>a+b,0)/players.length*10)/10 }
 
 function renderLineupCompare(m) {
-  const groups=[{key:'POR',icon:'🧤',label:'PORTEROS'},{key:'DEF',icon:'🛡️',label:'DEFENSORES'},{key:'MED',icon:'⚙️',label:'MEDIOCAMPISTAS'},{key:'DEL',icon:'⚡',label:'DELANTEROS'}]
+  const groups=[{key:'POR',icon:'🧤',label:'PORTEROS',top:2},{key:'DEF',icon:'🛡️',label:'DEFENSORES',top:5},{key:'MED',icon:'⚙️',label:'MEDIOCAMPISTAS',top:5},{key:'DEL',icon:'⚡',label:'DELANTEROS',top:5}]
   const statDefs=[{lbl:'GOLES',fn:p=>p.stats.goles},{lbl:'ASIST',fn:p=>p.stats.asistencias},{lbl:'PARTIDOS',fn:p=>p.stats.partidos},{lbl:'RATING',fn:p=>p.rating}]
+  // Helper: ordena por rating desc y devuelve los top N. Los promedios se
+  // calculan solo sobre estos "titulares clave" (top 2 para POR, top 5 resto).
+  const topByRating=(arr,n)=>[...arr].filter(p=>p.rating!=null).sort((a,b)=>b.rating-a.rating).slice(0,n)
   const html=groups.map((g,gi)=>{
-    const hp=m.home.players.filter(p=>p.pos===g.key),ap=m.away.players.filter(p=>p.pos===g.key)
-    if(!hp.length&&!ap.length)return''
+    const hpAll=m.home.players.filter(p=>p.pos===g.key),apAll=m.away.players.filter(p=>p.pos===g.key)
+    if(!hpAll.length&&!apAll.length)return''
+    // Top N por rating: estos son los que entran al promedio.
+    const hp=topByRating(hpAll,g.top), ap=topByRating(apAll,g.top)
     const avgH=avgStat(hp,p=>p.rating),avgA=avgStat(ap,p=>p.rating)
     const tot=avgH+avgA||1,pctH=Math.round(avgH/tot*100),pctA=100-pctH
     const winner=avgH>avgA?'home':avgH<avgA?'away':'draw'
     const bc=winner==='home'?'#22c55e':winner==='away'?'#ef4444':'#f59e0b'
     const bb=winner==='home'?'rgba(34,197,94,.12)':winner==='away'?'rgba(239,68,68,.12)':'rgba(245,158,11,.12)'
     const bt=winner==='home'?m.home.abbr+' ▲':winner==='away'?m.away.abbr+' ▲':'PAREJO'
-    const pcard=(p,col)=>`<div class="lc-pcard"><div><div class="lc-pcard-name">${p.name}</div><div class="lc-pcard-pos">${p.pos}</div></div><div class="lc-pcard-rating" style="color:${col}">${p.rating}</div></div>`
+    // En las cards: muestro TODOS pero marco los top N con un badge "TOP".
+    const hpTopSet=new Set(hp.map(p=>p.name)), apTopSet=new Set(ap.map(p=>p.name))
+    const pcard=(p,col,isTop)=>`<div class="lc-pcard${isTop?' lc-pcard-top':''}"><div><div class="lc-pcard-name">${p.name}${isTop?' <span class="lc-top-mark">★</span>':''}</div><div class="lc-pcard-pos">${p.pos}</div></div><div class="lc-pcard-rating" style="color:${col}">${p.rating}</div></div>`
+    // Stats promedio: usar tambien los top N (mismos jugadores).
     const statRows=statDefs.map(sd=>{const svH=avgStat(hp,sd.fn),svA=avgStat(ap,sd.fn);const t=svH+svA||1;const fH=Math.round(svH/t*100),fA=100-fH;return`<div class="lc-stat-row"><span class="lc-stat-val" style="color:#22c55e">${svH}</span><div class="lc-stat-bars"><div class="lc-stat-fill-h" style="width:${fH}%"></div></div><span class="lc-stat-name">${sd.lbl}</span><div class="lc-stat-bars"><div class="lc-stat-fill-a" style="width:${fA}%"></div></div><span class="lc-stat-val" style="color:#ef4444">${svA}</span></div>`}).join('')
-    return`<div class="lc-group"><div class="lc-header" onclick="toggleLC(${gi})"><div class="lc-header-left"><span class="lc-icon">${g.icon}</span><span class="lc-title">${g.label}</span><span class="lc-badge" style="color:${bc};background:${bb}">${bt}</span></div><div class="lc-ratings"><span class="lc-rat-h">${avgH}</span><span class="lc-rat-sep">vs</span><span class="lc-rat-a">${avgA}</span><span class="lc-chevron" id="lc-chev-${gi}">▼</span></div></div><div class="lc-body" id="lc-body-${gi}"><div class="lc-global-bar-wrap"><div class="lc-global-labels"><span class="lc-global-lbl" style="color:#22c55e">${m.home.name} · ${avgH}</span><span class="lc-global-lbl" style="color:#ef4444">${m.away.name} · ${avgA}</span></div><div class="lc-global-bar"><div class="lc-global-seg" style="background:#22c55e;width:${pctH}%">${pctH>12?pctH+'%':''}</div><div class="lc-global-seg" style="background:#ef4444;width:${pctA}%">${pctA>12?pctA+'%':''}</div></div></div><div class="lc-players-grid"><div><div class="lc-team-label" style="color:#22c55e">${m.home.name}</div>${hp.map(p=>pcard(p,'#22c55e')).join('')}</div><div><div class="lc-team-label" style="color:#ef4444">${m.away.name}</div>${ap.map(p=>pcard(p,'#ef4444')).join('')}</div></div><div class="lc-stat-section-title">Estadísticas promedio del grupo</div><div style="display:flex;justify-content:space-between;margin-bottom:.5rem"><span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#22c55e;font-weight:700">${m.home.abbr}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#ef4444;font-weight:700">${m.away.abbr}</span></div>${statRows}</div></div>`
+    const groupLabel=`Top ${g.top} por rating`
+    return`<div class="lc-group"><div class="lc-header" onclick="toggleLC(${gi})"><div class="lc-header-left"><span class="lc-icon">${g.icon}</span><span class="lc-title">${g.label}</span><span class="lc-badge" style="color:${bc};background:${bb}">${bt}</span></div><div class="lc-ratings"><span class="lc-rat-h">${avgH}</span><span class="lc-rat-sep">vs</span><span class="lc-rat-a">${avgA}</span><span class="lc-chevron" id="lc-chev-${gi}">▼</span></div></div><div class="lc-body" id="lc-body-${gi}"><div class="lc-global-bar-wrap"><div class="lc-global-labels"><span class="lc-global-lbl" style="color:#22c55e">${m.home.name} · ${avgH}</span><span class="lc-global-lbl" style="color:#ef4444">${m.away.name} · ${avgA}</span></div><div class="lc-global-bar"><div class="lc-global-seg" style="background:#22c55e;width:${pctH}%">${pctH>12?pctH+'%':''}</div><div class="lc-global-seg" style="background:#ef4444;width:${pctA}%">${pctA>12?pctA+'%':''}</div></div><div class="lc-avg-hint">★ ${groupLabel} · plantel completo abajo</div></div><div class="lc-players-grid"><div><div class="lc-team-label" style="color:#22c55e">${m.home.name}</div>${hpAll.map(p=>pcard(p,'#22c55e',hpTopSet.has(p.name))).join('')}</div><div><div class="lc-team-label" style="color:#ef4444">${m.away.name}</div>${apAll.map(p=>pcard(p,'#ef4444',apTopSet.has(p.name))).join('')}</div></div><div class="lc-stat-section-title">Estadísticas promedio (top ${g.top})</div><div style="display:flex;justify-content:space-between;margin-bottom:.5rem"><span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#22c55e;font-weight:700">${m.home.abbr}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#ef4444;font-weight:700">${m.away.abbr}</span></div>${statRows}</div></div>`
   }).join('')
   document.getElementById('lineup-compare').innerHTML=html
 }
