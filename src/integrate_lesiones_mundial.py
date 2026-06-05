@@ -171,12 +171,13 @@ def main() -> None:
            and a.get("nivel", "warning") not in IGNORE_LEVELS]
     print(f"[lesiones] relevantes (lesion/suspension excl. info): {len(rel)}")
 
+    # Aunque no haya alertas de Claude, igual hay que aplicar los overrides
+    # manuales (data/lesiones_overrides_manual.json). Esos son bajas que Facu
+    # confirmo manualmente y deben mantenerse en el JSON de ajustes pase lo
+    # que pase con insights. No salimos temprano aca; seguimos al loop principal
+    # que igual los carga via load_manual_overrides().
     if not rel:
-        print("[lesiones] nada que integrar")
-        if not args.dry_run:
-            OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-            OUT_PATH.write_text("{}", encoding="utf-8")
-        return
+        print("[lesiones] sin alertas de Claude, pero seguimos para aplicar overrides manuales")
 
     # Cargar todos los jugadores del Mundial (rating >= umbral)
     ids_str = ",".join(map(str, MUNDIAL_TEAM_IDS))
