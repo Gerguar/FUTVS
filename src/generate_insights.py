@@ -145,8 +145,22 @@ def _claude_request(messages: list[dict], tools: list[dict] | None = None, max_t
         },
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=60) as r:
-        return json.loads(r.read())
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        # Loggear el body completo del error para diagnosticar (modelo,
+        # tools, etc. La api de Anthropic devuelve JSON con detalle).
+        err_body = ""
+        try:
+            err_body = e.read().decode("utf-8", errors="replace")[:2000]
+        except Exception:
+            pass
+        print(f"[claude-api] HTTP {e.code} {e.reason}")
+        print(f"[claude-api] body: {err_body}")
+        print(f"[claude-api] request model: {body.get('model')}")
+        print(f"[claude-api] tools: {[t.get('name') for t in (body.get('tools') or [])]}")
+        raise
 
 
 def _extract_text(resp: dict) -> str:
