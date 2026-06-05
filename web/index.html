@@ -3579,6 +3579,66 @@ let rkPage = 1
 let rkLoaded = false
 let rkSearchTimer = null
 
+// Mapeo nacionalidad ingles -> espanol (canonical). Los jugadores de clubes
+// vienen con paises en ingles (Spain, France, ...) y los del Mundial en
+// espanol (Espana, Francia, ...). Normalizamos a espanol para deduplicar.
+const COUNTRY_NORM_EN_TO_ES = {
+  'Spain':'España','France':'Francia','Italy':'Italia','Germany':'Alemania',
+  'England':'Inglaterra','Portugal':'Portugal','Netherlands':'Países Bajos',
+  'Brazil':'Brasil','Argentina':'Argentina','Belgium':'Bélgica',
+  'Senegal':'Senegal','Denmark':'Dinamarca','Austria':'Austria',
+  'Ghana':'Ghana','Norway':'Noruega','Uruguay':'Uruguay','Morocco':'Marruecos',
+  'Ivory Coast':'Costa de Marfil','Colombia':'Colombia','Switzerland':'Suiza',
+  'Sweden':'Suecia','Turkey':'Turquía','Czech Republic':'República Checa',
+  'Nigeria':'Nigeria','Croatia':'Croacia','USA':'Estados Unidos',
+  'United States':'Estados Unidos','Ecuador':'Ecuador','Greece':'Grecia',
+  'Poland':'Polonia','Paraguay':'Paraguay','Serbia':'Serbia',
+  'Australia':'Australia','Japan':'Japón','Kazakhstan':'Kazajistán',
+  'South Korea':'Corea del Sur','Korea Republic':'Corea del Sur',
+  'Algeria':'Argelia','Panama':'Panamá','Canada':'Canadá','Mexico':'México',
+  'Tunisia':'Túnez','Saudi Arabia':'Arabia Saudita','Haiti':'Haití',
+  'DR Congo':'RD del Congo','Congo DR':'RD del Congo',
+  'Bosnia and Herzegovina':'Bosnia y Herzegovina','Bosnia':'Bosnia y Herzegovina',
+  'Curacao':'Curazao','Curaçao':'Curazao','New Zealand':'Nueva Zelanda',
+  'Hungary':'Hungría','Ireland':'Irlanda','Republic of Ireland':'Irlanda',
+  'Romania':'Rumania','Scotland':'Escocia','Wales':'Gales','Ukraine':'Ucrania',
+  'Russia':'Rusia','Slovakia':'Eslovaquia','Slovenia':'Eslovenia',
+  'Finland':'Finlandia','Iceland':'Islandia','Albania':'Albania',
+  'Bulgaria':'Bulgaria','Egypt':'Egipto','Cameroon':'Camerún','Mali':'Malí',
+  'Iran':'Irán','Iraq':'Irak','UAE':'Emiratos Árabes Unidos',
+  'United Arab Emirates':'Emiratos Árabes Unidos','Qatar':'Qatar',
+  'Jordan':'Jordania','Uzbekistan':'Uzbekistán','Cape Verde':'Cabo Verde',
+  'South Africa':'Sudáfrica','Honduras':'Honduras','Costa Rica':'Costa Rica',
+  'Jamaica':'Jamaica','Trinidad and Tobago':'Trinidad y Tobago',
+  'Suriname':'Surinam','North Macedonia':'Macedonia del Norte',
+  'Macedonia':'Macedonia del Norte','Montenegro':'Montenegro',
+  'Kosovo':'Kosovo','Georgia':'Georgia','Armenia':'Armenia',
+  'Azerbaijan':'Azerbaiyán','Belarus':'Bielorrusia','Estonia':'Estonia',
+  'Latvia':'Letonia','Lithuania':'Lituania','Luxembourg':'Luxemburgo',
+  'Cyprus':'Chipre','Malta':'Malta','Israel':'Israel',
+  'Chile':'Chile','Peru':'Perú','Bolivia':'Bolivia','Venezuela':'Venezuela',
+  'Guatemala':'Guatemala','El Salvador':'El Salvador','Nicaragua':'Nicaragua',
+  'Cuba':'Cuba','Dominican Republic':'República Dominicana',
+  'China':'China','China PR':'China','Thailand':'Tailandia',
+  'Vietnam':'Vietnam','Indonesia':'Indonesia','Philippines':'Filipinas',
+  'Malaysia':'Malasia','Singapore':'Singapur','India':'India',
+  'Pakistan':'Pakistán','Bangladesh':'Bangladesh','Sri Lanka':'Sri Lanka',
+  'Kenya':'Kenia','Tanzania':'Tanzania','Uganda':'Uganda',
+  'Zambia':'Zambia','Zimbabwe':'Zimbabue','Ethiopia':'Etiopía',
+  'Gabon':'Gabón','Guinea':'Guinea','Mauritania':'Mauritania',
+  'Burkina Faso':'Burkina Faso','Madagascar':'Madagascar','Angola':'Angola',
+  'Sierra Leone':'Sierra Leona','Liberia':'Liberia','Mozambique':'Mozambique',
+  'Equatorial Guinea':'Guinea Ecuatorial','Comoros':'Comoras',
+  'Lebanon':'Líbano','Syria':'Siria','Bahrain':'Baréin','Kuwait':'Kuwait',
+  'Oman':'Omán','Yemen':'Yemen',
+}
+// Normalizador: si el valor esta en el mapeo (ingles), devuelve el canonical
+// en espanol; si no, devuelve el valor original (asumimos que ya es espanol).
+function normCountry(s) {
+  if (!s) return s
+  return COUNTRY_NORM_EN_TO_ES[s] || s
+}
+
 async function loadRanking() {
   if (rkLoaded) { rkRender(); return }
   try {
@@ -3590,9 +3650,15 @@ async function loadRanking() {
     equipos.forEach(e => { eqMap[e.id] = e })
     rkAllPlayers = jugadores
       .filter(j => j.rating && j.nombre)
-      .map((j, i) => ({ ...j, equipo: eqMap[j.equipo_id] || null, globalRank: i + 1 }))
+      .map((j, i) => ({
+        ...j,
+        // Normalizamos a espanol para deduplicar entre Brasil/Brazil etc.
+        nacionalidad: normCountry(j.nacionalidad),
+        equipo: eqMap[j.equipo_id] || null,
+        globalRank: i + 1
+      }))
 
-    // Poblar países
+    // Poblar países (ya normalizados arriba)
     const paises = [...new Set(rkAllPlayers.map(p => p.nacionalidad).filter(Boolean))].sort()
     const sel = document.getElementById('rk-filter-pais')
     if (sel && sel.options.length <= 1) {
