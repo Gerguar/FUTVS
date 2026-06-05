@@ -1,8 +1,26 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-05T22:53:07+00:00",
+  "generated_at_utc": "2026-06-05T23:50:50+00:00",
   "dato_curioso": "El modelo FutVS procesa más de 12.500 partidos históricos para generar cada pronóstico.",
   "forma_reciente": [
+    {
+      "id": 112,
+      "slug": "ar",
+      "nombre": "Argentina",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/ar.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "wins": 5,
+      "draws": 0,
+      "gf": 16,
+      "gc": 1
+    },
     {
       "id": 121,
       "slug": "de",
@@ -18,7 +36,7 @@
       ],
       "wins": 5,
       "draws": 0,
-      "gf": 17,
+      "gf": 18,
       "gc": 4
     },
     {
@@ -40,60 +58,6 @@
       "gc": 0
     },
     {
-      "id": 124,
-      "slug": "tr",
-      "nombre": "Turquía",
-      "pais": "Internacional",
-      "escudo": "https://flagcdn.com/w160/tr.png",
-      "forma": [
-        "W",
-        "D",
-        "W",
-        "W",
-        "W"
-      ],
-      "wins": 4,
-      "draws": 1,
-      "gf": 15,
-      "gc": 4
-    },
-    {
-      "id": 134,
-      "slug": "ma",
-      "nombre": "Marruecos",
-      "pais": "Internacional",
-      "escudo": "https://flagcdn.com/w160/ma.png",
-      "forma": [
-        "W",
-        "D",
-        "W",
-        "D",
-        "W"
-      ],
-      "wins": 3,
-      "draws": 2,
-      "gf": 8,
-      "gc": 2
-    },
-    {
-      "id": 130,
-      "slug": "mx",
-      "nombre": "México",
-      "pais": "Internacional",
-      "escudo": "https://flagcdn.com/w160/mx.png",
-      "forma": [
-        "W",
-        "W",
-        "W",
-        "D",
-        "D"
-      ],
-      "wins": 3,
-      "draws": 2,
-      "gf": 9,
-      "gc": 2
-    },
-    {
       "id": 133,
       "slug": "at",
       "nombre": "Austria",
@@ -104,29 +68,47 @@
         "W",
         "W",
         "D",
-        "L"
+        "W"
       ],
-      "wins": 3,
+      "wins": 4,
       "draws": 1,
-      "gf": 8,
-      "gc": 3
+      "gf": 10,
+      "gc": 2
     },
     {
-      "id": 112,
-      "slug": "ar",
-      "nombre": "Argentina",
+      "id": 134,
+      "slug": "ma",
+      "nombre": "Marruecos",
       "pais": "Internacional",
-      "escudo": "https://flagcdn.com/w160/ar.png",
+      "escudo": "https://flagcdn.com/w160/ma.png",
       "forma": [
         "W",
-        "L",
+        "W",
         "W",
         "D",
         "W"
       ],
-      "wins": 3,
+      "wins": 4,
       "draws": 1,
-      "gf": 6,
+      "gf": 15,
+      "gc": 2
+    },
+    {
+      "id": 124,
+      "slug": "tr",
+      "nombre": "Turquía",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/tr.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "D",
+        "W"
+      ],
+      "wins": 4,
+      "draws": 1,
+      "gf": 10,
       "gc": 2
     },
     {
@@ -140,12 +122,30 @@
         "W",
         "W",
         "W",
-        "D"
+        "W"
       ],
-      "wins": 3,
-      "draws": 1,
+      "wins": 4,
+      "draws": 0,
+      "gf": 13,
+      "gc": 5
+    },
+    {
+      "id": 162,
+      "slug": "ci",
+      "nombre": "Costa de Marfil",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/ci.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "W"
+      ],
+      "wins": 4,
+      "draws": 0,
       "gf": 12,
-      "gc": 6
+      "gc": 4
     }
   ],
   "oportunidades": [],
@@ -154,7 +154,7 @@
   "xg_performance": [],
   "meta": {
     "n_partidos_analizados": 0,
-    "n_equipos_con_forma": 143,
+    "n_equipos_con_forma": 238,
     "n_tendencias": 0,
     "n_alertas": 0,
     "n_oportunidades": 0,
