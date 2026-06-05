@@ -49,6 +49,13 @@ STATE_PATH = Path("data/twitter_state.json")
 LESIONES_AJUSTES_PATH = Path("data/wc2026_ajustes_lesiones.json")
 INSIGHTS_PATH = Path("web/data/insights.json")
 
+# Cooldown para lesiones nuevas: deben aparecer en el JSON de ajustes durante
+# >=N horas antes de postearse. Esto evita postear ruido transitorio (una
+# alerta puntual que despues se vetea o desaparece del proximo insights).
+# Como el workflow `mundial` corre cada 6h y regenera ajustes_lesiones,
+# 6h = una segunda confirmacion del modelo + tiempo para veto manual.
+LESION_COOLDOWN_HOURS = 6.0
+
 # Ventana de pre-match: postea entre 0.5h y 8h antes del kickoff.
 # Originalmente apuntabamos a "4h antes ideal", pero GitHub Actions throttle los
 # crons de */15 (a veces demoran 1-4h). Con ventana de 8h tenemos margen para
@@ -85,6 +92,12 @@ def load_state() -> dict:
         "postmortem_miss_counter": 0,
         "lesion_snapshot": [],
         "lesion_posted_keys": [],
+        # COOLDOWN: lesiones detectadas pero aun no posteadas.
+        # {"eq_id|jugador": {"first_seen_at": iso, "delta_pp": float}}
+        # Una lesion no se postea hasta que pase LESION_COOLDOWN_HOURS desde
+        # first_seen_at Y siga apareciendo en wc2026_ajustes_lesiones.json.
+        # Si dentro del cooldown se va del JSON, se cancela sin postear.
+        "lesion_pending": {},
     }
 
 
@@ -306,36 +319,37 @@ def run_postmortem(state: dict, dry_run: bool, now: datetime) -> int:
 # ─────────────────────────────────────────────────────────────
 
 def run_lesiones(state: dict, dry_run: bool, now: datetime) -> int:
-    """Postea las lesiones nuevas detectadas en wc2026_ajustes_lesiones.json
-    (parseado desde insights.json). Sin throttle (son raras: ~0-2/dia).
+    """Postea lesiones del JSON wc2026_ajustes_lesiones.json con COOLDOWN.
 
-    Detectamos "nuevas" por (equipo_id, nombre_jugador) que no esten en
-    state["lesion_posted_keys"].
+    Flujo:
+    1. Parseamos el JSON actual y construimos `current_set` con todas las
+       lesiones detectadas en este run.
+    2. Limpiamos `lesion_pending`: si una lesion pendiente YA NO esta en
+       current_set, se cancela (era ruido transitorio).
+    3. Para cada lesion en current_set:
+       a. Si ya esta en `lesion_posted_keys`: nada que hacer.
+       b. Si esta en `lesion_pending` y paso el cooldown: candidata a postear.
+       c. Si esta en `lesion_pending` pero NO paso el cooldown: esperar.
+       d. Si NO esta en pending ni en posted: agregar a pending.
+    4. Postear maximo 1 candidata por run.
     """
     if not LESIONES_AJUSTES_PATH.exists():
         print("[lesiones] no existe data/wc2026_ajustes_lesiones.json")
         return 0
     aj = json.loads(LESIONES_AJUSTES_PATH.read_text(encoding="utf-8"))
-    if not aj:
-        print("[lesiones] sin ajustes activos")
-        return 0
 
     eq = equipos_index()
     posted_keys = set(state.get("lesion_posted_keys", []))
+    pending: dict = state.setdefault("lesion_pending", {})
     new_count = 0
 
-    # aj[partido_id] = {p_*_delta, reasons: ["España sin Lamine Yamal (-3.0pp)", ...]}
-    # Extraemos por equipo (deduplicando entre partidos del mismo equipo)
+    # ── Paso 1: construir current_set desde el JSON ─────────
     seen_team_player: set[tuple[int, str]] = set()
-    items: list[tuple[int, str, float, str]] = []  # (equipo_id, jugadores_str, total_pp, equipo_nombre)
-    for pid, ent in aj.items():
+    # current[key] = (eq_id, jugador, total_pp, eq_name)
+    current: dict[str, tuple[int, str, float, str]] = {}
+    for pid, ent in (aj or {}).items():
         for reason in ent.get("reasons", []):
-            # Formato: "España sin Lamine Yamal (-3.0pp)" o "España sin Lamine Yamal, Pedri (-4.5pp)"
-            # Lo parseamos pero tambien podriamos resolver por equipo_id buscando match con nombres.
-            # Para no depender de un parser fragil, usamos texto crudo.
-            if reason in [r for _, r, _, _ in items]:
-                continue
-            # Buscar equipo en texto: el primer token suele ser el nombre del equipo
+            # Buscar equipo en texto: el primer token suele ser el nombre.
             eq_id = None
             for tid, tname in eq.items():
                 if reason.startswith(tname + " sin "):
@@ -343,9 +357,7 @@ def run_lesiones(state: dict, dry_run: bool, now: datetime) -> int:
                     break
             if eq_id is None:
                 continue
-            # Extraer jugadores
             try:
-                # "X sin J1, J2 (-Xpp)" -> "J1, J2"
                 jugadores_part = reason.split(" sin ", 1)[1]
                 jugadores_str = jugadores_part.rsplit(" (-", 1)[0]
                 pp_str = jugadores_part.rsplit(" (-", 1)[1].rstrip("pp)")
@@ -353,41 +365,77 @@ def run_lesiones(state: dict, dry_run: bool, now: datetime) -> int:
             except (IndexError, ValueError):
                 continue
             for j in [x.strip() for x in jugadores_str.split(",")]:
-                key = (eq_id, j)
-                if key in seen_team_player:
+                key = f"{eq_id}|{j}"
+                if (eq_id, j) in seen_team_player:
                     continue
-                seen_team_player.add(key)
-                if f"{eq_id}|{j}" in posted_keys:
-                    continue
-                items.append((eq_id, j, total_pp, eq.get(eq_id, "?")))
+                seen_team_player.add((eq_id, j))
+                current[key] = (eq_id, j, total_pp, eq.get(eq_id, "?"))
 
-    if not items:
-        print("[lesiones] sin lesiones nuevas")
+    # ── Paso 2: limpiar pending de items que ya no estan en el JSON ─────
+    cancelled = []
+    for key in list(pending.keys()):
+        if key not in current:
+            cancelled.append(key)
+            del pending[key]
+    if cancelled:
+        print(f"[lesiones] CANCELADAS (ya no en JSON): {cancelled}")
+
+    # ── Paso 3: clasificar items entre nuevos / esperando / listos ─────
+    listas: list[tuple[int, str, float, str]] = []
+    nuevas: list[str] = []
+    esperando: list[str] = []
+    for key, item in current.items():
+        if key in posted_keys:
+            continue
+        if key in pending:
+            first_seen = iso_to_dt(pending[key]["first_seen_at"])
+            edad_h = (now - first_seen).total_seconds() / 3600
+            if edad_h >= LESION_COOLDOWN_HOURS:
+                listas.append(item)
+            else:
+                esperando.append(f"{item[3]}/{item[1]} ({edad_h:.1f}h)")
+        else:
+            # Lesion nueva: agregar a pending con timestamp ahora.
+            pending[key] = {
+                "first_seen_at": now.isoformat(),
+                "delta_pp": item[2],
+            }
+            nuevas.append(f"{item[3]}/{item[1]}")
+
+    if nuevas:
+        print(f"[lesiones] NUEVAS (esperando cooldown {LESION_COOLDOWN_HOURS:.0f}h): {nuevas}")
+    if esperando:
+        print(f"[lesiones] EN COOLDOWN: {esperando}")
+
+    if not listas:
+        if not current:
+            print("[lesiones] sin ajustes activos")
+        else:
+            print(f"[lesiones] ninguna paso el cooldown todavia (total en JSON: {len(current)})")
         return 0
 
-    # 1 lesion por run para distribuir en el tiempo (evita burst de 3 tweets
-    # seguidos en cuentas nuevas + se ven mejor espaciados en el timeline).
-    # En el dry-run posteamos todos para que se vea el output completo.
-    eq_id, jugador, total_pp, eq_name = items[0]
+    # ── Paso 4: postear 1 por run (la primera lista por orden de aparicion) ─
+    eq_id, jugador, total_pp, eq_name = listas[0]
     sev = "danger" if total_pp >= 3.0 else "warning"
     text = tt.tweet_lesion(
         jugador=jugador, equipo_name=eq_name,
         severidad=sev, delta_pp=total_pp,
     )
     print(f"[lesiones] {eq_name} <- {jugador} ({sev}, -{total_pp:.1f}pp) "
-          f"[+{len(items)-1} en cola]")
+          f"[+{len(listas)-1} en cola, cooldown OK]")
     tweet_id = post_tweet(text, dry_run=dry_run)
     if tweet_id:
         posted_keys.add(f"{eq_id}|{jugador}")
+        # Sacar de pending (ya posteada)
+        pending.pop(f"{eq_id}|{jugador}", None)
         new_count += 1
         state["lesion_posted_keys"] = sorted(posted_keys)
 
-    if dry_run and len(items) > 1:
-        # En dry-run mostramos las que quedarian en cola para los proximos runs.
-        print(f"\n[lesiones] (dry-run) {len(items)-1} mas se postearian en runs siguientes:")
-        for eq_id_q, jug_q, pp_q, eq_q in items[1:]:
-            sev_q = "danger" if pp_q >= 3.0 else "warning"
-            print(f"  - {eq_q} <- {jug_q} ({sev_q}, -{pp_q:.1f}pp)")
+    if dry_run and len(listas) > 1:
+        print(f"\n[lesiones] (dry-run) {len(listas)-1} mas se postearian en runs siguientes:")
+        for it in listas[1:]:
+            sev_q = "danger" if it[2] >= 3.0 else "warning"
+            print(f"  - {it[3]} <- {it[1]} ({sev_q}, -{it[2]:.1f}pp)")
 
     return new_count
 
