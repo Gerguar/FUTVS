@@ -87,10 +87,12 @@ def classify_result(prob_local: float, prob_empate: float, prob_visitante: float
 # Formateadores de tweet
 # ─────────────────────────────────────────────────────────────
 
-# X cuenta cada link como 23 chars (t.co). 280 chars total.
-# Nuestros tweets son cortos: tipicamente 200-250 chars con link incluido.
+# IMPORTANTE: desde el 20-abr-2026 X cobra $0.20 por tweet con URL
+# (vs $0.015 sin URL). Por eso *no* incluimos links en los tweets — el
+# trafico al sitio depende del link en la bio de @FutVersus_ y de hashtags
+# como #FutVersus / #Mundial2026 que la gente pueda googlear.
 
-BASE_URL = "https://futversus.com"
+HASHTAGS = "#FutVersus #Mundial2026"
 
 
 def _fmt_hour_ar(iso_utc: str) -> str:
@@ -116,7 +118,7 @@ def tweet_prematch(home_name: str, away_name: str,
                    kickoff_iso_utc: str, partido_id: int,
                    competicion: str = "MUNDIAL 2026") -> str:
     """
-    Pronostico pre-partido. ~220 chars.
+    Pronostico pre-partido. ~200 chars sin URL (ver nota sobre pricing arriba).
 
     ⚽ MUNDIAL 2026 · 16:00 ART
     🇲🇽 México vs 🇿🇦 Sudáfrica
@@ -125,13 +127,11 @@ def tweet_prematch(home_name: str, away_name: str,
     🟡 Empate       23.0%
     🔴 Visitante     9.3%
 
-    futversus.com/partido/74
+    #FutVersus #Mundial2026
     """
     fh = flag_for(home_name)
     fa = flag_for(away_name)
     hour = _fmt_hour_ar(kickoff_iso_utc)
-    # Determinar favorito para destacarlo
-    probs = {"H": prob_local, "D": prob_empate, "A": prob_visitante}
     return (
         f"⚽ {competicion} · {hour} ART\n"
         f"{fh} {home_name} vs {fa} {away_name}\n"
@@ -140,7 +140,7 @@ def tweet_prematch(home_name: str, away_name: str,
         f"🟡 Empate          {_round1(prob_empate)}%\n"
         f"🔴 {away_name:<14} {_round1(prob_visitante)}%\n"
         f"\n"
-        f"{BASE_URL}/partido/{partido_id}"
+        f"{HASHTAGS}"
     )
 
 
@@ -183,7 +183,7 @@ def tweet_postmortem(home_name: str, away_name: str,
         f"\n"
         f"Habíamos dado top-1: {top_str}\n"
         f"\n"
-        f"{BASE_URL}/partido/{partido_id}"
+        f"{HASHTAGS}"
     )
 
 
@@ -210,7 +210,7 @@ def tweet_lesion(jugador: str, equipo_name: str, severidad: str,
         f"\n"
         f"Impacto en el modelo: -{abs(delta_pp):.1f}pp para {equipo_name}.\n"
         f"\n"
-        f"{BASE_URL}/insights"
+        f"{HASHTAGS}"
     )
 
 
