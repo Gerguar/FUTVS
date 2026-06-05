@@ -229,9 +229,9 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .adv-draw{background:rgba(245,158,11,.12);color:var(--amber)}
 .adv-away{background:rgba(239,68,68,.12);color:var(--red)}
 /* Dots de fuerza por lado (5 niveles, 0-5) */
-.factor-dots-row{display:grid;grid-template-columns:42px 1fr;gap:.55rem;align-items:center;margin-bottom:.18rem}
+.factor-dots-row{display:grid;grid-template-columns:minmax(70px,28%) 1fr;gap:.55rem;align-items:center;margin-bottom:.18rem}
 .factor-dots-row:last-of-type{margin-bottom:.5rem}
-.factor-side-lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--faint);text-transform:uppercase;letter-spacing:.5px}
+.factor-side-lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--faint);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .factor-dots{display:flex;gap:.28rem}
 .fdot-sm{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);transition:background .15s}
 .fdot-sm.filled-h{background:var(--green);border-color:var(--green)}
@@ -2134,12 +2134,18 @@ async function buildEnrichedFactors(m, pron) {
 
   // Avantaje calculada desde diff de dots (no de "homeVal" como antes).
   const advFromDots = (h, a) => h - a >= 2 ? 'home' : a - h >= 2 ? 'away' : 'draw'
-  const labelFor = (a) => a === 'home' ? 'Local' : a === 'away' ? 'Visitante' : 'Parejo'
+  // Badge: nombre del equipo en lugar de 'Local'/'Visitante'. 'Parejo' queda.
+  const homeBadge = m.home?.name || 'Local'
+  const awayBadge = m.away?.name || 'Visitante'
+  const labelFor = (a) => a === 'home' ? homeBadge : a === 'away' ? awayBadge : 'Parejo'
   const mk = (icon, name, hDots, aDots, desc, noData=false) => {
     const adv = noData ? 'draw' : advFromDots(hDots, aDots)
     return {
       icon, name, adv, advLabel: noData ? 'Sin datos' : labelFor(adv),
       homeDots: hDots, awayDots: aDots, desc, noData,
+      // Nombres para usar en las labels al lado de los dots
+      homeName: m.home?.abr || m.home?.name || 'Local',
+      awayName: m.away?.abr || m.away?.name || 'Visitante',
     }
   }
   return [
@@ -2768,6 +2774,8 @@ function renderDetailBody(m) {
       const advCls = f.adv === 'home' ? 'adv-home' : f.adv === 'draw' ? 'adv-draw' : 'adv-away'
       const hDots = f.homeDots != null ? f.homeDots : 0
       const aDots = f.awayDots != null ? f.awayDots : 0
+      const homeLbl = f.homeName || (m.home?.abr || m.home?.name || 'Local')
+      const awayLbl = f.awayName || (m.away?.abr || m.away?.name || 'Visit.')
       return `
       <div class="factor-card">
         <div class="factor-header">
@@ -2775,11 +2783,11 @@ function renderDetailBody(m) {
           <span class="factor-adv ${advCls}">${(f.advLabel || '').toUpperCase()}</span>
         </div>
         <div class="factor-dots-row">
-          <span class="factor-side-lbl">Local</span>
+          <span class="factor-side-lbl" title="${m.home?.name || ''}">${homeLbl}</span>
           <div class="factor-dots">${dotsHtml(hDots, 'h', f.noData)}</div>
         </div>
         <div class="factor-dots-row">
-          <span class="factor-side-lbl">Visit.</span>
+          <span class="factor-side-lbl" title="${m.away?.name || ''}">${awayLbl}</span>
           <div class="factor-dots">${dotsHtml(aDots, 'a', f.noData)}</div>
         </div>
         <div class="factor-desc">${f.desc || 'Cargando…'}</div>
