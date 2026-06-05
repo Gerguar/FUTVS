@@ -1721,8 +1721,9 @@ button,a{touch-action:manipulation}
 <!-- /COOKIES -->
 <!-- DETAIL -->
 <div id="detail" class="page">
-  <div style="padding:1.2rem 1.5rem .5rem;position:relative;z-index:1">
-    <button class="back-btn" onclick="showPage('home')">← Inicio</button>
+  <div style="padding:1.2rem 1.5rem .5rem;position:relative;z-index:1;display:flex;gap:.6rem;align-items:center">
+    <button class="back-btn" onclick="nav('/')">← Inicio</button>
+    <button class="back-btn" onclick="copyMatchLink(this)" title="Copiar link de este partido">🔗 Compartir</button>
   </div>
   <div id="detail-final-strip" class="detail-final-strip" style="display:none">
     <span>● FINAL</span>
@@ -2639,6 +2640,13 @@ async function showDetail(id) {
   const m = matches.find(x=>x.id===id)
   if (!m) return
   currentMatch = m
+
+  // Sincronizar URL con el partido (a menos que ya estemos resolviendo
+  // desde URL, en cuyo caso NavRouter._suppress=true para evitar loops).
+  if (!NavRouter._suppress) {
+    const slug = NavRouter.matchSlug(m)
+    NavRouter.push('/partido/' + slug)
+  }
 
   // Reset chart
   placeTeamChartPanel()
@@ -4165,8 +4173,43 @@ const NavRouter = {
       renderGoatTables()
       return
     }
+    // /partido/:slug  -> abrir detalle del partido
+    const partidoMatch = path.match(/^\/partido\/([^\/]+)\/?$/)
+    if (partidoMatch) {
+      const slug = decodeURIComponent(partidoMatch[1])
+      await this.openMatchBySlug(slug)
+      return
+    }
     // default: home
     showPage('home')
+  },
+  // Slug de un partido: "mexico-vs-sudafrica-2026-06-11"
+  matchSlug(m) {
+    const date = (m.kickoffIso || '').slice(0, 10)  // YYYY-MM-DD
+    const h = this.slugify(m.home?.name || 'local')
+    const a = this.slugify(m.away?.name || 'visit')
+    return `${h}-vs-${a}-${date}`
+  },
+  async openMatchBySlug(slug) {
+    // Si los matches todavía no se cargaron, espero a que se carguen.
+    if (!matches || !matches.length) {
+      showPage('home')
+      // loadMatches() es async; el showPage('home') ya disparó la carga.
+      // Hacemos polling cortito esperando que aparezca.
+      for (let i = 0; i < 30; i++) {  // hasta 6 segundos
+        await new Promise(r => setTimeout(r, 200))
+        if (matches && matches.length) break
+      }
+    }
+    const found = (matches || []).find(m => this.matchSlug(m) === slug)
+    if (found) {
+      this._suppress = true
+      try { await showDetail(found.id) }
+      finally { this._suppress = false }
+    } else {
+      showPage('home')
+      console.warn('Partido no encontrado para slug:', slug)
+    }
   },
   init() {
     window.addEventListener('popstate', () => this.parse())
@@ -4180,6 +4223,25 @@ const NavRouter = {
 // Wrapper para los enlaces del nav: pushea la URL y dispara la vista.
 function nav(path) { NavRouter.push(path); NavRouter.parse() }
 NavRouter.init()
+
+// Copia el link del partido actual al portapapeles y muestra feedback breve.
+async function copyMatchLink(btn) {
+  const url = location.origin + location.pathname
+  const original = btn.innerHTML
+  try {
+    await navigator.clipboard.writeText(url)
+    btn.innerHTML = '✅ Copiado'
+    btn.style.borderColor = 'var(--green)'
+    btn.style.color = 'var(--green)'
+  } catch(e) {
+    btn.innerHTML = '⚠️ Error'
+  }
+  setTimeout(() => {
+    btn.innerHTML = original
+    btn.style.borderColor = ''
+    btn.style.color = ''
+  }, 1500)
+}
 
 // ══════════════════════════════════════════
 // INSIGHTS — carga data/insights.json
