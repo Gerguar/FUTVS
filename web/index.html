@@ -1143,7 +1143,7 @@ button,a{touch-action:manipulation}
       <div class="ins-card">
         <div class="ins-card-title">🔥 Forma reciente</div>
         <table class="ins-table">
-          <thead><tr><th>Equipo</th><th>Últimos 5</th><th>G</th><th>E</th><th>P</th></tr></thead>
+          <thead><tr><th>Equipo</th><th>Últimos 5</th><th>GF</th><th>GC</th><th>DIF</th></tr></thead>
           <tbody id="ins-forma-tbody"><tr><td colspan="5" class="ins-empty">Sin datos</td></tr></tbody>
         </table>
       </div>
@@ -4301,12 +4301,17 @@ function renderInsForma(rows) {
   tb.innerHTML = rows.map(eq => {
     const f = (eq.forma||[]).slice(0,5)
     const esc = eq.escudo ? `<img src="${insEsc(eq.escudo)}" style="width:22px;height:22px;object-fit:contain;border-radius:3px" onerror="this.style.display='none'">` : ''
+    const gf = (eq.gf != null) ? eq.gf : '—'
+    const gc = (eq.gc != null) ? eq.gc : '—'
+    const dif = (eq.gf != null && eq.gc != null) ? (eq.gf - eq.gc) : null
+    const difStr = dif == null ? '—' : (dif > 0 ? `+${dif}` : `${dif}`)
+    const difColor = dif == null ? 'var(--faint)' : dif > 0 ? 'var(--green)' : dif < 0 ? 'var(--red)' : 'var(--amber)'
     return `<tr>
       <td><div class="ins-team-cell">${esc}<span>${insEsc(eq.nombre||eq.slug||'')}</span></div></td>
       <td><div class="ins-form-dots">${f.map(dot).join('')}</div></td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--green);font-weight:900">${f.filter(r=>r==='W').length}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--amber);font-weight:900">${f.filter(r=>r==='D').length}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--red);font-weight:900">${f.filter(r=>r==='L').length}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--green);font-weight:900">${gf}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--red);font-weight:900">${gc}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:${difColor};font-weight:900">${difStr}</td>
     </tr>`
   }).join('')
 }

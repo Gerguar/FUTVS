@@ -499,6 +499,28 @@ def build_tendencias_estadisticas(df: pd.DataFrame, predictions: list[dict]) -> 
 # FORMA RECIENTE
 # ──────────────────────────────────────────────────────────────────────────────
 
+def _gf_gc_ultimos_5(equipo_id: int) -> tuple[int, int]:
+    """Goles a favor y en contra del equipo en sus ultimos 5 partidos finalizados."""
+    try:
+        rows = sb_get(
+            f"partidos?select=goles_local,goles_visitante,equipo_local_id"
+            f"&or=(equipo_local_id.eq.{equipo_id},equipo_visitante_id.eq.{equipo_id})"
+            f"&estado=eq.finalizado&goles_local=not.is.null&goles_visitante=not.is.null"
+            f"&order=fecha.desc&limit=5"
+        )
+    except Exception:
+        return 0, 0
+    gf, gc = 0, 0
+    for r in rows:
+        gl = r.get("goles_local") or 0
+        gv = r.get("goles_visitante") or 0
+        if r.get("equipo_local_id") == equipo_id:
+            gf += gl; gc += gv
+        else:
+            gf += gv; gc += gl
+    return gf, gc
+
+
 def build_forma_section(predictions, forma_sb, equipos_sb) -> list[dict]:
     if forma_sb and equipos_sb:
         rows = []
@@ -512,6 +534,7 @@ def build_forma_section(predictions, forma_sb, equipos_sb) -> list[dict]:
             forma_norm = [r.upper() if r.upper() in ("W","D","L") else "?" for r in forma_raw[:5]]
             wins = forma_norm.count("W")
             rows.append({
+                "id":     int(eid),
                 "slug":   eq.get("abreviacion", "").lower(),
                 "nombre": eq.get("nombre", ""),
                 "pais":   eq.get("pais", ""),
@@ -521,7 +544,13 @@ def build_forma_section(predictions, forma_sb, equipos_sb) -> list[dict]:
                 "draws":  forma_norm.count("D"),
             })
         rows.sort(key=lambda x: (x["wins"], x["draws"]), reverse=True)
-        return rows[:8]
+        top = rows[:8]
+        # Anotar GF/GC de los ultimos 5 para los top 8 (1 query c/u).
+        for r in top:
+            gf, gc = _gf_gc_ultimos_5(r["id"])
+            r["gf"] = gf
+            r["gc"] = gc
+        return top
     return []
 
 
