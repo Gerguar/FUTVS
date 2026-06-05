@@ -24,6 +24,12 @@
     "razon": "Descartado del Mundial tras lesión en amistoso (confirmado manual 5-jun-2026)"
   },
   {
+    "equipo_id": 264,
+    "jugador": "Billy Gilmour",
+    "delta_pp": 3.0,
+    "razon": "Fuera del Mundial por lesión de rodilla en amistoso vs Curazao (Infobae 31-may-2026)"
+  },
+  {
     "equipo_id": 111,
     "jugador": "Lamine Yamal",
     "delta_pp": 0,
