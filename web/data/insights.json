@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-05T04:16:10+00:00",
-  "dato_curioso": "Craig Gordon (Escocia) será el jugador más veterano del Mundial a los 43 años, mientras que Gilberto Mora (México) será el más joven con solo 17 años. Curazao, con apenas 185.000 habitantes, es el país más pequeño en clasificar a un Mundial.",
+  "generated_at_utc": "2026-06-05T04:34:29+00:00",
+  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos totales. Por primera vez, 289 jugadores defenderán a una selección distinta al país donde nacieron, marcando un récord histórico de naturalizaciones.",
   "forma_reciente": [
     {
       "slug": "de",
@@ -127,74 +127,38 @@
   "oportunidades": [],
   "tendencias": [
     {
-      "tipo": "racha_goles",
-      "equipo": "Brasil y Alemania",
-      "flag": "🇧🇷🇩🇪",
-      "texto": "Brasil y Alemania comparten el récord de 18 partidos consecutivos anotando en Mundiales, marca inalcanzable en 2026.",
+      "tipo": "under",
+      "equipo": "Chile",
+      "flag": "🇨🇱",
+      "texto": "Chile registra Menos de 3.5 goles en todos sus últimos 10 partidos internacionales.",
       "valor": 100,
-      "n": 18
+      "n": 10
     },
     {
-      "tipo": "racha_positiva",
-      "equipo": "Argentina",
-      "flag": "🇦🇷",
-      "texto": "La Albiceleste acumula 9 partidos consecutivos anotando en Mundiales (Rusia 2018 y Qatar 2022). Buscan extender la racha.",
-      "valor": 90,
-      "n": 9
-    },
-    {
-      "tipo": "tarjetas",
-      "equipo": "Selecciones participantes",
-      "flag": "⚽",
-      "texto": "FIFA implementó doble amnistía de amarillas: se borran tras fase de grupos y cuartos de final para evitar suspensiones clave.",
-      "valor": 0,
-      "n": 2
-    },
-    {
-      "tipo": "expansion",
-      "equipo": "Mundial 2026",
-      "flag": "🏆",
-      "texto": "El Mundial 2026 será el más grande de la historia con 48 selecciones y 104 partidos, 40 más que Qatar 2022.",
-      "valor": 63,
-      "n": 104
+      "tipo": "over",
+      "equipo": "Marruecos",
+      "flag": "🇲🇦",
+      "texto": "Marruecos goleó 5-0 a Burundi en su último amistoso de preparación (01-Jun).",
+      "valor": 83,
+      "n": 1
     }
   ],
   "alertas": [
     {
       "tipo": "lesion",
-      "equipo": "Brasil",
-      "flag": "🇧🇷",
-      "texto": "Rodrygo descartado del Mundial por rotura de ligamentos cruzados en marzo. La Canarinha pierde uno de sus principales desequilibrantes en ataque.",
-      "nivel": "critical"
-    },
-    {
-      "tipo": "lesion",
-      "equipo": "España",
-      "flag": "🇪🇸",
-      "texto": "Lamine Yamal sufrió rotura muscular de grado 2 en el bíceps femoral. Estará 6-8 semanas fuera y llegará sin ritmo pleno al Mundial.",
-      "nivel": "warning"
-    },
-    {
-      "tipo": "suspension",
-      "equipo": "Alemania",
-      "flag": "🇩🇪",
-      "texto": "Alemania con peor racha histórica: dos eliminaciones consecutivas en fase de grupos (Rusia 2018 y Qatar 2022). Buscan recuperar identidad.",
-      "nivel": "warning"
-    },
-    {
-      "tipo": "lesion",
-      "equipo": "Francia",
-      "flag": "🇫🇷",
-      "texto": "Hugo Ekitiké se perderá el Mundial por rotura del tendón de Aquiles. Serge Gnabry (Alemania) tampoco llegará por lesión de larga duración.",
-      "nivel": "critical"
+      "equipo": "Escocia",
+      "flag": "🏴󐁧󐁢󐁳󐁣󐁴󐁿",
+      "texto": "Billy Gilmour queda fuera del Mundial por lesión de rodilla sufrida en amistoso vs. Curazao. (Fuente: Infobae, 31-May)",
+      "nivel": "critical",
+      "fuente_url": "https://www.infobae.com/deportes/2026/05/31/la-primera-baja-oficial-del-mundial-es-una-de-las-maximas-figuras-de-su-seleccion-y-se-rompio-la-rodilla-en-un-amistoso/"
     }
   ],
   "xg_performance": [],
   "meta": {
     "n_partidos_analizados": 0,
     "n_equipos_con_forma": 143,
-    "n_tendencias": 4,
-    "n_alertas": 4,
+    "n_tendencias": 2,
+    "n_alertas": 1,
     "n_oportunidades": 0,
     "claude_used": true,
     "claude_web_search": true
