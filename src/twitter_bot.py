@@ -49,11 +49,13 @@ STATE_PATH = Path("data/twitter_state.json")
 LESIONES_AJUSTES_PATH = Path("data/wc2026_ajustes_lesiones.json")
 INSIGHTS_PATH = Path("web/data/insights.json")
 
-# Ventana de "4h antes del kickoff" para pre-match.
-# Si en el run actual ya pasaron menos de PREMATCH_MIN_BEFORE_H del kickoff,
-# *postear ahora* (mejor antes que despues, regla de Facu).
-PREMATCH_TARGET_H = 4.0     # ideal: ~4h antes
-PREMATCH_MIN_BEFORE_H = 0.5  # nunca despues del kickoff; corte 30 min antes minimo
+# Ventana de pre-match: postea entre 0.5h y 8h antes del kickoff.
+# Originalmente apuntabamos a "4h antes ideal", pero GitHub Actions throttle los
+# crons de */15 (a veces demoran 1-4h). Con ventana de 8h tenemos margen para
+# que aunque el cron se demore, el tweet salga antes del kickoff.
+# Regla original de Facu: "mejor antes que despues, nunca despues del kickoff".
+PREMATCH_TARGET_H = 8.0     # ventana superior: hasta 8h antes
+PREMATCH_MIN_BEFORE_H = 0.5  # corte 30 min antes minimo
 
 # Throttle entre tweets pre-match (para no saturar cuando hay varios partidos simultaneos)
 PREMATCH_THROTTLE_MIN = 30
