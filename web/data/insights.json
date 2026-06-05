@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-04T19:51:18+00:00",
-  "dato_curioso": "El francés Just Fontaine marcó 13 goles en una sola edición (Suecia 1958), récord vigente hace 68 años que parece inalcanzable. Hungría anotó 27 goles en el Mundial 1954, la mayor cantidad de una selección en un solo torneo.",
+  "generated_at_utc": "2026-06-05T04:16:10+00:00",
+  "dato_curioso": "Craig Gordon (Escocia) será el jugador más veterano del Mundial a los 43 años, mientras que Gilberto Mora (México) será el más joven con solo 17 años. Curazao, con apenas 185.000 habitantes, es el país más pequeño en clasificar a un Mundial.",
   "forma_reciente": [
     {
       "slug": "de",
@@ -127,36 +127,36 @@
   "oportunidades": [],
   "tendencias": [
     {
-      "tipo": "epidemia_lesiones",
-      "equipo": "Selecciones Mundialistas",
-      "flag": "🌍",
-      "texto": "Al menos 16 figuras confirmadas fuera del Mundial 2026 por lesiones. Roturas de ligamentos cruzados es la lesión más recurrente: Rodrygo, Xavi Simons, Hugo Ekitiké, entre otros.",
+      "tipo": "racha_goles",
+      "equipo": "Brasil y Alemania",
+      "flag": "🇧🇷🇩🇪",
+      "texto": "Brasil y Alemania comparten el récord de 18 partidos consecutivos anotando en Mundiales, marca inalcanzable en 2026.",
       "valor": 100,
-      "n": 16
+      "n": 18
     },
     {
-      "tipo": "formato_historico",
+      "tipo": "racha_positiva",
+      "equipo": "Argentina",
+      "flag": "🇦🇷",
+      "texto": "La Albiceleste acumula 9 partidos consecutivos anotando en Mundiales (Rusia 2018 y Qatar 2022). Buscan extender la racha.",
+      "valor": 90,
+      "n": 9
+    },
+    {
+      "tipo": "tarjetas",
+      "equipo": "Selecciones participantes",
+      "flag": "⚽",
+      "texto": "FIFA implementó doble amnistía de amarillas: se borran tras fase de grupos y cuartos de final para evitar suspensiones clave.",
+      "valor": 0,
+      "n": 2
+    },
+    {
+      "tipo": "expansion",
       "equipo": "Mundial 2026",
       "flag": "🏆",
-      "texto": "Primer Mundial con 48 selecciones: se disputarán 104 partidos en 39 días. Las tarjetas amarillas se borrarán dos veces: tras fase de grupos y tras cuartos de final.",
-      "valor": 48,
+      "texto": "El Mundial 2026 será el más grande de la historia con 48 selecciones y 104 partidos, 40 más que Qatar 2022.",
+      "valor": 63,
       "n": 104
-    },
-    {
-      "tipo": "reglas_disciplinarias",
-      "equipo": "FIFA",
-      "flag": "⚖️",
-      "texto": "Nueva regla FIFA: tarjeta roja directa para jugadores que se cubran la boca durante discusiones o abandonen el campo en protesta. VAR podrá revisar segundas amarillas que deriven en expulsión.",
-      "valor": 100,
-      "n": 1
-    },
-    {
-      "tipo": "juventud_veterania",
-      "equipo": "Jugadores Mundial 2026",
-      "flag": "👥",
-      "texto": "Contrastes extremos: Gilberto Mora (México) es el más joven con 17 años, mientras que Craig Gordon (Escocia) el mayor con 43 años. Cristiano Ronaldo jugará su sexto Mundial a los 41 años.",
-      "valor": 26,
-      "n": 1248
     }
   ],
   "alertas": [
@@ -164,29 +164,29 @@
       "tipo": "lesion",
       "equipo": "Brasil",
       "flag": "🇧🇷",
-      "texto": "Brasil llega muy golpeado por las lesiones: Rodrygo, Militão y Estêvão quedan fuera del Mundial tras roturas de ligamentos. Tres bajas sensibles para el ataque y defensa de la Canarinha.",
-      "nivel": "danger"
+      "texto": "Rodrygo descartado del Mundial por rotura de ligamentos cruzados en marzo. La Canarinha pierde uno de sus principales desequilibrantes en ataque.",
+      "nivel": "critical"
     },
     {
       "tipo": "lesion",
-      "equipo": "Argentina",
-      "flag": "🇦🇷",
-      "texto": "Leandro Paredes sufre desgarro en el isquiotibial y se pierde los amistosos previos. Cristian Romero llega con escaso ritmo tras semanas sin jugar por lesión en la rodilla.",
+      "equipo": "España",
+      "flag": "🇪🇸",
+      "texto": "Lamine Yamal sufrió rotura muscular de grado 2 en el bíceps femoral. Estará 6-8 semanas fuera y llegará sin ritmo pleno al Mundial.",
+      "nivel": "warning"
+    },
+    {
+      "tipo": "suspension",
+      "equipo": "Alemania",
+      "flag": "🇩🇪",
+      "texto": "Alemania con peor racha histórica: dos eliminaciones consecutivas en fase de grupos (Rusia 2018 y Qatar 2022). Buscan recuperar identidad.",
       "nivel": "warning"
     },
     {
       "tipo": "lesion",
-      "equipo": "México",
-      "flag": "🇲🇽",
-      "texto": "Cuatro jugadores clave del Tri trabajan por separado: César Montes, Edson Álvarez, Luis Chávez y Alexis Vega llegan tocados físicamente al debut mundialista contra Sudáfrica.",
-      "nivel": "warning"
-    },
-    {
-      "tipo": "lesion",
-      "equipo": "Austria",
-      "flag": "🇦🇹",
-      "texto": "Christoph Baumgartner, figura del Leipzig y clave para Austria, queda descartado del Mundial tras lesionarse en el calentamiento del amistoso ante Túnez. Baja confirmada hace 24 horas.",
-      "nivel": "danger"
+      "equipo": "Francia",
+      "flag": "🇫🇷",
+      "texto": "Hugo Ekitiké se perderá el Mundial por rotura del tendón de Aquiles. Serge Gnabry (Alemania) tampoco llegará por lesión de larga duración.",
+      "nivel": "critical"
     }
   ],
   "xg_performance": [],
