@@ -487,9 +487,10 @@ button,a{touch-action:manipulation}
     padding:10px max(12px,env(safe-area-inset-left)) 8px max(12px,env(safe-area-inset-right));
     gap:8px 10px;
   }
-  .logo{white-space:nowrap;font-size:18px}
-  .live-badge{justify-self:end;white-space:nowrap;font-size:9px;padding:4px 8px;letter-spacing:.25px}
+  .logo{white-space:nowrap;font-size:18px;grid-row:1;grid-column:1}
+  .live-badge{justify-self:end;white-space:nowrap;font-size:9px;padding:4px 8px;letter-spacing:.25px;grid-row:1;grid-column:3}
   .nav-links{
+    grid-row:2;
     grid-column:1/-1;
     width:100%;
     overflow-x:auto;
