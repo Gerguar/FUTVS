@@ -33,33 +33,80 @@ from pathlib import Path
 NEWS_API_KEY = os.environ.get("NEWS_API_KEY", "")
 OUT_PATH = Path("web/data/insights_semana.json")
 
-# Palabras clave para buscar noticias impactantes de fútbol
+# Queries usando qInTitle (matchea solo titulo, mucho mas estricto).
+# Cada query trae solo notas cuyo TITULO contiene esas palabras.
 QUERIES = [
-    "fútbol Champions League",
-    "fútbol Mundial 2026",
-    "Premier League LaLiga Serie A",
-    "Messi Mbappé Haaland Vinicius",
+    "Mundial 2026 fútbol",   # qInTitle: filtra 'Mundial 2026' de One Piece / Netflix / etc
+    "Champions League",
+    "Premier League",
+    "LaLiga",
+    "Serie A fútbol",        # 'Serie A' tambien puede ser categoria, agregamos 'futbol'
+    "selección fútbol",
 ]
 
-# Fuentes de fútbol confiables (NewsAPI source IDs)
+# Fuentes deportivas confiables (NewsAPI source IDs). Cuando usamos `sources`,
+# NewsAPI ignora `language` (las fuentes ya tienen idioma fijo).
 FOOTBALL_SOURCES = [
-    "marca", "as", "sport", "mundo-deportivo",
-    "the-sport-bible", "bleacher-report", "espn",
-    "four-four-two", "bbc-sport",
+    "marca", "abc-es", "el-mundo",  # españolas + general que cubren deporte
+    "bbc-sport", "espn", "fox-sports", "four-four-two",
+    "bleacher-report", "the-sport-bible",
+]
+
+# Si una nota tiene CUALQUIERA de estas palabras en titulo o descripcion, se
+# DESCARTA por completo (no es de futbol). Esto saca Netflix, anime, series, etc.
+OFFTOPIC_KEYWORDS = [
+    "netflix", "hbo", "disney+", "amazon prime", "spotify",
+    "one piece", "anime", "manga", "videojuego", "gaming", "playstation", "xbox",
+    "estreno", "estrenos", "película", "pelicula", "tráiler", "trailer",
+    "serie de tv", "serie netflix", "celebridad", "celebridades",
+    "criptomoneda", "bitcoin", "nft", "criptos",
+    "horóscopo", "horoscopo", "tarot",
+    "padel ", "pádel ", "basquet", "básquet", "tenis ", "boxeo ", "ufc ",
+    "f1 ", "formula 1", "fórmula 1", "motogp",
+    # 'mundial' es ambiguo (puede ser anime, comic, etc). Solo permitimos si
+    # tambien aparece 'futbol' o nombres de selecciones/jugadores (check abajo).
+]
+
+# Palabras que CONFIRMAN que es de futbol. Una nota debe tener al menos UNA
+# de estas en titulo o descripcion. Si no, se descarta (defensa adicional).
+FOOTBALL_CONFIRMERS = [
+    "fútbol", "futbol", "soccer",
+    "gol", "goles", "partido", "torneo", "liga", "copa",
+    "selección", "seleccion", "jugador", "club", "estadio", "fixture",
+    "champions", "champions league", "premier league", "laliga", "la liga",
+    "serie a", "bundesliga", "ligue 1", "copa america", "copa américa",
+    "fifa", "uefa", "conmebol", "concacaf",
+    "messi", "ronaldo", "mbappe", "mbappé", "haaland", "vinicius", "vinícius",
+    "lamine", "yamal", "bellingham", "kane", "pedri", "gavi",
+    "real madrid", "barcelona", "atletico", "atlético", "bayern", "borussia",
+    "arsenal", "manchester", "liverpool", "chelsea", "tottenham", "inter ",
+    "milan", "juventus", "psg", "paris saint",
+    "river", "boca", "racing", "independiente",  # argentino
+    "fluminense", "flamengo", "palmeiras", "corinthians",  # brasilero
+    "argentina ", "brasil ", "uruguay ", "españa ", "francia ", "alemania ",
+    "inglaterra ", "italia ", "portugal ", "holanda ", "paises bajos",
 ]
 
 
-def fetch_articles(query: str, from_date: str, to_date: str, page_size: int = 5) -> list[dict]:
-    params = urllib.parse.urlencode({
-        "q": query,
+def fetch_articles(query: str, from_date: str, to_date: str, page_size: int = 8,
+                   sources: str | None = None) -> list[dict]:
+    """Llama a NewsAPI `everything` con qInTitle (mas estricto que q).
+
+    Si `sources` se pasa, restringe a esos source ids (override de 'language').
+    """
+    params: dict = {
+        "qInTitle": query,
         "from": from_date,
         "to": to_date,
-        "language": "es",
         "sortBy": "popularity",
         "pageSize": page_size,
         "apiKey": NEWS_API_KEY,
-    })
-    url = f"https://newsapi.org/v2/everything?{params}"
+    }
+    if sources:
+        params["sources"] = sources
+    else:
+        params["language"] = "es"
+    url = f"https://newsapi.org/v2/everything?{urllib.parse.urlencode(params)}"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "FutVersus/1.0"})
         with urllib.request.urlopen(req, timeout=15) as r:
@@ -68,6 +115,21 @@ def fetch_articles(query: str, from_date: str, to_date: str, page_size: int = 5)
     except Exception as e:
         print(f"  ! Error fetching '{query}': {e}", file=sys.stderr)
         return []
+
+
+def is_football_news(a: dict) -> tuple[bool, str]:
+    """Devuelve (es_futbol, razon). Si es False, hay que descartar la nota."""
+    title = (a.get("title") or "").lower()
+    desc = (a.get("description") or "").lower()
+    combined = title + " " + desc
+    # Off-topic explicito -> rechazar
+    for kw in OFFTOPIC_KEYWORDS:
+        if kw in combined:
+            return False, f"off-topic: contiene '{kw}'"
+    # Debe tener al menos UN confirmador de futbol
+    if not any(kw in combined for kw in FOOTBALL_CONFIRMERS):
+        return False, "sin confirmador de futbol"
+    return True, ""
 
 
 def score_article(a: dict) -> float:
@@ -133,16 +195,26 @@ def main() -> None:
     # Recopilar artículos de todas las queries
     seen_urls: set[str] = set()
     candidates: list[dict] = []
+    sources_csv = ",".join(FOOTBALL_SOURCES)
 
     for q in QUERIES:
-        articles = fetch_articles(q, from_date, to_date, page_size=5)
-        print(f"  · '{q}': {len(articles)} artículos")
+        # Primera vuelta: con sources deportivos (mejor calidad).
+        articles = fetch_articles(q, from_date, to_date, page_size=8, sources=sources_csv)
+        # Segunda vuelta: solo idioma es, sin sources (fallback para tener volumen).
+        articles += fetch_articles(q, from_date, to_date, page_size=5, sources=None)
+        kept = 0
         for a in articles:
             url = a.get("url", "")
             if url in seen_urls or not url:
                 continue
+            ok, razon = is_football_news(a)
+            if not ok:
+                print(f"  · descartado [{razon[:35]}]: {(a.get('title') or '')[:70]}")
+                continue
             seen_urls.add(url)
             candidates.append(a)
+            kept += 1
+        print(f"  · '{q}': {kept} candidatos validos de {len(articles)} bajados")
 
     # Ordenar por score
     candidates.sort(key=score_article, reverse=True)
