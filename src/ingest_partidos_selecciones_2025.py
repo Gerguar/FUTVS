@@ -28,7 +28,8 @@ from .replay_elo_selecciones import NAME_TO_SLUG, HIST_URL
 from .supabase_writer import sb_get, sb_post
 
 
-LIGA_SELECCIONES = 7
+LIGA_SELECCIONES = 7      # 48 selecciones del Mundial 2026
+LIGA_OTRAS = 8            # rivales historicos no-Mundial (Zambia, Mauritania, ...)
 SINCE_DATE = "2025-01-01"
 
 
@@ -69,8 +70,49 @@ def main() -> None:
     print(f"[partidos-sel] martj42 {args.since} → hoy: {len(df):,} partidos")
 
     en2id = build_name_to_id()
-    df["home_team_id"] = df["home_team"].map(en2id)
-    df["away_team_id"] = df["away_team"].map(en2id)
+
+    # Para que se carguen los amistosos contra equipos NO del Mundial
+    # (Zambia, Mauritania, Angola, Puerto Rico, etc), auto-creamos esos
+    # equipos en LIGA_OTRAS y los reusamos en futuros runs.
+    # Solo nos importan los partidos donde al menos UNO de los equipos
+    # es del Mundial — los partidos de no-Mundial vs no-Mundial los
+    # ignoramos (no aportan a forma_reciente de selecciones del Mundial).
+    mundial_set = set(en2id.keys())
+    home_in = df["home_team"].isin(mundial_set)
+    away_in = df["away_team"].isin(mundial_set)
+    df = df[home_in | away_in].copy()  # al menos uno del Mundial
+
+    # Cache de equipos de LIGA_OTRAS ya cargados (no duplicar)
+    existing_otras = sb_get(f"equipos?select=id,nombre&liga_id=eq.{LIGA_OTRAS}")
+    otras_nombre2id = {e["nombre"]: e["id"] for e in existing_otras}
+
+    # Detectar nombres no mapeados (rivales no-Mundial)
+    needed = set()
+    for _, row in df.iterrows():
+        if row["home_team"] not in en2id and row["home_team"] not in otras_nombre2id:
+            needed.add(row["home_team"])
+        if row["away_team"] not in en2id and row["away_team"] not in otras_nombre2id:
+            needed.add(row["away_team"])
+
+    # Crear los faltantes en LIGA_OTRAS
+    if needed:
+        print(f"[partidos-sel] creando {len(needed)} equipos nuevos en LIGA_OTRAS (no-Mundial)...")
+        payloads_eq = [{"nombre": n, "liga_id": LIGA_OTRAS} for n in sorted(needed)]
+        try:
+            from .supabase_writer import sb_post as _sbp
+            created = _sbp("equipos", payloads_eq, prefer="return=representation")
+            for e in (created or []):
+                otras_nombre2id[e["nombre"]] = e["id"]
+            print(f"[partidos-sel] equipos creados OK: {len(created or [])}")
+        except Exception as e:
+            print(f"[partidos-sel] WARN: error creando equipos otras: {e}")
+
+    # Mapear ambos lados ahora con en2id (Mundial) + otras_nombre2id (no-Mundial)
+    def map_id(name):
+        return en2id.get(name) or otras_nombre2id.get(name)
+
+    df["home_team_id"] = df["home_team"].map(map_id)
+    df["away_team_id"] = df["away_team"].map(map_id)
     df = df.dropna(subset=["home_team_id", "away_team_id"]).copy()
     df["home_team_id"] = df["home_team_id"].astype(int)
     df["away_team_id"] = df["away_team_id"].astype(int)
