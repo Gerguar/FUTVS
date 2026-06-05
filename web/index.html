@@ -633,7 +633,20 @@ button,a{touch-action:manipulation}
   .min-strip::-webkit-scrollbar{display:none}
   .min-chip{flex:0 0 auto}
 
-  footer [style*="grid-template-columns:repeat(4,1fr) 1.4fr"]{grid-template-columns:1fr!important;gap:1.35rem!important;margin-bottom:2rem!important}
+  footer [style*="grid-template-columns:repeat(4,1fr) 1.4fr"]{
+    grid-template-columns:repeat(2,1fr)!important;
+    gap:1.6rem 1.2rem!important;
+    margin-bottom:2rem!important;
+  }
+  /* El ultimo hijo (logo+redes) ocupa ambas columnas y se centra */
+  footer [style*="grid-template-columns:repeat(4,1fr) 1.4fr"] > div:last-child{
+    grid-column:1/-1!important;
+    align-items:center!important;
+    text-align:center;
+    border-top:1px solid var(--border);
+    padding-top:1.5rem;
+    margin-top:.4rem;
+  }
   footer a{min-height:28px;display:inline-flex;align-items:center}
 }
 
