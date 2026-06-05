@@ -222,15 +222,22 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
   .ms-label{font-size:.66rem}
 }
 .factor-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.85rem .9rem}
-.factor-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem}
+.factor-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
 .factor-name{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:.35rem;font-family:'JetBrains Mono',monospace}
 .factor-adv{font-size:.62rem;font-weight:800;padding:2px 8px;border-radius:10px;font-family:'JetBrains Mono',monospace}
 .adv-home{background:rgba(34,197,94,.12);color:var(--green)}
 .adv-draw{background:rgba(245,158,11,.12);color:var(--amber)}
 .adv-away{background:rgba(239,68,68,.12);color:var(--red)}
-.factor-track{height:4px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-bottom:.35rem}
-.factor-fill{height:100%;border-radius:3px}
-.factor-desc{font-size:.68rem;color:var(--faint);line-height:1.4}
+/* Dots de fuerza por lado (5 niveles, 0-5) */
+.factor-dots-row{display:grid;grid-template-columns:42px 1fr;gap:.55rem;align-items:center;margin-bottom:.18rem}
+.factor-dots-row:last-of-type{margin-bottom:.5rem}
+.factor-side-lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--faint);text-transform:uppercase;letter-spacing:.5px}
+.factor-dots{display:flex;gap:.28rem}
+.fdot-sm{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);transition:background .15s}
+.fdot-sm.filled-h{background:var(--green);border-color:var(--green)}
+.fdot-sm.filled-a{background:var(--red);border-color:var(--red)}
+.fdot-sm.filled-n{background:var(--muted);border-color:var(--muted)}  /* neutral */
+.factor-desc{font-size:.68rem;color:var(--faint);line-height:1.4;margin-top:.1rem}
 .stats-2col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .stat-row-d{display:flex;flex-direction:column;gap:4px;margin-bottom:.65rem}
 .stat-row-d:last-child{margin-bottom:0}
@@ -2030,39 +2037,44 @@ async function buildEnrichedFactors(m, pron) {
     isMundial ? loadWcLesiones() : Promise.resolve({}),
   ])
 
-  // === LOCALÍA ===
-  let locVal = 50, locDesc = 'Campo neutral · sin ventaja'
+  // Helper: clampea a 0-5 entero
+  const c5 = (x) => Math.max(0, Math.min(5, Math.round(x)))
+
+  // === LOCALÍA ===  (cada lado: 0-5 según cuánta ventaja de cancha tiene)
+  let locH = 2, locA = 2, locDesc = 'Campo neutral · sin ventaja'
   if (isMundial) {
     if (WC_HOST_IDS.includes(homeId)) {
-      locVal = 75; locDesc = `🇲🇽🇺🇸🇨🇦 Anfitrión en casa · ventaja típica +5pp`
+      locH = 4; locA = 1; locDesc = `🇲🇽🇺🇸🇨🇦 Anfitrión en casa · ventaja típica +5pp`
     } else if (WC_HOST_IDS.includes(awayId)) {
-      locVal = 25; locDesc = `🇲🇽🇺🇸🇨🇦 Visitante es anfitrión · juega como local`
+      locH = 1; locA = 4; locDesc = `🇲🇽🇺🇸🇨🇦 Visitante es anfitrión · juega como local`
     } else {
       locDesc = 'Campo neutral (Mundial) · ningún anfitrión en este partido'
     }
   } else {
-    locVal = 75; locDesc = `${m.home.name} juega en su estadio · ventaja típica +5pp`
+    locH = 4; locA = 1; locDesc = `${m.home.name} juega en su estadio · ventaja típica +5pp`
   }
 
-  // === H2H ===
-  let h2hVal = 50, h2hDesc = 'Sin enfrentamientos históricos disponibles'
+  // === H2H === (% de partidos ganados por cada lado, escalado a 0-5)
+  let h2hH = 0, h2hA = 0, h2hDesc = 'Sin enfrentamientos históricos disponibles'
+  let h2hHasData = false
   if (h2hRows && h2hRows.length) {
     const h = h2hRows[0]
-    // Las victorias_a son del equipo_a_id. Mapear quién es local en H2H.
     const aIsHome = h.equipo_a_id === homeId
     const vH = aIsHome ? h.victorias_a : h.victorias_b
     const vA = aIsHome ? h.victorias_b : h.victorias_a
     const e = h.empates || 0
     const tot = h.partidos || (vH + vA + e)
-    h2hDesc = `${tot} partidos: ${vH}V-${e}E-${vA}D para ${m.home.name}`
     if (tot > 0) {
-      // Convertir a 0-100 (cuánto favorece al local)
-      h2hVal = Math.round(((vH + e * 0.5) / tot) * 100)
+      h2hDesc = `${tot} partidos · ${vH}V-${e}E-${vA}D para ${m.home.name}`
+      h2hH = c5((vH / tot) * 5)
+      h2hA = c5((vA / tot) * 5)
+      h2hHasData = true
     }
   }
 
-  // === FORMA ===
-  let formVal = 50, formDesc = 'Sin datos de forma reciente'
+  // === FORMA === (puntos sacados en últimos 5 / 15, escalado 0-5)
+  let formH_dots = 0, formA_dots = 0, formDesc = 'Sin datos de forma reciente'
+  let formHasData = false
   const formH = m.home?.form || [], formA = m.away?.form || []
   if (formH.length || formA.length) {
     const cnt = (arr) => ({
@@ -2072,62 +2084,71 @@ async function buildEnrichedFactors(m, pron) {
     })
     const fh = cnt(formH), fa = cnt(formA)
     const ptsH = fh.W * 3 + fh.D, ptsA = fa.W * 3 + fa.D
-    const totH = Math.max(formH.length, 1), totA = Math.max(formA.length, 1)
-    formDesc = `Local ${fh.W}-${fh.D}-${fh.L} · ${m.away.name} ${fa.W}-${fa.D}-${fa.L} (últimos ${Math.max(totH, totA)})`
-    const diff = (ptsH / totH) - (ptsA / totA)  // -3 a +3
-    formVal = Math.round(50 + diff * 16.67)
+    const maxH = formH.length * 3, maxA = formA.length * 3
+    formDesc = `Local ${fh.W}-${fh.D}-${fh.L} · ${m.away.name} ${fa.W}-${fa.D}-${fa.L}`
+    formH_dots = maxH ? c5((ptsH / maxH) * 5) : 0
+    formA_dots = maxA ? c5((ptsA / maxA) * 5) : 0
+    formHasData = true
   }
 
-  // === TABLA (ratings de plantilla) ===
-  let tablaVal = 50, tablaDesc = 'Sin ratings disponibles'
+  // === TABLA === (rating XI absoluto: 70=1, 75=2.5, 80=4, 85=5)
+  let tablaH = 0, tablaA = 0, tablaDesc = 'Sin ratings disponibles'
+  let tablaHasData = false
   const ratH = m.home?.xiRating, ratA = m.away?.xiRating
+  const ratingToDots = (r) => c5((r - 70) / 3)
   if (ratH && ratA) {
     const dr = ratH - ratA
     tablaDesc = `XI prom: ${ratH.toFixed(1)} vs ${ratA.toFixed(1)} (Δ${dr >= 0 ? '+' : ''}${dr.toFixed(1)})`
-    // sigmoid: cada +2 puntos de XI ≈ +10pp de favoritismo
-    tablaVal = Math.round(50 + 50 * Math.tanh(dr / 4))
+    tablaH = ratingToDots(ratH)
+    tablaA = ratingToDots(ratA)
+    tablaHasData = true
   }
 
-  // === BAJAS ===
-  let bajasVal = 50, bajasDesc = 'Sin bajas reportadas'
+  // === BAJAS === (5 = plantilla completa, cada -2pp baja 1 dot)
+  let bajasH = 5, bajasA = 5, bajasDesc = 'Ambos equipos sin bajas reportadas'
   const lesEnt = lesiones && lesiones[String(m.id)]
   if (lesEnt && lesEnt.reasons && lesEnt.reasons.length) {
     bajasDesc = lesEnt.reasons.join(' · ')
-    // Si p_local_delta < 0 → local con bajas → favorece visitante.
-    const dL = lesEnt.p_local_delta || 0
-    bajasVal = Math.max(0, Math.min(100, 50 + dL * 6))  // -6pp → val=14, +6pp → val=86
+    const dL = lesEnt.p_local_delta || 0       // negativo = local pierde
+    const dV = lesEnt.p_visitante_delta || 0   // negativo = visit pierde
+    bajasH = c5(5 + dL / 2)  // -6pp -> 5-3 = 2 dots
+    bajasA = c5(5 + dV / 2)
   }
 
-  // === GOLES ===
-  let golesVal = 50, golesDesc = 'Sin proyección de goles'
-  // Intentar parsear "xG esperado X.XX - Y.YY" del notas del pron.
+  // === GOLES === (xG individual: 0 xG = 0 dots, 2.5 xG = 5 dots)
+  let golesH = 0, golesA = 0, golesDesc = 'Sin proyección de goles'
+  let golesHasData = false
+  const xgToDots = (xg) => c5(xg * 2)  // 2.5 xG = 5 dots
   const xgMatch = (pron.notas || '').match(/xG[^0-9]*([\d.]+)\s*-\s*([\d.]+)/i)
   if (xgMatch) {
     const xgH = parseFloat(xgMatch[1]), xgA = parseFloat(xgMatch[2])
-    golesDesc = `xG esperado: ${xgH.toFixed(1)} - ${xgA.toFixed(1)}`
-    const dg = xgH - xgA
-    golesVal = Math.round(50 + 50 * Math.tanh(dg / 1.0))
+    golesDesc = `xG esperado · Local ${xgH.toFixed(1)} · Visit. ${xgA.toFixed(1)}`
+    golesH = xgToDots(xgH); golesA = xgToDots(xgA)
+    golesHasData = true
   } else {
-    // Fallback: usar las propias probabilidades.
     const dp = (pron.prob_local || 0) - (pron.prob_visitante || 0)
     golesDesc = `Modelo proyecta ${dp > 5 ? m.home.name : dp < -5 ? m.away.name : 'paridad'} con más goles`
-    golesVal = Math.round(50 + dp * 1.5)
+    // Fallback dots desde prob
+    golesH = c5(2.5 + dp / 20); golesA = c5(2.5 - dp / 20)
   }
 
-  const advFor = (v) => v >= 65 ? 'home' : v <= 40 ? 'away' : 'draw'
+  // Avantaje calculada desde diff de dots (no de "homeVal" como antes).
+  const advFromDots = (h, a) => h - a >= 2 ? 'home' : a - h >= 2 ? 'away' : 'draw'
   const labelFor = (a) => a === 'home' ? 'Local' : a === 'away' ? 'Visitante' : 'Parejo'
-  const mk = (icon, name, val, desc) => {
-    const v = Math.max(0, Math.min(100, val))
-    const adv = advFor(v)
-    return { icon, name, adv, advLabel: labelFor(adv), homeVal: v, desc }
+  const mk = (icon, name, hDots, aDots, desc, noData=false) => {
+    const adv = noData ? 'draw' : advFromDots(hDots, aDots)
+    return {
+      icon, name, adv, advLabel: noData ? 'Sin datos' : labelFor(adv),
+      homeDots: hDots, awayDots: aDots, desc, noData,
+    }
   }
   return [
-    mk('🏠', 'LOCALÍA', locVal, locDesc),
-    mk('⚔️', 'H2H',     h2hVal, h2hDesc),
-    mk('📋', 'FORMA',   formVal, formDesc),
-    mk('📊', 'TABLA',   tablaVal, tablaDesc),
-    mk('🤕', 'BAJAS',   bajasVal, bajasDesc),
-    mk('⚡', 'GOLES',   golesVal, golesDesc),
+    mk('🏠', 'LOCALÍA', locH, locA, locDesc),
+    mk('⚔️', 'H2H',     h2hH, h2hA, h2hDesc, !h2hHasData),
+    mk('📋', 'FORMA',   formH_dots, formA_dots, formDesc, !formHasData),
+    mk('📊', 'TABLA',   tablaH, tablaA, tablaDesc, !tablaHasData),
+    mk('🤕', 'BAJAS',   bajasH, bajasA, bajasDesc),
+    mk('⚡', 'GOLES',   golesH, golesA, golesDesc),
   ]
 }
 
@@ -2734,15 +2755,39 @@ function renderDetailBody(m) {
   }
 
   // Factors: render inmediato con placeholder + enriquecer en background.
-  const renderFactors = (arr) => {
-    document.getElementById('detail-factors').innerHTML = arr.map(f=>`
-      <div class="factor-card">
-        <div class="factor-header"><div class="factor-name">${f.icon} ${f.name}</div><span class="factor-adv ${f.adv==='home'?'adv-home':f.adv==='draw'?'adv-draw':'adv-away'}">${f.advLabel.toUpperCase()}</span></div>
-        <div class="factor-track"><div class="factor-fill" style="width:${f.homeVal}%;background:${f.adv==='home'?'#22c55e':f.adv==='draw'?'#f59e0b':'#ef4444'}"></div></div>
-        <div class="factor-desc">${f.desc || 'Cargando...'}</div>
-      </div>`).join('')
+  // Genera 5 dots: los primeros N rellenos con el color del lado.
+  const dotsHtml = (n, side, noData) => {
+    if (noData) return Array.from({length:5}, () => '<span class="fdot-sm"></span>').join('')
+    const cls = side === 'h' ? 'filled-h' : 'filled-a'
+    return Array.from({length:5}, (_, i) =>
+      `<span class="fdot-sm ${i < n ? cls : ''}"></span>`
+    ).join('')
   }
-  renderFactors(m.factors)  // placeholder rapido
+  const renderFactors = (arr) => {
+    document.getElementById('detail-factors').innerHTML = arr.map(f => {
+      const advCls = f.adv === 'home' ? 'adv-home' : f.adv === 'draw' ? 'adv-draw' : 'adv-away'
+      const hDots = f.homeDots != null ? f.homeDots : 0
+      const aDots = f.awayDots != null ? f.awayDots : 0
+      return `
+      <div class="factor-card">
+        <div class="factor-header">
+          <div class="factor-name">${f.icon} ${f.name}</div>
+          <span class="factor-adv ${advCls}">${(f.advLabel || '').toUpperCase()}</span>
+        </div>
+        <div class="factor-dots-row">
+          <span class="factor-side-lbl">Local</span>
+          <div class="factor-dots">${dotsHtml(hDots, 'h', f.noData)}</div>
+        </div>
+        <div class="factor-dots-row">
+          <span class="factor-side-lbl">Visit.</span>
+          <div class="factor-dots">${dotsHtml(aDots, 'a', f.noData)}</div>
+        </div>
+        <div class="factor-desc">${f.desc || 'Cargando…'}</div>
+      </div>`
+    }).join('')
+  }
+  // Placeholder rapido con homeDots=0 (se ven los 5 huecos vacios mientras carga).
+  renderFactors(m.factors.map(f => ({...f, homeDots: 0, awayDots: 0, noData: true})))
   // Async: enriquecer factores con datos reales (H2H, Elo, lesiones).
   // No usamos await porque renderDetailBody() no es async.
   sb(`pronosticos?select=prob_local,prob_empate,prob_visitante,factor_localidad,factor_forma,factor_h2h,factor_tabla,factor_bajas,factor_goles,notas&partido_id=eq.${m.id}&limit=1`)
