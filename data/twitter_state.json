@@ -8,18 +8,5 @@
     "115|Eder Militao",
     "115|Rodrygo"
   ],
-  "lesion_pending": {
-    "115|Estevao": {
-      "first_seen_at": "2026-06-04T21:04:31.995765+00:00",
-      "delta_pp": 6.0
-    },
-    "133|Christoph Baumgartner": {
-      "first_seen_at": "2026-06-04T21:04:31.995765+00:00",
-      "delta_pp": 3.0
-    },
-    "264|Billy Gilmour": {
-      "first_seen_at": "2026-06-04T21:37:25.136998+00:00",
-      "delta_pp": 3.0
-    }
-  }
+  "lesion_pending": {}
 }
