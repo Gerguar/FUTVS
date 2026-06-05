@@ -1973,7 +1973,13 @@ function transformEquipo(e) {
   }
 }
 
+// IDs de anfitriones del Mundial 2026 (cuando juegan, no es campo neutral).
+const WC_HOST_IDS = [130, 151, 135]  // Mexico, USA, Canada
+
 function generateFactors(pron, homeName, awayName) {
+  // Stub: genera los 6 factors basicos para preview en el home.
+  // El detalle del partido los ENRIQUECE con buildEnrichedFactors() llamando
+  // a Supabase para H2H y leyendo el JSON de lesiones.
   if (!pron) return []
   const defs = [
     { icon:'🏠', name:'LOCALÍA', val: pron.factor_localidad },
@@ -1990,9 +1996,139 @@ function generateFactors(pron, homeName, awayName) {
       icon: f.icon, name: f.name, adv,
       advLabel: adv==='home'?'Local':adv==='away'?'Visitante':'Parejo',
       homeVal: v,
-      desc: pron.notas || `${homeName} vs ${awayName}`
+      desc: '',  // se llena en buildEnrichedFactors al abrir el detalle
     }
   })
+}
+
+// Cache de lesiones (se descarga 1 vez por sesion).
+let _wcLesionesCache = null
+async function loadWcLesiones() {
+  if (_wcLesionesCache !== null) return _wcLesionesCache
+  try {
+    const r = await fetch('/data/wc2026_ajustes_lesiones.json?t=' + Date.now())
+    if (!r.ok) throw new Error('HTTP ' + r.status)
+    _wcLesionesCache = await r.json()
+  } catch(e) {
+    _wcLesionesCache = {}
+  }
+  return _wcLesionesCache
+}
+
+// Genera los 6 factors con datos especificos por categoria.
+// Reemplaza el placeholder de generateFactors() (que solo tenia pron.notas).
+async function buildEnrichedFactors(m, pron) {
+  if (!pron) return []
+  const homeId = m.home?.id, awayId = m.away?.id
+  const isMundial = (m.leagueKey === 'mundial' || m.league?.toUpperCase().includes('FIFA'))
+
+  // Fetches en paralelo: H2H + lesiones
+  const [h2hRows, lesiones] = await Promise.all([
+    (homeId && awayId) ? sb(
+      `h2h_historico?select=victorias_a,victorias_b,empates,partidos,equipo_a_id,equipo_b_id&or=(and(equipo_a_id.eq.${homeId},equipo_b_id.eq.${awayId}),and(equipo_a_id.eq.${awayId},equipo_b_id.eq.${homeId}))&limit=1`
+    ).catch(()=>[]) : Promise.resolve([]),
+    isMundial ? loadWcLesiones() : Promise.resolve({}),
+  ])
+
+  // === LOCALÍA ===
+  let locVal = 50, locDesc = 'Campo neutral · sin ventaja'
+  if (isMundial) {
+    if (WC_HOST_IDS.includes(homeId)) {
+      locVal = 75; locDesc = `🇲🇽🇺🇸🇨🇦 Anfitrión en casa · ventaja típica +5pp`
+    } else if (WC_HOST_IDS.includes(awayId)) {
+      locVal = 25; locDesc = `🇲🇽🇺🇸🇨🇦 Visitante es anfitrión · juega como local`
+    } else {
+      locDesc = 'Campo neutral (Mundial) · ningún anfitrión en este partido'
+    }
+  } else {
+    locVal = 75; locDesc = `${m.home.name} juega en su estadio · ventaja típica +5pp`
+  }
+
+  // === H2H ===
+  let h2hVal = 50, h2hDesc = 'Sin enfrentamientos históricos disponibles'
+  if (h2hRows && h2hRows.length) {
+    const h = h2hRows[0]
+    // Las victorias_a son del equipo_a_id. Mapear quién es local en H2H.
+    const aIsHome = h.equipo_a_id === homeId
+    const vH = aIsHome ? h.victorias_a : h.victorias_b
+    const vA = aIsHome ? h.victorias_b : h.victorias_a
+    const e = h.empates || 0
+    const tot = h.partidos || (vH + vA + e)
+    h2hDesc = `${tot} partidos: ${vH}V-${e}E-${vA}D para ${m.home.name}`
+    if (tot > 0) {
+      // Convertir a 0-100 (cuánto favorece al local)
+      h2hVal = Math.round(((vH + e * 0.5) / tot) * 100)
+    }
+  }
+
+  // === FORMA ===
+  let formVal = 50, formDesc = 'Sin datos de forma reciente'
+  const formH = m.home?.form || [], formA = m.away?.form || []
+  if (formH.length || formA.length) {
+    const cnt = (arr) => ({
+      W: arr.filter(x => x === 'W').length,
+      D: arr.filter(x => x === 'D').length,
+      L: arr.filter(x => x === 'L').length,
+    })
+    const fh = cnt(formH), fa = cnt(formA)
+    const ptsH = fh.W * 3 + fh.D, ptsA = fa.W * 3 + fa.D
+    const totH = Math.max(formH.length, 1), totA = Math.max(formA.length, 1)
+    formDesc = `Local ${fh.W}-${fh.D}-${fh.L} · ${m.away.name} ${fa.W}-${fa.D}-${fa.L} (últimos ${Math.max(totH, totA)})`
+    const diff = (ptsH / totH) - (ptsA / totA)  // -3 a +3
+    formVal = Math.round(50 + diff * 16.67)
+  }
+
+  // === TABLA (ratings de plantilla) ===
+  let tablaVal = 50, tablaDesc = 'Sin ratings disponibles'
+  const ratH = m.home?.xiRating, ratA = m.away?.xiRating
+  if (ratH && ratA) {
+    const dr = ratH - ratA
+    tablaDesc = `XI prom: ${ratH.toFixed(1)} vs ${ratA.toFixed(1)} (Δ${dr >= 0 ? '+' : ''}${dr.toFixed(1)})`
+    // sigmoid: cada +2 puntos de XI ≈ +10pp de favoritismo
+    tablaVal = Math.round(50 + 50 * Math.tanh(dr / 4))
+  }
+
+  // === BAJAS ===
+  let bajasVal = 50, bajasDesc = 'Sin bajas reportadas'
+  const lesEnt = lesiones && lesiones[String(m.id)]
+  if (lesEnt && lesEnt.reasons && lesEnt.reasons.length) {
+    bajasDesc = lesEnt.reasons.join(' · ')
+    // Si p_local_delta < 0 → local con bajas → favorece visitante.
+    const dL = lesEnt.p_local_delta || 0
+    bajasVal = Math.max(0, Math.min(100, 50 + dL * 6))  // -6pp → val=14, +6pp → val=86
+  }
+
+  // === GOLES ===
+  let golesVal = 50, golesDesc = 'Sin proyección de goles'
+  // Intentar parsear "xG esperado X.XX - Y.YY" del notas del pron.
+  const xgMatch = (pron.notas || '').match(/xG[^0-9]*([\d.]+)\s*-\s*([\d.]+)/i)
+  if (xgMatch) {
+    const xgH = parseFloat(xgMatch[1]), xgA = parseFloat(xgMatch[2])
+    golesDesc = `xG esperado: ${xgH.toFixed(1)} - ${xgA.toFixed(1)}`
+    const dg = xgH - xgA
+    golesVal = Math.round(50 + 50 * Math.tanh(dg / 1.0))
+  } else {
+    // Fallback: usar las propias probabilidades.
+    const dp = (pron.prob_local || 0) - (pron.prob_visitante || 0)
+    golesDesc = `Modelo proyecta ${dp > 5 ? m.home.name : dp < -5 ? m.away.name : 'paridad'} con más goles`
+    golesVal = Math.round(50 + dp * 1.5)
+  }
+
+  const advFor = (v) => v >= 65 ? 'home' : v <= 40 ? 'away' : 'draw'
+  const labelFor = (a) => a === 'home' ? 'Local' : a === 'away' ? 'Visitante' : 'Parejo'
+  const mk = (icon, name, val, desc) => {
+    const v = Math.max(0, Math.min(100, val))
+    const adv = advFor(v)
+    return { icon, name, adv, advLabel: labelFor(adv), homeVal: v, desc }
+  }
+  return [
+    mk('🏠', 'LOCALÍA', locVal, locDesc),
+    mk('⚔️', 'H2H',     h2hVal, h2hDesc),
+    mk('📋', 'FORMA',   formVal, formDesc),
+    mk('📊', 'TABLA',   tablaVal, tablaDesc),
+    mk('🤕', 'BAJAS',   bajasVal, bajasDesc),
+    mk('⚡', 'GOLES',   golesVal, golesDesc),
+  ]
 }
 
 function genMinutes(startYear, endYear, peakMin, injuryYears=[]) {
@@ -2597,13 +2733,28 @@ function renderDetailBody(m) {
     </div>`
   }
 
-  // Factors
-  document.getElementById('detail-factors').innerHTML = m.factors.map(f=>`
-    <div class="factor-card">
-      <div class="factor-header"><div class="factor-name">${f.icon} ${f.name}</div><span class="factor-adv ${f.adv==='home'?'adv-home':f.adv==='draw'?'adv-draw':'adv-away'}">${f.advLabel.toUpperCase()}</span></div>
-      <div class="factor-track"><div class="factor-fill" style="width:${f.homeVal}%;background:${f.adv==='home'?'#22c55e':f.adv==='draw'?'#f59e0b':'#ef4444'}"></div></div>
-      <div class="factor-desc">${f.desc}</div>
-    </div>`).join('')
+  // Factors: render inmediato con placeholder + enriquecer en background.
+  const renderFactors = (arr) => {
+    document.getElementById('detail-factors').innerHTML = arr.map(f=>`
+      <div class="factor-card">
+        <div class="factor-header"><div class="factor-name">${f.icon} ${f.name}</div><span class="factor-adv ${f.adv==='home'?'adv-home':f.adv==='draw'?'adv-draw':'adv-away'}">${f.advLabel.toUpperCase()}</span></div>
+        <div class="factor-track"><div class="factor-fill" style="width:${f.homeVal}%;background:${f.adv==='home'?'#22c55e':f.adv==='draw'?'#f59e0b':'#ef4444'}"></div></div>
+        <div class="factor-desc">${f.desc || 'Cargando...'}</div>
+      </div>`).join('')
+  }
+  renderFactors(m.factors)  // placeholder rapido
+  // Async: enriquecer factores con datos reales (H2H, Elo, lesiones).
+  // No usamos await porque renderDetailBody() no es async.
+  sb(`pronosticos?select=prob_local,prob_empate,prob_visitante,factor_localidad,factor_forma,factor_h2h,factor_tabla,factor_bajas,factor_goles,notas&partido_id=eq.${m.id}&limit=1`)
+    .then(pronArr => {
+      const pronRaw = pronArr[0]
+      if (!pronRaw) return null
+      return buildEnrichedFactors(m, pronRaw)
+    })
+    .then(enriched => {
+      if (enriched) renderFactors(enriched)
+    })
+    .catch(e => console.warn('No se pudo enriquecer factores:', e))
 
   // (Cuadro "Ultimos 5 partidos" removido: las stats de temporada de
   // arriba ya muestran V/E/D + form dots, era redundante.)
