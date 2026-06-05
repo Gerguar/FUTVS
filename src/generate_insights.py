@@ -181,48 +181,74 @@ def build_alertas_tendencias_claude(predictions: list[dict]) -> tuple[list[dict]
 
     partidos_str = "\n".join(f"- {p}" for p in partidos_ctx) if partidos_ctx else "- Partidos internacionales próximos"
 
-    prompt = f"""Sos el analista de datos de FutVS, un sitio de pronósticos de fútbol.
+    # Cargar vetos manuales: jugadores que NO deben aparecer como bajas
+    # (Facu confirmo que juegan, evita que Claude levante noticias viejas/erroneas).
+    vetados = []
+    overrides_path = Path("data/lesiones_overrides_manual.json")
+    if overrides_path.exists():
+        try:
+            for o in json.loads(overrides_path.read_text(encoding="utf-8")):
+                if float(o.get("delta_pp", 0)) == 0:
+                    vetados.append(o.get("jugador", ""))
+        except (json.JSONDecodeError, KeyError, TypeError):
+            pass
+    vetados_str = ", ".join(f'"{v}"' for v in vetados) if vetados else "(ninguno)"
 
-Partidos próximos a analizar:
+    # Fecha actual en formato legible para anclar a "última semana"
+    hoy = datetime.now(timezone.utc).strftime("%d-%b-%Y")
+
+    prompt = f"""Sos el analista de datos de FutVS, sitio de pronósticos para el Mundial 2026.
+Hoy es {hoy}. El Mundial 2026 arranca el 11 de junio en México/USA/Canadá.
+
+Partidos próximos del Mundial:
 {partidos_str}
 
-Usá web search para buscar información REAL y ACTUAL sobre:
-1. Suspensiones o tarjetas amarillas acumuladas de jugadores clave
-2. Lesiones confirmadas de titulares
-3. Equipos en mala racha reciente (últimos 4-5 partidos)
-4. Tendencias estadísticas reales: equipos que marcan primero frecuentemente, equipos con muchos goles en contra, partidos con Over 2.5 frecuentes
-5. Un dato curioso o estadística sorprendente del fútbol actual
+Usá web search para buscar info REAL, VERIFICABLE y MUY RECIENTE (últimos 7 días).
 
-Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin texto extra, sin markdown, sin backticks):
+CRITERIOS ESTRICTOS:
+- Cada alerta debe basarse en una noticia publicada EN LOS ÚLTIMOS 7 DÍAS.
+- Si la noticia es anterior, NO la incluyas (puede estar desactualizada).
+- Para lesiones: solo incluí si la noticia dice EXPLÍCITAMENTE que el jugador
+  "se pierde el Mundial", "fuera del Mundial", "descartado", "rotura de
+  ligamentos/cruzados", "operado", "baja confirmada".
+  NO incluyas frases ambiguas como "en duda", "trabaja al margen", "llega justo",
+  "escaso ritmo", "molestias" — eso NO es baja.
+- NUNCA incluyas estos jugadores como baja (vetados manualmente porque juegan
+  el Mundial confirmado): {vetados_str}.
+- 'alertas' es SOLO para lesiones/suspensiones confirmadas. NO comentarios
+  históricos como "Alemania peor racha" — eso va en 'tendencias' o se descarta.
+
+Devolvé ÚNICAMENTE un JSON válido (sin markdown, sin backticks) con esta estructura:
 {{
   "alertas": [
     {{
-      "tipo": "suspension",
-      "equipo": "Nombre del equipo",
-      "flag": "🏳️",
-      "texto": "Descripción concreta de la alerta.",
-      "nivel": "warning"
+      "tipo": "lesion",
+      "equipo": "Brasil",
+      "flag": "🇧🇷",
+      "texto": "Jugador X queda fuera del Mundial por rotura de Y. (Fuente: Nombre del medio, DD-MMM)",
+      "nivel": "critical",
+      "fuente_url": "https://..."
     }}
   ],
   "tendencias": [
     {{
       "tipo": "over",
-      "equipo": "Nombre del equipo",
-      "flag": "🏳️",
-      "texto": "Descripción concreta de la tendencia.",
-      "valor": 75,
-      "n": 8
+      "equipo": "Brasil",
+      "flag": "🇧🇷",
+      "texto": "Tendencia concreta con número (ej: '8 de últimos 10 amistosos terminaron Over 2.5').",
+      "valor": 80,
+      "n": 10
     }}
   ],
-  "dato_curioso": "Un dato sorprendente y concreto en máximo 2 oraciones."
+  "dato_curioso": "Un dato concreto y sorprendente del Mundial 2026 en máximo 2 oraciones. Debe ser un dato distinto cada vez que se genere (varía: récords, edades, países, estadios, formato de 48 equipos)."
 }}
 
-Reglas:
-- Máximo 4 alertas y 4 tendencias
-- Solo información verificable y reciente (últimas 2-4 semanas)
-- Texto en español rioplatense, tono analítico
-- Si no encontrás info real sobre un equipo específico, usá equipos del fútbol europeo o internacional actual
-- El JSON debe ser parseable directamente con json.loads()"""
+Reglas adicionales:
+- Máximo 4 alertas y 4 tendencias.
+- Si no encontrás ninguna lesión que cumpla los criterios estrictos, devolvé "alertas": []. Mejor vacío que falso.
+- Texto en español rioplatense, tono analítico, sin exageraciones.
+- nivel: "critical" = fuera del Mundial confirmado. "warning" = baja para un partido específico (suspensión, p.ej.). NO uses "info".
+- El JSON debe parsearse directo con json.loads()."""
 
     tools = [{"type": "web_search_20250305", "name": "web_search"}]
 
