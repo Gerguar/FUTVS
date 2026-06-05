@@ -96,7 +96,7 @@ def classify_result(prob_local: float, prob_empate: float, prob_visitante: float
 # Ojo: poner "futversus.com" o cualquier patron de URL hace que X lo cobre
 # como tweet con link ($0.20). Usar solo texto plano y emoji.
 
-CTA = "🔎 Pronóstico completo y datos en mi perfil 👇"
+CTA = "🔎 Pronóstico completo y datos en nuestra web - ↗ bio"
 HASHTAGS = "#FutVersus #Mundial2026"
 
 
@@ -189,7 +189,7 @@ def tweet_postmortem(home_name: str, away_name: str,
         f"\n"
         f"Habíamos dado top-1: {top_str}\n"
         f"\n"
-        f"📊 Análisis detallado del partido en mi perfil 👇\n"
+        f"📊 Análisis detallado del partido en nuestra web - ↗ bio\n"
         f"{HASHTAGS}"
     )
 
@@ -217,7 +217,7 @@ def tweet_lesion(jugador: str, equipo_name: str, severidad: str,
         f"\n"
         f"Impacto en el modelo: -{abs(delta_pp):.1f}pp para {equipo_name}.\n"
         f"\n"
-        f"🔍 Análisis completo del impacto en mi perfil 👇\n"
+        f"🔍 Análisis completo del impacto en nuestra web - ↗ bio\n"
         f"{HASHTAGS}"
     )
 
