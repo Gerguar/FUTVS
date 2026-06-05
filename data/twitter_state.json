@@ -4,12 +4,10 @@
   "postmortem_posted": {},
   "postmortem_miss_counter": 0,
   "lesion_snapshot": [],
-  "lesion_posted_keys": [],
+  "lesion_posted_keys": [
+    "115|Rodrygo"
+  ],
   "lesion_pending": {
-    "115|Rodrygo": {
-      "first_seen_at": "2026-06-04T21:04:31.995765+00:00",
-      "delta_pp": 6.0
-    },
     "115|Eder Militao": {
       "first_seen_at": "2026-06-04T21:04:31.995765+00:00",
       "delta_pp": 6.0
