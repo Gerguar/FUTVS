@@ -4,5 +4,23 @@
   "postmortem_posted": {},
   "postmortem_miss_counter": 0,
   "lesion_snapshot": [],
-  "lesion_posted_keys": []
+  "lesion_posted_keys": [],
+  "lesion_pending": {
+    "115|Rodrygo": {
+      "first_seen_at": "2026-06-05T03:57:23.343413+00:00",
+      "delta_pp": 6.0
+    },
+    "115|Eder Militao": {
+      "first_seen_at": "2026-06-05T03:57:23.343413+00:00",
+      "delta_pp": 6.0
+    },
+    "115|Estevao": {
+      "first_seen_at": "2026-06-05T03:57:23.343413+00:00",
+      "delta_pp": 6.0
+    },
+    "133|Christoph Baumgartner": {
+      "first_seen_at": "2026-06-05T03:57:23.343413+00:00",
+      "delta_pp": 3.0
+    }
+  }
 }
