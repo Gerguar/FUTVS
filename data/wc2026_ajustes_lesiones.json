@@ -1,1 +1,50 @@
-{}
+{
+  "79": {
+    "p_local_delta": -6.0,
+    "p_empate_delta": 3.0,
+    "p_visitante_delta": 3.0,
+    "reasons": [
+      "Brasil sin Rodrygo, Eder Militao, Estevao (-6.0pp)"
+    ]
+  },
+  "104": {
+    "p_local_delta": -6.0,
+    "p_empate_delta": 3.0,
+    "p_visitante_delta": 3.0,
+    "reasons": [
+      "Brasil sin Rodrygo, Eder Militao, Estevao (-6.0pp)"
+    ]
+  },
+  "125": {
+    "p_local_delta": 3.0,
+    "p_empate_delta": 3.0,
+    "p_visitante_delta": -6.0,
+    "reasons": [
+      "Brasil sin Rodrygo, Eder Militao, Estevao (-6.0pp)"
+    ]
+  },
+  "93": {
+    "p_local_delta": -3.0,
+    "p_empate_delta": 1.5,
+    "p_visitante_delta": 1.5,
+    "reasons": [
+      "Austria sin Christoph Baumgartner (-3.0pp)"
+    ]
+  },
+  "114": {
+    "p_local_delta": 1.5,
+    "p_empate_delta": 1.5,
+    "p_visitante_delta": -3.0,
+    "reasons": [
+      "Austria sin Christoph Baumgartner (-3.0pp)"
+    ]
+  },
+  "145": {
+    "p_local_delta": 1.5,
+    "p_empate_delta": 1.5,
+    "p_visitante_delta": -3.0,
+    "reasons": [
+      "Austria sin Christoph Baumgartner (-3.0pp)"
+    ]
+  }
+}

@@ -59,6 +59,85 @@ MIN_RATING_TO_AFFECT = 78
 # titulares lesionados podrian dar -9pp; limitamos a -6pp).
 MAX_PENALTY_PER_TEAM = 6.0
 
+# ─── MATCHER ESTRICTO ─────────────────────────────────────────────
+# Despues del incidente del 5-jun-2026 (Cristian Romero y Leandro Paredes
+# marcados como bajas por simple mencion en texto ambiguo), exigimos que
+# el texto de la alerta contenga al menos una de estas frases para
+# considerar que el jugador esta REALMENTE descartado.
+# Si solo hay menciones ambiguas ('en duda', 'llega justo'), no penalizamos.
+CONFIRMED_PHRASES = (
+    "se pierde el mundial",
+    "fuera del mundial",
+    "queda fuera",
+    "descartado del mundial",
+    "descartado para el mundial",
+    "no llega al mundial",
+    "no estara en el mundial",
+    "no estara en la cita",
+    "no jugara el mundial",
+    "rotura de ligamentos",
+    "rotura del cruzado",
+    "rotura del lca",
+    "rotura del menisco",
+    "rotura de fibras",
+    "rotura muscular grave",
+    "operado",
+    "intervenido quirurgicamente",
+    "baja confirmada",
+    "baja por lesion",
+    "lesion grave",
+    "tres meses de baja",
+    "varias semanas de baja",
+    "varios meses fuera",
+    "fin de temporada",
+    "se perdera el torneo",
+    "no podra disputar el mundial",
+)
+
+# Frases que indican incertidumbre pero NO descarte. No penalizamos por estas
+# (era nuestro fallo anterior). Si quisieramos restar muy poco en estos casos,
+# se podria sumar -0.5pp como "en duda", pero por ahora ignoramos.
+AMBIGUOUS_PHRASES = (
+    "llega justo",
+    "en duda",
+    "escaso ritmo",
+    "trabaja por separado",
+    "trabajan por separado",
+    "molestias",
+    "se recupera",
+    "se entrena al margen",
+    "carga de minutos",
+    "preocupa su estado",
+    "podria perderse",
+    "podria no llegar",
+    "duda hasta ultimo momento",
+)
+
+# Override manual: si necesitas forzar/vetar un jugador, edita esta lista.
+# Cada entrada es {"equipo_id": int, "jugador": str, "delta_pp": float, "razon": str}.
+# delta_pp positivo = penalizacion para ESE equipo (resta de su prob de ganar).
+# delta_pp 0 = veto explicito (ignorar matches de ese jugador).
+MANUAL_OVERRIDES_PATH = Path("data/lesiones_overrides_manual.json")
+
+
+def has_confirmed_phrase(text_norm: str) -> bool:
+    """True si el texto contiene una frase que CONFIRMA descarte del Mundial."""
+    return any(p in text_norm for p in CONFIRMED_PHRASES)
+
+
+def load_manual_overrides() -> dict[tuple[int, str], dict]:
+    """{(equipo_id, jugador_normalized): {delta_pp, razon}}.
+    Si delta_pp == 0 -> veto: ignorar al jugador aunque aparezca.
+    """
+    if not MANUAL_OVERRIDES_PATH.exists():
+        return {}
+    try:
+        data = json.loads(MANUAL_OVERRIDES_PATH.read_text(encoding="utf-8"))
+        return {(int(o["equipo_id"]), normalize(o["jugador"])): o for o in data}
+    except (json.JSONDecodeError, KeyError, TypeError) as e:
+        print(f"[lesiones] WARN: overrides invalidos: {e}")
+        return {}
+
 
 def strip_accents(s: str) -> str:
     return "".join(c for c in unicodedata.normalize("NFD", s)
@@ -139,6 +218,11 @@ def main() -> None:
         by_team[m["equipo_local_id"]].append(m)
         by_team[m["equipo_visitante_id"]].append(m)
 
+    # Cargar overrides manuales
+    overrides = load_manual_overrides()
+    if overrides:
+        print(f"[lesiones] overrides manuales cargados: {len(overrides)}")
+
     # Procesar alertas
     print(f"\n[lesiones] procesando alertas:")
     affected_by_team: dict[int, list[tuple[str, float]]] = defaultdict(list)
@@ -146,6 +230,14 @@ def main() -> None:
         text_norm = " " + normalize(a.get("texto", "")) + " "
         level = a.get("nivel", "warning")
         penalty = LEVEL_PENALTIES.get(level, 1.5)
+
+        # MATCHER ESTRICTO: solo procesar alertas con frases que confirman
+        # descarte. Esto evita los false positives de comentarios ambiguos.
+        if not has_confirmed_phrase(text_norm):
+            print(f"  [{level:<8}] descartado (sin frase de confirmacion): "
+                  f"{a.get('texto','')[:100]}")
+            continue
+
         matches = []
         seen_player_ids = set()
         # Ordenar por longitud descendente: matchea primero los nombres largos
@@ -176,10 +268,33 @@ def main() -> None:
                     continue
         if matches:
             for nm, eid, r in matches:
-                print(f"  [{level:<8}] '{nm}' (rating {r}, {id_to_nombre.get(eid,'?')}) -> penalty {penalty}%")
-                affected_by_team[eid].append((nm, penalty))
+                # Check de override manual: si esta vetado (delta_pp=0), saltear.
+                override = overrides.get((eid, normalize(nm)))
+                if override is not None:
+                    od = float(override.get("delta_pp", 0))
+                    if od == 0:
+                        print(f"  [{level:<8}] '{nm}' VETADO por override manual")
+                        continue
+                    print(f"  [{level:<8}] '{nm}' override manual: -{od}pp ({override.get('razon','')})")
+                    affected_by_team[eid].append((nm, od))
+                else:
+                    print(f"  [{level:<8}] '{nm}' (rating {r}, {id_to_nombre.get(eid,'?')}) -> penalty {penalty}%")
+                    affected_by_team[eid].append((nm, penalty))
         else:
             print(f"  [{level:<8}] sin match: {a.get('texto','')[:90]}")
+
+    # Agregar overrides manuales que NO esten ya cubiertos por alertas
+    # (ej: Facu quiere forzar manualmente una baja que Claude no detecto).
+    for (eid, jug_norm), override in overrides.items():
+        od = float(override.get("delta_pp", 0))
+        if od <= 0:
+            continue
+        # Si ya esta en affected, no duplicar
+        nombre_real = override.get("jugador", jug_norm)
+        already = any(normalize(n) == jug_norm for n, _ in affected_by_team.get(eid, []))
+        if not already:
+            print(f"  [override] '{nombre_real}' ({id_to_nombre.get(eid,'?')}) -> -{od}pp (manual)")
+            affected_by_team[eid].append((nombre_real, od))
 
     # Construir ajustes por partido_id
     ajustes: dict[str, dict] = {}

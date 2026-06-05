@@ -1,0 +1,26 @@
+[
+  {
+    "equipo_id": 115,
+    "jugador": "Rodrygo",
+    "delta_pp": 3.0,
+    "razon": "Rotura de ligamentos, fuera del Mundial (confirmado manual 5-jun-2026)"
+  },
+  {
+    "equipo_id": 115,
+    "jugador": "Eder Militao",
+    "delta_pp": 3.0,
+    "razon": "Lesión grave, descartado del Mundial (confirmado manual 5-jun-2026)"
+  },
+  {
+    "equipo_id": 115,
+    "jugador": "Estevao",
+    "delta_pp": 3.0,
+    "razon": "Lesión grave, descartado del Mundial (confirmado manual 5-jun-2026)"
+  },
+  {
+    "equipo_id": 133,
+    "jugador": "Christoph Baumgartner",
+    "delta_pp": 3.0,
+    "razon": "Descartado del Mundial tras lesión en amistoso (confirmado manual 5-jun-2026)"
+  }
+]
