@@ -203,20 +203,44 @@ Hoy es {hoy}. El Mundial 2026 arranca el 11 de junio en México/USA/Canadá.
 Partidos próximos del Mundial:
 {partidos_str}
 
-Usá web search para buscar info REAL, VERIFICABLE y MUY RECIENTE (últimos 7 días).
+Usá web search para buscar info REAL, VERIFICABLE y reciente (últimos 14 días).
 
-CRITERIOS ESTRICTOS:
-- Cada alerta debe basarse en una noticia publicada EN LOS ÚLTIMOS 7 DÍAS.
-- Si la noticia es anterior, NO la incluyas (puede estar desactualizada).
-- Para lesiones: solo incluí si la noticia dice EXPLÍCITAMENTE que el jugador
-  "se pierde el Mundial", "fuera del Mundial", "descartado", "rotura de
-  ligamentos/cruzados", "operado", "baja confirmada".
-  NO incluyas frases ambiguas como "en duda", "trabaja al margen", "llega justo",
-  "escaso ritmo", "molestias" — eso NO es baja.
-- NUNCA incluyas estos jugadores como baja (vetados manualmente porque juegan
-  el Mundial confirmado): {vetados_str}.
-- 'alertas' es SOLO para lesiones/suspensiones confirmadas. NO comentarios
-  históricos como "Alemania peor racha" — eso va en 'tendencias' o se descarta.
+CATEGORÍAS DE ALERTAS QUE BUSCAMOS:
+
+1. **LESIONES GRAVES** (nivel: "critical"):
+   El jugador se pierde TODO el Mundial. La noticia debe decirlo
+   EXPLÍCITAMENTE con frases como:
+   - "se pierde el Mundial"
+   - "fuera del Mundial" / "queda fuera"
+   - "descartado del Mundial"
+   - "rotura de ligamentos/cruzados"
+   - "operado", "intervenido quirúrgicamente"
+   - "baja confirmada", "lesión grave"
+
+2. **LESIONES DE PARTIDO** (nivel: "warning"):
+   El jugador está descartado para PARTIDOS PUNTUALES, no todo el Mundial:
+   - "será baja en el debut", "no jugará vs X"
+   - "no estará en la convocatoria de Y"
+   - "queda al margen del partido inicial"
+   - "fuera de la lista de convocados para el debut"
+
+3. **SUSPENSIONES** (nivel: "warning"):
+   - Suspendido por tarjetas amarillas acumuladas
+   - Suspendido por roja directa
+   - Sanción FIFA por conducta
+
+4. **CONVOCATORIAS DE ÚLTIMO MOMENTO** (nivel: "warning"):
+   - Cambio en la lista oficial: jugador X reemplaza a Y por lesión
+
+LO QUE NO DEBE IR EN ALERTAS:
+- Frases tipo "en duda", "llega justo", "escaso ritmo", "trabaja al margen",
+  "molestias" sin confirmación de baja → ignorar (puede ser ruido).
+- Comentarios históricos ("Alemania peor racha", "Brasil sin ganar desde X")
+  → eso va en TENDENCIAS, no en alertas.
+- Especulaciones, rumores sin fuente, noticias de hace +14 días.
+
+VETADOS (NUNCA incluir como baja, ya confirmado que juegan):
+{vetados_str}
 
 Devolvé ÚNICAMENTE un JSON válido (sin markdown, sin backticks) con esta estructura:
 {{
@@ -225,8 +249,16 @@ Devolvé ÚNICAMENTE un JSON válido (sin markdown, sin backticks) con esta estr
       "tipo": "lesion",
       "equipo": "Brasil",
       "flag": "🇧🇷",
-      "texto": "Jugador X queda fuera del Mundial por rotura de Y. (Fuente: Nombre del medio, DD-MMM)",
+      "texto": "Jugador X queda fuera del Mundial por rotura de Y. (Fuente: medio, DD-MMM)",
       "nivel": "critical",
+      "fuente_url": "https://..."
+    }},
+    {{
+      "tipo": "suspension",
+      "equipo": "Argentina",
+      "flag": "🇦🇷",
+      "texto": "Jugador Z suspendido por amarillas acumuladas, no jugará el debut vs A.",
+      "nivel": "warning",
       "fuente_url": "https://..."
     }}
   ],
@@ -244,10 +276,11 @@ Devolvé ÚNICAMENTE un JSON válido (sin markdown, sin backticks) con esta estr
 }}
 
 Reglas adicionales:
-- Máximo 4 alertas y 4 tendencias.
-- Si no encontrás ninguna lesión que cumpla los criterios estrictos, devolvé "alertas": []. Mejor vacío que falso.
+- Hasta 6 alertas y 6 tendencias.
+- Mejor incluir una lesión de partido moderada (warning) que dejar todo vacío,
+  mientras cumpla las frases canónicas listadas arriba.
+- Si no encontrás NADA que cumpla criterios, devolvé "alertas": [].
 - Texto en español rioplatense, tono analítico, sin exageraciones.
-- nivel: "critical" = fuera del Mundial confirmado. "warning" = baja para un partido específico (suspensión, p.ej.). NO uses "info".
 - El JSON debe parsearse directo con json.loads()."""
 
     tools = [{"type": "web_search_20250305", "name": "web_search"}]

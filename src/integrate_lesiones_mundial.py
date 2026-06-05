@@ -66,6 +66,7 @@ MAX_PENALTY_PER_TEAM = 6.0
 # considerar que el jugador esta REALMENTE descartado.
 # Si solo hay menciones ambiguas ('en duda', 'llega justo'), no penalizamos.
 CONFIRMED_PHRASES = (
+    # Lesiones graves: descarte total del Mundial
     "se pierde el mundial",
     "fuera del mundial",
     "queda fuera",
@@ -92,6 +93,29 @@ CONFIRMED_PHRASES = (
     "fin de temporada",
     "se perdera el torneo",
     "no podra disputar el mundial",
+    # Lesiones/suspensiones de PARTIDO puntual (warning)
+    "no jugara el debut",
+    "no jugara vs",
+    "no jugara contra",
+    "no jugara el primer",
+    "sera baja en el debut",
+    "sera baja en el primer",
+    "queda al margen del partido",
+    "queda al margen del debut",
+    "no estara en la convocatoria",
+    "fuera de la convocatoria",
+    "fuera de la lista de convocados",
+    "se pierde el debut",
+    "se pierde el primer partido",
+    "se pierde el partido inaugural",
+    # Suspensiones
+    "suspendido por amarillas",
+    "suspendido por acumulacion de amarillas",
+    "suspendido por la fifa",
+    "suspendido por roja",
+    "suspendido por expulsion",
+    "cumplira un partido de sancion",
+    "cumplira dos partidos de sancion",
 )
 
 # Frases que indican incertidumbre pero NO descarte. No penalizamos por estas
