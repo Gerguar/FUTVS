@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-05T11:54:26+00:00",
-  "dato_curioso": "El Mundial 2026 será el primero con 48 equipos y 104 partidos disputados en tres países simultáneamente. Curazao, con apenas 156.000 habitantes, se convierte en la nación más pequeña de la historia en clasificar: toda su población cabría casi dos veces dentro del Estadio Azteca.",
+  "generated_at_utc": "2026-06-05T19:14:30+00:00",
+  "dato_curioso": "El modelo FutVS procesa más de 12.500 partidos históricos para generar cada pronóstico.",
   "forma_reciente": [
     {
       "slug": "de",
@@ -34,21 +34,6 @@
       "draws": 0
     },
     {
-      "slug": "fr",
-      "nombre": "Francia",
-      "pais": "Internacional",
-      "escudo": "https://flagcdn.com/w160/fr.png",
-      "forma": [
-        "W",
-        "W",
-        "W",
-        "D",
-        "W"
-      ],
-      "wins": 4,
-      "draws": 1
-    },
-    {
       "slug": "tr",
       "nombre": "Turquía",
       "pais": "Internacional",
@@ -79,21 +64,6 @@
       "draws": 2
     },
     {
-      "slug": "es",
-      "nombre": "España",
-      "pais": "Internacional",
-      "escudo": "https://flagcdn.com/w160/es.png",
-      "forma": [
-        "D",
-        "W",
-        "D",
-        "W",
-        "W"
-      ],
-      "wins": 3,
-      "draws": 2
-    },
-    {
       "slug": "mx",
       "nombre": "México",
       "pais": "Internacional",
@@ -101,9 +71,9 @@
       "forma": [
         "W",
         "W",
+        "W",
         "D",
-        "D",
-        "W"
+        "D"
       ],
       "wins": 3,
       "draws": 2
@@ -122,52 +92,49 @@
       ],
       "wins": 3,
       "draws": 1
+    },
+    {
+      "slug": "at",
+      "nombre": "Austria",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/at.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "D",
+        "L"
+      ],
+      "wins": 3,
+      "draws": 1
+    },
+    {
+      "slug": "ar",
+      "nombre": "Argentina",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/ar.png",
+      "forma": [
+        "W",
+        "L",
+        "W",
+        "D",
+        "W"
+      ],
+      "wins": 3,
+      "draws": 1
     }
   ],
   "oportunidades": [],
-  "tendencias": [
-    {
-      "tipo": "formato",
-      "equipo": "Mundial 2026",
-      "flag": "🏆",
-      "texto": "Por primera vez en la historia, 48 selecciones disputarán 104 partidos en un Mundial (62.5% más que las ediciones anteriores con 64 partidos).",
-      "valor": 63,
-      "n": 104
-    },
-    {
-      "tipo": "récord",
-      "equipo": "Estadio Azteca",
-      "flag": "🇲🇽",
-      "texto": "El Estadio Azteca será el primer estadio en la historia en albergar la inauguración de 3 Mundiales distintos (1970, 1986 y 2026).",
-      "valor": 100,
-      "n": 3
-    },
-    {
-      "tipo": "récord",
-      "equipo": "Múltiples",
-      "flag": "👴",
-      "texto": "Cristiano Ronaldo, Messi y Ochoa disputarán su sexto Mundial consecutivo, un récord absoluto en la historia del torneo.",
-      "valor": 100,
-      "n": 6
-    },
-    {
-      "tipo": "debutante",
-      "equipo": "Curazao",
-      "flag": "🇨🇼",
-      "texto": "Curazao (156.000 habitantes, 444 km²) se convierte en la nación menos poblada en clasificar a un Mundial en toda la historia.",
-      "valor": 100,
-      "n": 1
-    }
-  ],
+  "tendencias": [],
   "alertas": [],
   "xg_performance": [],
   "meta": {
     "n_partidos_analizados": 0,
     "n_equipos_con_forma": 143,
-    "n_tendencias": 4,
+    "n_tendencias": 0,
     "n_alertas": 0,
     "n_oportunidades": 0,
     "claude_used": true,
-    "claude_web_search": true
+    "claude_web_search": false
   }
 }
