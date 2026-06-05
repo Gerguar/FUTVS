@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-05T19:25:19+00:00",
+  "generated_at_utc": "2026-06-05T22:47:44+00:00",
   "dato_curioso": "El modelo FutVS procesa más de 12.500 partidos históricos para generar cada pronóstico.",
   "forma_reciente": [
     {
@@ -79,21 +79,6 @@
       "draws": 2
     },
     {
-      "slug": "rm",
-      "nombre": "Real Madrid",
-      "pais": "España",
-      "escudo": "https://crests.football-data.org/86.svg",
-      "forma": [
-        "W",
-        "L",
-        "W",
-        "D",
-        "W"
-      ],
-      "wins": 3,
-      "draws": 1
-    },
-    {
       "slug": "at",
       "nombre": "Austria",
       "pais": "Internacional",
@@ -119,6 +104,21 @@
         "W",
         "D",
         "W"
+      ],
+      "wins": 3,
+      "draws": 1
+    },
+    {
+      "slug": "fr",
+      "nombre": "Francia",
+      "pais": "Internacional",
+      "escudo": "https://flagcdn.com/w160/fr.png",
+      "forma": [
+        "L",
+        "W",
+        "W",
+        "W",
+        "D"
       ],
       "wins": 3,
       "draws": 1
