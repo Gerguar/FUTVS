@@ -2154,9 +2154,20 @@ async function buildEnrichedFactors(m, pron) {
     }
     golesHasData = true
   } else {
-    const dp = (pron.prob_local || 0) - (pron.prob_visitante || 0)
-    golesDesc = `Modelo proyecta ${dp > 5 ? m.home.name : dp < -5 ? m.away.name : 'paridad'} con más goles`
-    golesH = c5(2.5 + dp / 20); golesA = c5(2.5 - dp / 20)
+    // Fallback proporcional: si no hay xG en notas, uso prob_local/prob_visitante
+    // como peso de "fuerza ofensiva relativa". No es lo mismo que xG pero evita
+    // el efecto '5 vs 0' del calculo anterior.
+    const probH = pron.prob_local || 0, probA = pron.prob_visitante || 0
+    const tot = probH + probA
+    golesDesc = `Modelo proyecta ${probH - probA > 5 ? m.home.name : probA - probH > 5 ? m.away.name : 'paridad'} con más goles`
+    if (tot > 0) {
+      const baseDots = 5
+      golesH = Math.round((probH / tot) * baseDots)
+      golesA = baseDots - golesH
+      // Min 1 dot al que tenga >=10% prob para no quedar en 0 absoluto
+      if (probA >= 10 && golesA === 0) { golesA = 1; if (golesH > 1) golesH -= 1 }
+      if (probH >= 10 && golesH === 0) { golesH = 1; if (golesA > 1) golesA -= 1 }
+    }
   }
 
   // Avantaje calculada desde diff de dots (no de "homeVal" como antes).

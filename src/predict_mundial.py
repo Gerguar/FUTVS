@@ -191,15 +191,20 @@ def main() -> None:
         is_neutral = host_local is None
 
         # DC con sede real cuando aplica
+        lam_h = lam_a = None  # xG esperado (lambdas del DC); None si no hay DC
         if h_id in dc.attack and a_id in dc.attack:
             if not is_neutral and host_local == a_id:
                 # El visitante en la DB es el anfitrion: invertimos para que DC entienda
                 # quien es "home". Despues invertimos las probabilidades.
                 dc_probs = dc.probs_1x2(a_id, h_id, is_neutral=False)
                 p_h_dc, p_d_dc, p_a_dc = dc_probs["A"], dc_probs["D"], dc_probs["H"]
+                # Lambdas tambien invertidas
+                _la, _lh = dc.lambdas(a_id, h_id, is_neutral=False)
+                lam_h, lam_a = _lh, _la
             else:
                 dc_probs = dc.probs_1x2(h_id, a_id, is_neutral=is_neutral)
                 p_h_dc, p_d_dc, p_a_dc = dc_probs["H"], dc_probs["D"], dc_probs["A"]
+                lam_h, lam_a = dc.lambdas(h_id, a_id, is_neutral=is_neutral)
         else:
             skipped.append((h_name, a_name, "no_dc"))
             p_h_dc = p_d_dc = p_a_dc = 1/3
@@ -290,6 +295,9 @@ def main() -> None:
             f"Elo: {p_h_elo:.0%}/{p_d_elo:.0%}/{p_a_elo:.0%} (Δ{elo_diff:+.0f})",
             f"Plantilla: {p_h_pl:.0%}/{p_d_pl:.0%}/{p_a_pl:.0%} (XIΔ{xi_diff:+.1f})",
         ]
+        # xG esperado (lambdas del Dixon-Coles) si esta disponible
+        if lam_h is not None and lam_a is not None:
+            notas_parts.append(f"xG esperado: {lam_h:.2f}-{lam_a:.2f}")
         if mk:
             notas_parts.append(
                 f"Mercado: {mk['p_market_home']:.0%}/{mk['p_market_draw']:.0%}/{mk['p_market_away']:.0%}"
