@@ -116,8 +116,14 @@ def load_forma_supabase() -> dict[str, list[str]]:
     return {str(r.get("equipo_id", "")): r.get("forma", []) or [] for r in rows}
 
 def load_equipos_supabase() -> dict[str, dict]:
-    rows = sb_get("equipos?select=id,nombre,abreviacion,pais,escudo_url")
+    rows = sb_get("equipos?select=id,nombre,abreviacion,pais,escudo_url,liga_id")
     return {str(r["id"]): r for r in rows}
+
+
+# Filtro de ligas para la seccion "Forma reciente". Durante el Mundial 2026
+# nos quedamos solo con las selecciones (liga_id=7). Cuando termine el Mundial,
+# cambiar a [2, 3, 4, 5, 6] (5 grandes ligas de clubes).
+FORMA_LIGAS = [7]
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -497,6 +503,9 @@ def build_forma_section(predictions, forma_sb, equipos_sb) -> list[dict]:
     if forma_sb and equipos_sb:
         rows = []
         for eid, eq in equipos_sb.items():
+            # Filtro por liga: durante el Mundial solo selecciones (liga 7).
+            if eq.get("liga_id") not in FORMA_LIGAS:
+                continue
             forma_raw = forma_sb.get(eid, [])
             if not forma_raw:
                 continue
