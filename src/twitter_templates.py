@@ -91,7 +91,12 @@ def classify_result(prob_local: float, prob_empate: float, prob_visitante: float
 # (vs $0.015 sin URL). Por eso *no* incluimos links en los tweets — el
 # trafico al sitio depende del link en la bio de @FutVersus_ y de hashtags
 # como #FutVersus / #Mundial2026 que la gente pueda googlear.
+#
+# CTA = call to action. Texto que invita a visitar el sitio SIN incluir URL.
+# Ojo: poner "futversus.com" o cualquier patron de URL hace que X lo cobre
+# como tweet con link ($0.20). Usar solo texto plano y emoji.
 
+CTA = "🔎 Pronóstico completo y datos en mi perfil 👇"
 HASHTAGS = "#FutVersus #Mundial2026"
 
 
@@ -140,6 +145,7 @@ def tweet_prematch(home_name: str, away_name: str,
         f"🟡 Empate          {_round1(prob_empate)}%\n"
         f"🔴 {away_name:<14} {_round1(prob_visitante)}%\n"
         f"\n"
+        f"{CTA}\n"
         f"{HASHTAGS}"
     )
 
@@ -183,6 +189,7 @@ def tweet_postmortem(home_name: str, away_name: str,
         f"\n"
         f"Habíamos dado top-1: {top_str}\n"
         f"\n"
+        f"📊 Análisis detallado del partido en mi perfil 👇\n"
         f"{HASHTAGS}"
     )
 
@@ -210,6 +217,7 @@ def tweet_lesion(jugador: str, equipo_name: str, severidad: str,
         f"\n"
         f"Impacto en el modelo: -{abs(delta_pp):.1f}pp para {equipo_name}.\n"
         f"\n"
+        f"🔍 Análisis completo del impacto en mi perfil 👇\n"
         f"{HASHTAGS}"
     )
 
