@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-05T04:34:29+00:00",
-  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos totales. Por primera vez, 289 jugadores defenderán a una selección distinta al país donde nacieron, marcando un récord histórico de naturalizaciones.",
+  "generated_at_utc": "2026-06-05T11:54:26+00:00",
+  "dato_curioso": "El Mundial 2026 será el primero con 48 equipos y 104 partidos disputados en tres países simultáneamente. Curazao, con apenas 156.000 habitantes, se convierte en la nación más pequeña de la historia en clasificar: toda su población cabría casi dos veces dentro del Estadio Azteca.",
   "forma_reciente": [
     {
       "slug": "de",
@@ -127,38 +127,45 @@
   "oportunidades": [],
   "tendencias": [
     {
-      "tipo": "under",
-      "equipo": "Chile",
-      "flag": "🇨🇱",
-      "texto": "Chile registra Menos de 3.5 goles en todos sus últimos 10 partidos internacionales.",
-      "valor": 100,
-      "n": 10
+      "tipo": "formato",
+      "equipo": "Mundial 2026",
+      "flag": "🏆",
+      "texto": "Por primera vez en la historia, 48 selecciones disputarán 104 partidos en un Mundial (62.5% más que las ediciones anteriores con 64 partidos).",
+      "valor": 63,
+      "n": 104
     },
     {
-      "tipo": "over",
-      "equipo": "Marruecos",
-      "flag": "🇲🇦",
-      "texto": "Marruecos goleó 5-0 a Burundi en su último amistoso de preparación (01-Jun).",
-      "valor": 83,
+      "tipo": "récord",
+      "equipo": "Estadio Azteca",
+      "flag": "🇲🇽",
+      "texto": "El Estadio Azteca será el primer estadio en la historia en albergar la inauguración de 3 Mundiales distintos (1970, 1986 y 2026).",
+      "valor": 100,
+      "n": 3
+    },
+    {
+      "tipo": "récord",
+      "equipo": "Múltiples",
+      "flag": "👴",
+      "texto": "Cristiano Ronaldo, Messi y Ochoa disputarán su sexto Mundial consecutivo, un récord absoluto en la historia del torneo.",
+      "valor": 100,
+      "n": 6
+    },
+    {
+      "tipo": "debutante",
+      "equipo": "Curazao",
+      "flag": "🇨🇼",
+      "texto": "Curazao (156.000 habitantes, 444 km²) se convierte en la nación menos poblada en clasificar a un Mundial en toda la historia.",
+      "valor": 100,
       "n": 1
     }
   ],
-  "alertas": [
-    {
-      "tipo": "lesion",
-      "equipo": "Escocia",
-      "flag": "🏴󐁧󐁢󐁳󐁣󐁴󐁿",
-      "texto": "Billy Gilmour queda fuera del Mundial por lesión de rodilla sufrida en amistoso vs. Curazao. (Fuente: Infobae, 31-May)",
-      "nivel": "critical",
-      "fuente_url": "https://www.infobae.com/deportes/2026/05/31/la-primera-baja-oficial-del-mundial-es-una-de-las-maximas-figuras-de-su-seleccion-y-se-rompio-la-rodilla-en-un-amistoso/"
-    }
-  ],
+  "alertas": [],
   "xg_performance": [],
   "meta": {
     "n_partidos_analizados": 0,
     "n_equipos_con_forma": 143,
-    "n_tendencias": 2,
-    "n_alertas": 1,
+    "n_tendencias": 4,
+    "n_alertas": 0,
     "n_oportunidades": 0,
     "claude_used": true,
     "claude_web_search": true
