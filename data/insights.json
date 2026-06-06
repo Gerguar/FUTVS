@@ -1,7 +1,221 @@
 {
-  "generated_at_utc": "2026-06-06T21:41:36.347392+00:00",
+  "generated_at_utc": "2026-06-06T21:50:17.440412+00:00",
   "dato_curioso": "En la Champions League, los equipos de local ganan solo el 38% de los partidos — la ventaja de localía es menor que en ligas domésticas.",
-  "forma_reciente": [],
+  "forma_reciente": [
+    {
+      "slug": "méxico",
+      "nombre": "México",
+      "escudo": "https://flagcdn.com/w160/mx.png",
+      "forma": [
+        "W",
+        "W",
+        "W"
+      ],
+      "gf": 8,
+      "gc": 1
+    },
+    {
+      "slug": "marruecos",
+      "nombre": "Marruecos",
+      "escudo": "https://flagcdn.com/w160/ma.png",
+      "forma": [
+        "W",
+        "W"
+      ],
+      "gf": 9,
+      "gc": 0
+    },
+    {
+      "slug": "irlanda",
+      "nombre": "Irlanda",
+      "escudo": "https://flagcdn.com/w160/ie.png",
+      "forma": [
+        "D",
+        "W",
+        "W"
+      ],
+      "gf": 7,
+      "gc": 1
+    },
+    {
+      "slug": "corea_del_sur",
+      "nombre": "Corea del Sur",
+      "escudo": "https://flagcdn.com/w160/kr.png",
+      "forma": [
+        "W",
+        "W"
+      ],
+      "gf": 6,
+      "gc": 0
+    },
+    {
+      "slug": "república_checa",
+      "nombre": "República Checa",
+      "escudo": "https://flagcdn.com/w160/cz.png",
+      "forma": [
+        "W",
+        "W"
+      ],
+      "gf": 7,
+      "gc": 2
+    },
+    {
+      "slug": "nigeria",
+      "nombre": "Nigeria",
+      "escudo": "https://flagcdn.com/w160/ng.png",
+      "forma": [
+        "D",
+        "W",
+        "W"
+      ],
+      "gf": 7,
+      "gc": 2
+    },
+    {
+      "slug": "irán",
+      "nombre": "Irán",
+      "escudo": "https://flagcdn.com/w160/ir.png",
+      "forma": [
+        "W",
+        "W"
+      ],
+      "gf": 5,
+      "gc": 1
+    },
+    {
+      "slug": "arsenal",
+      "nombre": "Arsenal",
+      "escudo": "https://crests.football-data.org/57.svg",
+      "forma": [
+        "L",
+        "W",
+        "W"
+      ],
+      "gf": 7,
+      "gc": 6
+    },
+    {
+      "slug": "paraguay",
+      "nombre": "Paraguay",
+      "escudo": "https://flagcdn.com/w160/py.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 4,
+      "gc": 0
+    },
+    {
+      "slug": "turquía",
+      "nombre": "Turquía",
+      "escudo": "https://flagcdn.com/w160/tr.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 4,
+      "gc": 0
+    },
+    {
+      "slug": "brasil",
+      "nombre": "Brasil",
+      "escudo": "https://flagcdn.com/w160/br.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 6,
+      "gc": 2
+    },
+    {
+      "slug": "alemania",
+      "nombre": "Alemania",
+      "escudo": "https://flagcdn.com/w160/de.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 4,
+      "gc": 0
+    },
+    {
+      "slug": "villarreal",
+      "nombre": "Villarreal",
+      "escudo": "https://crests.football-data.org/94.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 5,
+      "gc": 1
+    },
+    {
+      "slug": "indonesia",
+      "nombre": "Indonesia",
+      "escudo": null,
+      "forma": [
+        "W"
+      ],
+      "gf": 3,
+      "gc": 0
+    },
+    {
+      "slug": "haití",
+      "nombre": "Haití",
+      "escudo": "https://flagcdn.com/w160/ht.png",
+      "forma": [
+        "L",
+        "W"
+      ],
+      "gf": 5,
+      "gc": 2
+    },
+    {
+      "slug": "cabo_verde",
+      "nombre": "Cabo Verde",
+      "escudo": "https://flagcdn.com/w160/cv.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 3,
+      "gc": 0
+    },
+    {
+      "slug": "suiza",
+      "nombre": "Suiza",
+      "escudo": "https://flagcdn.com/w160/ch.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 4,
+      "gc": 1
+    },
+    {
+      "slug": "escocia",
+      "nombre": "Escocia",
+      "escudo": "https://flagcdn.com/w160/gb-sct.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 4,
+      "gc": 1
+    },
+    {
+      "slug": "como_1907",
+      "nombre": "Como 1907",
+      "escudo": "https://crests.football-data.org/7397.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 4,
+      "gc": 1
+    },
+    {
+      "slug": "west_ham",
+      "nombre": "West Ham",
+      "escudo": "https://crests.football-data.org/563.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 3,
+      "gc": 0
+    }
+  ],
   "xg_performance": [],
   "alertas": [],
   "tendencias": [],
