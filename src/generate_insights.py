@@ -18,9 +18,10 @@ from collections import defaultdict
 # ── Paths ──────────────────────────────────────────────────────────────────
 ROOT         = Path(__file__).resolve().parents[1]
 DATA_DIR     = ROOT / "data"
+WEB_DATA_DIR = ROOT / "web" / "data"
 PREDS_PATH   = DATA_DIR / "predictions.json"
-OUT_INSIGHTS = DATA_DIR / "insights.json"
-OUT_SEMANA   = DATA_DIR / "insights_semana.json"
+OUT_INSIGHTS = WEB_DATA_DIR / "insights.json"
+OUT_SEMANA   = WEB_DATA_DIR / "insights_semana.json"
 
 # ── Credenciales ─────────────────────────────────────────────────────────────
 SB_URL        = os.environ.get("SUPABASE_URL", "").rstrip("/")

@@ -35,7 +35,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/insights.json data/insights_semana.json || true
+          git add web/data/insights.json web/data/insights_semana.json || true
           if ! git diff --cached --quiet; then
             git commit -m "chore: refresh insights $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             git push
