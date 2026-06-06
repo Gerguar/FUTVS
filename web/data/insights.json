@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-06T23:00:25.438836+00:00",
-  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos, el más largo de la historia FIFA",
+  "generated_at_utc": "2026-06-06T23:12:11.899313+00:00",
+  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40% más de fútbol que Qatar 2022",
   "forma_reciente": [
     {
       "slug": "méxico",
@@ -220,66 +220,66 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Harry Kane supera xG en Bayern con 8 goles en últimos 5 partidos, esperados solo 5.2"
-    },
-    {
-      "tipo": "bajo",
-      "flag": "📉",
-      "texto": "PSG genera 2.8 xG por partido pero solo anota 1.4 en últimas 4 jornadas de Ligue 1"
+      "texto": "Argentina supera xG en amistosos pre-Mundial con 8 goles vs 5.2 esperados en últimos 3 partidos"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Real Madrid convierte 18% más de lo esperado según xG en fase final de La Liga"
+      "texto": "España convierte al 140% de su xG en preparación, Morata en racha con 4 goles en 2 amistosos"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Manchester United con xG de 9.3 pero solo 5 goles reales en últimos 4 partidos Premier"
+      "texto": "Brasil genera 2.8 xG por partido pero solo anota 1.3, preocupa definición a días del Mundial"
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "Francia con 3.1 xG y solo 1 gol en último amistoso vs Alemania, falta efectividad sin Benzema"
     }
   ],
   "alertas": [
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Mbappé confirmado fuera 3 semanas por lesión muscular previo al Mundial 2026"
+      "texto": "Neymar confirmado fuera del Mundial 2026, lesión de rodilla no recuperada a tiempo"
     },
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Erling Haaland sancionado 2 partidos, se pierde derbi Manchester y duelo ante Arsenal"
+      "texto": "Bélgica pierde a De Bruyne por lesión muscular, duda para debut vs Canadá el 12 de junio"
     },
     {
       "nivel": "info",
       "flag": "🔍",
-      "texto": "De Bruyne vuelve a entrenar con el grupo después de 6 semanas de baja"
+      "texto": "Uruguay convoca a Luis Suárez a sus 39 años, último Mundial del Pistolero"
     },
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Ancelotti con posible salida del Real Madrid tras eliminación en Champions League"
+      "texto": "Inglaterra sin James Maddison por sanción FIFA, afecta mediocampo ante Serbia"
     }
   ],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Inter Miami promedia 3.8 goles totales por partido en últimos 6 encuentros MLS"
+      "texto": "Grupo E favorito para Over 2.5: España, Alemania y Japón promedian 3.2 goles por partido"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Arsenal lleva 7 partidos invicto con 6 victorias consecutivas en Premier League"
+      "texto": "México sólido en casa, 5 partidos sin perder en estadios sede, +7 de diferencia de gol"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Bayern Munich con Over 2.5 en 9 de últimos 10 partidos de Bundesliga"
+      "texto": "Portugal anota en primeros 15 mins en últimos 6 amistosos, tendencia early goal confirmada"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Napoli sin recibir goles en 5 de últimos 6 partidos con nueva defensa de tres"
+      "texto": "Argentina lidera apuestas con 19% de probabilidad de campeonato según modelos estadísticos"
     }
   ],
   "oportunidades": []

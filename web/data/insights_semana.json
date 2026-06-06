@@ -2,27 +2,27 @@
   "week": "2026-W23",
   "noticias": [
     {
-      "titulo": "FIFA confirma sedes finales para Mundial 2026 en México, USA y Canadá",
-      "fuente": "FIFA",
+      "titulo": "Lista definitiva de Argentina: Messi confirmado, sorprende convocatoria de Garnacho",
+      "fuente": "TyC Sports",
+      "fecha": "2026-06-05",
+      "url": ""
+    },
+    {
+      "titulo": "Mbappé capitán de Francia: 'Este será mi Mundial', declara previo al debut",
+      "fuente": "L'Équipe",
       "fecha": "2026-06-04",
       "url": ""
     },
     {
-      "titulo": "Lewandowski anuncia retiro de selección polaca post Mundial 2026",
+      "titulo": "Estados Unidos vs Polonia 2-1: anfitriones convencen en último amistoso pre-Mundial",
       "fuente": "ESPN",
       "fecha": "2026-06-03",
       "url": ""
     },
     {
-      "titulo": "Manchester City ficha a Florian Wirtz por récord de 130 millones de euros",
-      "fuente": "Sky Sports",
+      "titulo": "Ceremonia inaugural confirmada para 11 junio en Ciudad de México, espectáculo de 2 horas",
+      "fuente": "FIFA.com",
       "fecha": "2026-06-02",
-      "url": ""
-    },
-    {
-      "titulo": "Vinicius Jr gana Balón de Oro 2026 con récord de votación histórica",
-      "fuente": "France Football",
-      "fecha": "2026-06-01",
       "url": ""
     }
   ]
