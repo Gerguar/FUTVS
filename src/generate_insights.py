@@ -74,11 +74,14 @@ def claude_with_search(prompt: str, max_tokens: int = 2000) -> str:
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             data = json.loads(r.read())
-        # Extraer solo bloques de texto de la respuesta final
         texts = [b["text"] for b in data.get("content", []) if b.get("type") == "text"]
         return "\n".join(texts).strip()
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        print(f"[insights] claude error HTTP {e.code}: {body[:600]}")
+        return ""
     except Exception as e:
-        print(f"[insights] claude_with_search error: {e}")
+        print(f"[insights] claude error: {e}")
         return ""
 
 # ── Generar secciones con Claude + web search ─────────────────────────────────
