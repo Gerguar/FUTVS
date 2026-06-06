@@ -175,7 +175,7 @@ FORMA_LIGAS = [7]
 def _claude_request(messages: list[dict], tools: list[dict] | None = None, max_tokens: int = 1500) -> dict:
     """Llamada base a la API de Claude."""
     body: dict = {
-        "model": "claude-sonnet-4-5",
+        "model": "claude-sonnet-4-7",
         "max_tokens": max_tokens,
         "messages": messages,
     }
