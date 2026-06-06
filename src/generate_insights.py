@@ -68,7 +68,6 @@ def claude_with_search(prompt: str, max_tokens: int = 2000) -> str:
         headers={
             "x-api-key": ANTHROPIC_KEY,
             "anthropic-version": "2023-06-01",
-            "anthropic-beta": "web-search-2025-03-05",
             "content-type": "application/json",
         },
         method="POST",
