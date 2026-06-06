@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-06T09:15:13+00:00",
+  "generated_at_utc": "2026-06-06T16:18:51+00:00",
   "dato_curioso": "El partido con mayor expectativa de goles es México vs Sudáfrica, con 0 goles esperados según el modelo Dixon-Coles.",
   "forma_reciente": [
     {
@@ -154,7 +154,7 @@
   "xg_performance": [],
   "meta": {
     "n_partidos_analizados": 20,
-    "n_equipos_con_forma": 238,
+    "n_equipos_con_forma": 239,
     "n_tendencias": 0,
     "n_alertas": 0,
     "n_oportunidades": 0,
