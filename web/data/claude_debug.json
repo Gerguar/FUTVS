@@ -3,10 +3,6 @@
   "type": "HTTPError",
   "msg": "HTTP Error 400: Bad Request",
   "http_code": 400,
-  "body_len": 0,
   "http_body": "",
-  "inner_err": "unhashable type: 'slice'",
-  "simple_call": "HTTP 400",
-  "simple_body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.\"},\"request_id\":\"req_011Cbm5NEN8By3WTXq8bbDWn\"}",
-  "timestamp_utc": "2026-06-06T00:40:58.727813+00:00"
+  "timestamp_utc": "2026-06-06T09:15:10.948361+00:00"
 }
