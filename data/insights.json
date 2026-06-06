@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-06T22:42:16.152767+00:00",
-  "dato_curioso": "Argentina ganó el Mundial 2022 en Qatar, su tercera estrella, venciendo a Francia en una final histórica.",
+  "generated_at_utc": "2026-06-06T22:48:16.043871+00:00",
+  "dato_curioso": "A 6 días del Mundial 2026, México será el primer país en ser sede en 3 Copas del Mundo (1970, 1986, 2026)",
   "forma_reciente": [
     {
       "slug": "méxico",
@@ -216,8 +216,71 @@
       "gc": 0
     }
   ],
-  "xg_performance": [],
-  "alertas": [],
-  "tendencias": [],
+  "xg_performance": [
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Real Madrid supera xG esperado en preparación para Mundial 2026 con efectividad del 87%"
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "PSG rinde 23% bajo su xG en amistosos de pretemporada, preocupación en ataque"
+    },
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Selección de Argentina convierte al 164% de su xG en gira preparatoria"
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "Manchester United bajo expectativas con -0.4 xG por partido en tour asiático"
+    }
+  ],
+  "alertas": [
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Mbappé lesionado en entrenamiento con Francia, duda para amistoso vs Brasil"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "FIFA confirma cambios en formato de grupos para Mundial 2026 en Norteamérica"
+    },
+    {
+      "nivel": "info",
+      "flag": "🔍",
+      "texto": "Bayern Munich anuncia a Vincent Kompany como nuevo entrenador oficial"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Vinicius Jr. sancionado 2 partidos, se pierde inicio de pretemporada del Real Madrid"
+    }
+  ],
+  "tendencias": [
+    {
+      "tipo": "over",
+      "flag": "🎯",
+      "texto": "Amistosos internacionales promedian 3.8 goles, 67% terminan over 2.5"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Selecciones CONCACAF invictas en últimos 12 partidos preparatorios para Mundial"
+    },
+    {
+      "tipo": "over",
+      "flag": "🎯",
+      "texto": "Inter Miami con Messi suma 24 goles en últimos 5 amistosos de preparación"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Brasil sin perder hace 8 partidos, 75% de clean sheets en eliminatorias"
+    }
+  ],
   "oportunidades": []
 }
