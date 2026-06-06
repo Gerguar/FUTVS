@@ -13,13 +13,11 @@ Options -Indexes
 </IfModule>
 
 <IfModule mod_headers.c>
-  # Pruebo SIN HSTS para ver si rompia el parser del .htaccess en LiteSpeed.
-  # El semicolon de HSTS (max-age=N; includeSubDomains) puede confundir
-  # ciertos parsers. Si X-Frame y Permissions aparecen sin HSTS, era esa.
+  # Test: reordenar X-Frame primero para descartar que LiteSpeed solo
+  # tome los 2 primeros headers del bloque.
+  Header set X-Frame-Options "SAMEORIGIN"
   Header set X-Content-Type-Options "nosniff"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
-  Header set X-Frame-Options "SAMEORIGIN"
-  Header set Permissions-Policy "camera=(), geolocation=(), microphone=()"
 
   <FilesMatch "^predictions\.json$">
     Header set Cache-Control "public, max-age=300"
