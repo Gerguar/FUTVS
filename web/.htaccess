@@ -13,11 +13,14 @@ Options -Indexes
 </IfModule>
 
 <IfModule mod_headers.c>
-  # Test: reordenar X-Frame primero para descartar que LiteSpeed solo
-  # tome los 2 primeros headers del bloque.
-  Header set X-Frame-Options "SAMEORIGIN"
   Header set X-Content-Type-Options "nosniff"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
+  # Estos 3 los bloquea Hostinger a nivel server-WAF (testeado: ni con
+  # 'always set', ni reordenando, ni quitando puntos y coma se aplican).
+  # Quedan declarados para cuando se habiliten via panel/Cloudflare.
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Permissions-Policy "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
 
   <FilesMatch "^predictions\.json$">
     Header set Cache-Control "public, max-age=300"
