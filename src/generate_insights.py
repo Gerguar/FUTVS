@@ -94,12 +94,54 @@ def sb_get(path: str) -> list:
 # ──────────────────────────────────────────────────────────────────────────────
 
 def load_predictions() -> list[dict]:
+    """Carga partidos pronosticados. Si predictions.json esta vacio (off-season
+    de clubes), levanta los proximos partidos del Mundial desde Supabase para
+    que las secciones de alertas/tendencias/oportunidades tengan contexto."""
     p = PATHS["predictions"]
-    if not p.exists():
+    matches = []
+    if p.exists():
+        with open(p) as f:
+            data = json.load(f)
+        matches = data.get("matches", [])
+    if matches:
+        return matches
+    # Fallback: traer proximos partidos del Mundial desde Supabase (liga 7)
+    try:
+        rows = sb_get(
+            "partidos?select=id,fecha,equipo_local_id,equipo_visitante_id,"
+            "equipo_local:equipo_local_id(id,nombre,abreviacion),"
+            "equipo_visitante:equipo_visitante_id(id,nombre,abreviacion),"
+            "pronosticos(prob_local,prob_empate,prob_visitante,notas)"
+            "&estado=eq.programado&liga_id=eq.7&order=fecha&limit=20"
+        )
+    except Exception as e:
+        print(f"[insights] WARN no pudo cargar partidos Mundial: {e}")
         return []
-    with open(p) as f:
-        data = json.load(f)
-    return data.get("matches", [])
+    out = []
+    for r in rows:
+        h = r.get("equipo_local", {}) or {}
+        a = r.get("equipo_visitante", {}) or {}
+        pr = r.get("pronosticos")
+        if isinstance(pr, list):
+            pr = pr[0] if pr else None
+        pr = pr or {}
+        out.append({
+            "match_id": f"mundial-{r['id']}",
+            "kickoff_ts_utc": r["fecha"],
+            "competition": {"code": "WC", "name": "Mundial 2026"},
+            "home": {"id": (h.get("abreviacion") or str(h.get("id",""))).lower(),
+                     "name": h.get("nombre","?")},
+            "away": {"id": (a.get("abreviacion") or str(a.get("id",""))).lower(),
+                     "name": a.get("nombre","?")},
+            "is_neutral": True,
+            "probabilities": {
+                "home": (pr.get("prob_local") or 0) / 100.0,
+                "draw": (pr.get("prob_empate") or 0) / 100.0,
+                "away": (pr.get("prob_visitante") or 0) / 100.0,
+            },
+        })
+    print(f"[insights] fallback Mundial: {len(out)} partidos cargados")
+    return out
 
 def load_matches_df() -> pd.DataFrame:
     p = PATHS["matches"]
