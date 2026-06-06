@@ -34,6 +34,9 @@ jobs:
           server-dir: ./nodejs/
           protocol: ftp
           port: 21
+          # Log detallado para diagnosticar cuando un archivo no se sincroniza
+          # (caso .htaccess que se cacheo). Quitar 'verbose' cuando este resuelto.
+          log-level: verbose
           # No borra archivos extra en el servidor, solo sube los nuestros.
           dangerous-clean-slate: false
           # Excluye basura que no debe ir al hosting.
