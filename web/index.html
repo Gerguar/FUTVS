@@ -2232,7 +2232,10 @@ function genMarket(rating, name, club) {
 }
 
 function transformJugador(j) {
-  const s = j.estadisticas_jugador?.[0] || {}
+  const stats_arr = j.estadisticas_jugador || []
+  // Priorizar la fila con temporada='carrera' (totales de Transfermarkt cargados).
+  // Si no existe, caer al primer elemento (compat con clubes / temporada actual).
+  const s = stats_arr.find(x => x.temporada === 'carrera') || stats_arr[0] || {}
 
   // Minutos: desde DB o generados
   let mby = (j.minutos_por_anio || []).sort((a,b)=>a.anio-b.anio).map(m=>({y:m.anio,m:m.minutos}))
@@ -2248,8 +2251,23 @@ function transformJugador(j) {
     market = genMarket(j.rating, j.nombre, j.equipos?.nombre || 'Club')
   }
 
+  // Edad calculada desde fecha_nac (formato YYYY-MM-DD)
+  let edad = null
+  if (j.fecha_nac) {
+    const fn = new Date(j.fecha_nac)
+    if (!isNaN(fn)) {
+      const now = new Date()
+      edad = now.getFullYear() - fn.getFullYear()
+      const m = now.getMonth() - fn.getMonth()
+      if (m < 0 || (m === 0 && now.getDate() < fn.getDate())) edad--
+    }
+  }
+
   return {
     name: j.nombre, pos: j.posicion, rating: j.rating,
+    nacionalidad: j.nacionalidad || null,
+    fechaNac: j.fecha_nac || null,
+    edad,
     minutesByYear: mby, market,
     // Atributos oficiales EA FC 26 (smallint 0-99 o null si no matcheo en CSV).
     eafc: {
@@ -3349,7 +3367,15 @@ function showPlayer(matchId,playerIdx,side){
         ? `<div class="pstat-title">💰 Evolución del valor de mercado</div>`
         : (hasMinutes ? `<div class="pstat-title">⏱️ Minutos por temporada</div>` : ''))
   document.getElementById('player-stats-grid').innerHTML=`
-    <div class="pstat-card"><div class="pstat-title">📊 Estadísticas de temporada</div>${[['Partidos jugados',p.stats.partidos],['Goles',p.stats.goles],['Asistencias',p.stats.asistencias],['Amarillas',p.stats.amarillas],['Rojas',p.stats.rojas]].map(([k,v])=>`<div class="pstat-row"><span class="pstat-k">${k}</span><span class="pstat-v" style="color:${col}">${v}</span></div>`).join('')}</div>
+    <div class="pstat-card"><div class="pstat-title">🌐 Carrera</div>${[
+      ['Nacionalidad', p.nacionalidad || '—'],
+      ['Edad', p.edad != null ? `${p.edad} años` : '—'],
+      ['Partidos jugados', p.stats.partidos],
+      ['Goles', p.stats.goles],
+      ['Asistencias', p.stats.asistencias],
+      ['Amarillas', p.stats.amarillas],
+      ['Rojas', p.stats.rojas],
+    ].map(([k,v])=>`<div class="pstat-row"><span class="pstat-k">${k}</span><span class="pstat-v" style="color:${col}">${v}</span></div>`).join('')}</div>
     <div class="pstat-card">${hasRadar ? `<div class="pstat-title">📡 Radar de habilidades</div><canvas id="player-radar" width="540" height="380" style="width:100%;border-radius:6px;display:block;background:#080c10"></canvas><div id="player-radar-bars" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center;margin-top:6px">atributos oficiales EA FC 26</div>` : `<div class="pstat-title">📡 Radar de habilidades</div><div style="text-align:center;color:var(--faint);padding:3rem 1rem;font-size:.85rem">Sin atributos EA FC cargados para este jugador.</div>`}</div>
     <div class="form-row-full" style="flex-direction:column;gap:.6rem">
       <div class="pstat-title" style="margin-bottom:0">🗺️ Zonas de influencia</div>
