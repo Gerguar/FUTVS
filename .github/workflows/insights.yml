@@ -1,13 +1,8 @@
 name: insights (cada 6h + manual)
 
-# Genera data/insights.json y data/insights_semana.json
-# a partir de predictions.json y Supabase.
-# Corre justo después del predict (que corre en :00 de cada 6h),
-# así los insights siempre reflejan las predicciones más frescas.
-
 on:
   schedule:
-    - cron: "30 */6 * * *"   # 30 min después del predict
+    - cron: "30 */6 * * *"
   workflow_dispatch: {}
 
 jobs:
@@ -33,6 +28,7 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python -m src.generate_insights
 
       - name: Commit insights
