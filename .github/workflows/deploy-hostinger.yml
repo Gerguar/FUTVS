@@ -34,9 +34,12 @@ jobs:
           server-dir: ./nodejs/
           protocol: ftp
           port: 21
-          # Log detallado para diagnosticar cuando un archivo no se sincroniza
-          # (caso .htaccess que se cacheo). Quitar 'verbose' cuando este resuelto.
           log-level: verbose
+          # Cambio el state-name para forzar resync. El default era
+          # .ftp-deploy-sync-state.json y se quedo con la version vieja del
+          # .htaccess (creia que estaba sincronizado cuando no). Con un nombre
+          # nuevo, la action re-evalua todos los archivos desde cero.
+          state-name: .ftp-deploy-sync-state-v2.json
           # No borra archivos extra en el servidor, solo sube los nuestros.
           dangerous-clean-slate: false
           # Excluye basura que no debe ir al hosting.
