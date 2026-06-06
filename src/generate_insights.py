@@ -439,11 +439,40 @@ Ejemplos válidos:
 
     except json.JSONDecodeError as e:
         print(f"[insights] Error parseando JSON de Claude: {e}")
-        print(f"[insights] Respuesta recibida: {text[:300] if 'text' in dir() else 'N/A'}")
+        print(f"[insights] Respuesta recibida: {text[:500] if 'text' in dir() else 'N/A'}")
+        _write_debug({"stage": "json_parse", "error": str(e),
+                      "text_snippet": text[:500] if 'text' in dir() else None})
         return [], [], ""
     except Exception as e:
+        # Capturar HTTPError con detalle (auth, rate limit, billing, etc.)
+        err_info: dict = {"stage": "claude_call", "type": type(e).__name__, "msg": str(e)}
+        try:
+            import urllib.error
+            if isinstance(e, urllib.error.HTTPError):
+                err_info["http_code"] = e.code
+                body = e.read().decode("utf-8", errors="replace")
+                err_info["http_body"] = body[:1000]
+                print(f"[insights] HTTP {e.code} de Anthropic: {body[:300]}")
+        except Exception as inner:
+            err_info["inner_err"] = str(inner)
         print(f"[insights] Error llamando a Claude: {e}")
+        _write_debug(err_info)
         return [], [], ""
+
+
+def _write_debug(info: dict) -> None:
+    """Persiste el ultimo error de Claude API a data/claude_debug.json para
+    diagnostico. El archivo se commitea por el workflow asi lo podemos leer.
+    No es para uso normal — solo cuando algo falla."""
+    try:
+        from datetime import datetime, timezone
+        info["timestamp_utc"] = datetime.now(timezone.utc).isoformat()
+        Path("web/data").mkdir(parents=True, exist_ok=True)
+        Path("web/data/claude_debug.json").write_text(
+            json.dumps(info, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+    except Exception:
+        pass
 
 
 # ──────────────────────────────────────────────────────────────────────────────
