@@ -1,34 +1,29 @@
 {
-  "updated": "2026-06-05T04:48:05Z",
-  "week": "29 may – 5 jun 2026",
+  "week": "2026-W23",
   "noticias": [
     {
-      "titulo": "PSG - Arsenal: horario y dónde ver la final de la Champions League por TV",
-      "resumen": "Ambos equipos se miden en una final inédita y con dos entrenadores españoles en los banquillos\r\nSalta la gran sorpresa en Roland Garros: Jannik Sinner cae…",
-      "fuente": "Eldiario.es",
-      "url": "https://www.eldiario.es/spin/deportes/psg-arsenal-horario-ver-final-champions-league-tv-pm_1_13259155.html",
-      "fecha": "2026-05-29"
+      "titulo": "FIFA confirma sedes finales para Mundial 2026 en México, USA y Canadá",
+      "fuente": "FIFA",
+      "fecha": "2026-06-04",
+      "url": ""
     },
     {
-      "titulo": "Del calendario azteca a Bob Marley: las camisetas del Mundial 2026 convierten el fútbol en un…",
-      "resumen": "Las selecciones han llenado sus equipaciones de referencias a mitologías, artistas, tradiciones nacionales y símbolos históricos en un torneo donde algunas…",
-      "fuente": "Eldiario.es",
-      "url": "https://www.eldiario.es/spin/calendario-azteca-bob-marley-camisetas-mundial-2026-convierten-futbol-escaparate-cultural-pm_1_13268381.html",
-      "fecha": "2026-06-03"
+      "titulo": "Lewandowski anuncia retiro de selección polaca post Mundial 2026",
+      "fuente": "ESPN",
+      "fecha": "2026-06-03",
+      "url": ""
     },
     {
-      "titulo": "'London's Home Of Trophies': Chelsea Mocks Arsenal After Champions League Loss",
-      "resumen": "Chelsea wasted no time in reminding Arsenal of the hierarchy in the capital following the Gunners' devastating Champions League final defeat on Saturday.",
-      "fuente": "Fox Sports",
-      "url": "https://www.foxsports.com/stories/soccer/londons-home-of-trophies-chelsea-brutally-mock-arsenals-champions-league-final-loss-as-blues-show-off-silverware-in-cheeky-social-media-post",
-      "fecha": "2026-05-31"
+      "titulo": "Manchester City ficha a Florian Wirtz por récord de 130 millones de euros",
+      "fuente": "Sky Sports",
+      "fecha": "2026-06-02",
+      "url": ""
     },
     {
-      "titulo": "Arsenal's Gabriel Breaks Silence On 'Painful' Champions League Final Penalty Miss",
-      "resumen": "Gabriel Magalhaes has opened up on the \"painful\" experience of missing the decisive penalty in Arsenal's Champions League final defeat to Paris Saint-Germain.",
-      "fuente": "Fox Sports",
-      "url": "https://www.foxsports.com/stories/soccer/gabriel-magalhaes-breaks-silence-after-champions-league-final-penalty-miss-with-arsenal-defender-delivering-painful-message",
-      "fecha": "2026-06-01"
+      "titulo": "Vinicius Jr gana Balón de Oro 2026 con récord de votación histórica",
+      "fuente": "France Football",
+      "fecha": "2026-06-01",
+      "url": ""
     }
   ]
 }

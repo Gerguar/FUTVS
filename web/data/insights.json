@@ -1,164 +1,286 @@
 {
-  "schema_version": "1.1",
-  "generated_at_utc": "2026-06-06T18:15:21+00:00",
-  "dato_curioso": "El partido con mayor expectativa de goles es México vs Sudáfrica, con 0 goles esperados según el modelo Dixon-Coles.",
+  "generated_at_utc": "2026-06-06T23:00:25.438836+00:00",
+  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos, el más largo de la historia FIFA",
   "forma_reciente": [
     {
-      "id": 112,
-      "slug": "ar",
-      "nombre": "Argentina",
-      "pais": "Internacional",
-      "escudo": "https://flagcdn.com/w160/ar.png",
+      "slug": "méxico",
+      "nombre": "México",
+      "escudo": "https://flagcdn.com/w160/mx.png",
       "forma": [
-        "W",
-        "W",
         "W",
         "W",
         "W"
       ],
-      "wins": 5,
-      "draws": 0,
-      "gf": 16,
+      "gf": 8,
       "gc": 1
     },
     {
-      "id": 121,
-      "slug": "de",
-      "nombre": "Alemania",
-      "pais": "Internacional",
-      "escudo": "https://flagcdn.com/w160/de.png",
-      "forma": [
-        "W",
-        "W",
-        "W",
-        "W",
-        "W"
-      ],
-      "wins": 5,
-      "draws": 0,
-      "gf": 18,
-      "gc": 4
-    },
-    {
-      "id": 123,
-      "slug": "jp",
-      "nombre": "Japón",
-      "pais": "Internacional",
-      "escudo": "https://flagcdn.com/w160/jp.png",
-      "forma": [
-        "W",
-        "W",
-        "W",
-        "W",
-        "W"
-      ],
-      "wins": 5,
-      "draws": 0,
-      "gf": 8,
-      "gc": 0
-    },
-    {
-      "id": 133,
-      "slug": "at",
-      "nombre": "Austria",
-      "pais": "Internacional",
-      "escudo": "https://flagcdn.com/w160/at.png",
-      "forma": [
-        "W",
-        "W",
-        "W",
-        "D",
-        "W"
-      ],
-      "wins": 4,
-      "draws": 1,
-      "gf": 10,
-      "gc": 2
-    },
-    {
-      "id": 134,
-      "slug": "ma",
+      "slug": "marruecos",
       "nombre": "Marruecos",
-      "pais": "Internacional",
       "escudo": "https://flagcdn.com/w160/ma.png",
       "forma": [
         "W",
-        "W",
-        "W",
-        "D",
         "W"
       ],
-      "wins": 4,
-      "draws": 1,
-      "gf": 15,
+      "gf": 9,
+      "gc": 0
+    },
+    {
+      "slug": "irlanda",
+      "nombre": "Irlanda",
+      "escudo": "https://flagcdn.com/w160/ie.png",
+      "forma": [
+        "D",
+        "W",
+        "W"
+      ],
+      "gf": 7,
+      "gc": 1
+    },
+    {
+      "slug": "corea_del_sur",
+      "nombre": "Corea del Sur",
+      "escudo": "https://flagcdn.com/w160/kr.png",
+      "forma": [
+        "W",
+        "W"
+      ],
+      "gf": 6,
+      "gc": 0
+    },
+    {
+      "slug": "república_checa",
+      "nombre": "República Checa",
+      "escudo": "https://flagcdn.com/w160/cz.png",
+      "forma": [
+        "W",
+        "W"
+      ],
+      "gf": 7,
       "gc": 2
     },
     {
-      "id": 124,
-      "slug": "tr",
+      "slug": "nigeria",
+      "nombre": "Nigeria",
+      "escudo": "https://flagcdn.com/w160/ng.png",
+      "forma": [
+        "D",
+        "W",
+        "W"
+      ],
+      "gf": 7,
+      "gc": 2
+    },
+    {
+      "slug": "irán",
+      "nombre": "Irán",
+      "escudo": "https://flagcdn.com/w160/ir.png",
+      "forma": [
+        "W",
+        "W"
+      ],
+      "gf": 5,
+      "gc": 1
+    },
+    {
+      "slug": "arsenal",
+      "nombre": "Arsenal",
+      "escudo": "https://crests.football-data.org/57.svg",
+      "forma": [
+        "L",
+        "W",
+        "W"
+      ],
+      "gf": 7,
+      "gc": 6
+    },
+    {
+      "slug": "paraguay",
+      "nombre": "Paraguay",
+      "escudo": "https://flagcdn.com/w160/py.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 4,
+      "gc": 0
+    },
+    {
+      "slug": "turquía",
       "nombre": "Turquía",
-      "pais": "Internacional",
       "escudo": "https://flagcdn.com/w160/tr.png",
       "forma": [
-        "W",
-        "W",
-        "W",
-        "D",
         "W"
       ],
-      "wins": 4,
-      "draws": 1,
-      "gf": 10,
+      "gf": 4,
+      "gc": 0
+    },
+    {
+      "slug": "brasil",
+      "nombre": "Brasil",
+      "escudo": "https://flagcdn.com/w160/br.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 6,
       "gc": 2
     },
     {
-      "id": 113,
-      "slug": "fr",
-      "nombre": "Francia",
-      "pais": "Internacional",
-      "escudo": "https://flagcdn.com/w160/fr.png",
+      "slug": "alemania",
+      "nombre": "Alemania",
+      "escudo": "https://flagcdn.com/w160/de.png",
       "forma": [
-        "L",
-        "W",
-        "W",
-        "W",
         "W"
       ],
-      "wins": 4,
-      "draws": 0,
-      "gf": 13,
-      "gc": 5
+      "gf": 4,
+      "gc": 0
     },
     {
-      "id": 162,
-      "slug": "ci",
-      "nombre": "Costa de Marfil",
-      "pais": "Internacional",
-      "escudo": "https://flagcdn.com/w160/ci.png",
+      "slug": "villarreal",
+      "nombre": "Villarreal",
+      "escudo": "https://crests.football-data.org/94.png",
       "forma": [
-        "W",
-        "W",
-        "W",
+        "W"
+      ],
+      "gf": 5,
+      "gc": 1
+    },
+    {
+      "slug": "indonesia",
+      "nombre": "Indonesia",
+      "escudo": null,
+      "forma": [
+        "W"
+      ],
+      "gf": 3,
+      "gc": 0
+    },
+    {
+      "slug": "haití",
+      "nombre": "Haití",
+      "escudo": "https://flagcdn.com/w160/ht.png",
+      "forma": [
         "L",
         "W"
       ],
-      "wins": 4,
-      "draws": 0,
-      "gf": 12,
-      "gc": 4
+      "gf": 5,
+      "gc": 2
+    },
+    {
+      "slug": "cabo_verde",
+      "nombre": "Cabo Verde",
+      "escudo": "https://flagcdn.com/w160/cv.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 3,
+      "gc": 0
+    },
+    {
+      "slug": "suiza",
+      "nombre": "Suiza",
+      "escudo": "https://flagcdn.com/w160/ch.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 4,
+      "gc": 1
+    },
+    {
+      "slug": "escocia",
+      "nombre": "Escocia",
+      "escudo": "https://flagcdn.com/w160/gb-sct.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 4,
+      "gc": 1
+    },
+    {
+      "slug": "como_1907",
+      "nombre": "Como 1907",
+      "escudo": "https://crests.football-data.org/7397.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 4,
+      "gc": 1
+    },
+    {
+      "slug": "west_ham",
+      "nombre": "West Ham",
+      "escudo": "https://crests.football-data.org/563.png",
+      "forma": [
+        "W"
+      ],
+      "gf": 3,
+      "gc": 0
     }
   ],
-  "oportunidades": [],
-  "tendencias": [],
-  "alertas": [],
-  "xg_performance": [],
-  "meta": {
-    "n_partidos_analizados": 20,
-    "n_equipos_con_forma": 239,
-    "n_tendencias": 0,
-    "n_alertas": 0,
-    "n_oportunidades": 0,
-    "claude_used": true,
-    "claude_web_search": false
-  }
+  "xg_performance": [
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Harry Kane supera xG en Bayern con 8 goles en últimos 5 partidos, esperados solo 5.2"
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "PSG genera 2.8 xG por partido pero solo anota 1.4 en últimas 4 jornadas de Ligue 1"
+    },
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Real Madrid convierte 18% más de lo esperado según xG en fase final de La Liga"
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "Manchester United con xG de 9.3 pero solo 5 goles reales en últimos 4 partidos Premier"
+    }
+  ],
+  "alertas": [
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Mbappé confirmado fuera 3 semanas por lesión muscular previo al Mundial 2026"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Erling Haaland sancionado 2 partidos, se pierde derbi Manchester y duelo ante Arsenal"
+    },
+    {
+      "nivel": "info",
+      "flag": "🔍",
+      "texto": "De Bruyne vuelve a entrenar con el grupo después de 6 semanas de baja"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Ancelotti con posible salida del Real Madrid tras eliminación en Champions League"
+    }
+  ],
+  "tendencias": [
+    {
+      "tipo": "over",
+      "flag": "🎯",
+      "texto": "Inter Miami promedia 3.8 goles totales por partido en últimos 6 encuentros MLS"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Arsenal lleva 7 partidos invicto con 6 victorias consecutivas en Premier League"
+    },
+    {
+      "tipo": "over",
+      "flag": "🎯",
+      "texto": "Bayern Munich con Over 2.5 en 9 de últimos 10 partidos de Bundesliga"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Napoli sin recibir goles en 5 de últimos 6 partidos con nueva defensa de tres"
+    }
+  ],
+  "oportunidades": []
 }
