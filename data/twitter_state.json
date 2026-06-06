@@ -8,12 +8,8 @@
     "115|Eder Militao",
     "115|Estevao",
     "115|Rodrygo",
+    "133|Christoph Baumgartner",
     "264|Billy Gilmour"
   ],
-  "lesion_pending": {
-    "133|Christoph Baumgartner": {
-      "first_seen_at": "2026-06-05T11:58:17.029551+00:00",
-      "delta_pp": 3.0
-    }
-  }
+  "lesion_pending": {}
 }
