@@ -2850,16 +2850,16 @@ function renderDetailBody(m) {
       // LAYOUT ESPECIAL: LOCALÍA (sin dots, solo texto destacado)
       if (f.layout === 'localia') {
         const teamHtml = f.locTeam
-          ? `<div class="factor-localia-team">${f.locTeam}</div>`
+          ? `<div class="factor-localia-team">${insEsc(f.locTeam)}</div>`
           : `<div class="factor-localia-team factor-localia-neutral">Campo neutral</div>`
         return `
         <div class="factor-card">
           <div class="factor-header">
-            <div class="factor-name">${f.icon} ${f.name}</div>
-            <span class="factor-adv ${advCls}">${(f.advLabel || '').toUpperCase()}</span>
+            <div class="factor-name">${f.icon} ${insEsc(f.name)}</div>
+            <span class="factor-adv ${advCls}">${insEsc((f.advLabel || '').toUpperCase())}</span>
           </div>
           ${teamHtml}
-          <div class="factor-desc">${f.desc || 'Cargando…'}</div>
+          <div class="factor-desc">${insEsc(f.desc) || 'Cargando…'}</div>
         </div>`
       }
       // LAYOUT POR DEFECTO: 2 filas de dots
@@ -2870,18 +2870,18 @@ function renderDetailBody(m) {
       return `
       <div class="factor-card">
         <div class="factor-header">
-          <div class="factor-name">${f.icon} ${f.name}</div>
-          <span class="factor-adv ${advCls}">${(f.advLabel || '').toUpperCase()}</span>
+          <div class="factor-name">${f.icon} ${insEsc(f.name)}</div>
+          <span class="factor-adv ${advCls}">${insEsc((f.advLabel || '').toUpperCase())}</span>
         </div>
         <div class="factor-dots-row">
-          <span class="factor-side-lbl" title="${m.home?.name || ''}">${homeLbl}</span>
+          <span class="factor-side-lbl" title="${insEsc(m.home?.name || '')}">${insEsc(homeLbl)}</span>
           <div class="factor-dots">${dotsHtml(hDots, 'h', f.noData)}</div>
         </div>
         <div class="factor-dots-row">
-          <span class="factor-side-lbl" title="${m.away?.name || ''}">${awayLbl}</span>
+          <span class="factor-side-lbl" title="${insEsc(m.away?.name || '')}">${insEsc(awayLbl)}</span>
           <div class="factor-dots">${dotsHtml(aDots, 'a', f.noData)}</div>
         </div>
-        <div class="factor-desc">${f.desc || 'Cargando…'}</div>
+        <div class="factor-desc">${insEsc(f.desc) || 'Cargando…'}</div>
       </div>`
     }).join('')
   }
@@ -4572,8 +4572,16 @@ async function loadWeeklyNews() {
     const noticias = data.noticias || []
     if (!noticias.length) throw new Error('Sin noticias')
 
+    // Sanitiza una URL: solo permite http/https. Cualquier otro protocolo
+    // (javascript:, data:, etc.) se reemplaza por '#' para no introducir XSS.
+    const safeUrl = (u) => {
+      if (typeof u !== 'string') return '#'
+      const trimmed = u.trim()
+      return /^https?:\/\//i.test(trimmed) ? trimmed : '#'
+    }
+
     const weekHtml = data.week
-      ? `<div class="news-week">Semana: ${data.week}</div>` : ''
+      ? `<div class="news-week">Semana: ${insEsc(data.week)}</div>` : ''
 
     const itemsHtml = noticias.map(n => {
       const fecha = n.fecha
@@ -4581,19 +4589,19 @@ async function loadWeeklyNews() {
         : ''
       return `<div class="news-item">
         <div class="news-item-title">
-          <a href="${n.url}" target="_blank" rel="noopener">${n.titulo}</a>
+          <a href="${insEsc(safeUrl(n.url))}" target="_blank" rel="noopener">${insEsc(n.titulo || '')}</a>
         </div>
 
         <div class="news-item-meta">
-          <span>${n.fuente || ''}</span>
-          ${fecha ? `<span>${fecha}</span>` : ''}
+          <span>${insEsc(n.fuente || '')}</span>
+          ${fecha ? `<span>${insEsc(fecha)}</span>` : ''}
         </div>
       </div>`
     }).join('')
 
     container.innerHTML = weekHtml + itemsHtml
   } catch(e) {
-    container.innerHTML = `<div class="news-loading">No hay noticias disponibles esta semana.<br><span style="font-size:.6rem;opacity:.6">${e.message}</span></div>`
+    container.innerHTML = `<div class="news-loading">No hay noticias disponibles esta semana.<br><span style="font-size:.6rem;opacity:.6">${insEsc(e.message)}</span></div>`
   }
 }
 loadWeeklyNews()
