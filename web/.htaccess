@@ -15,6 +15,18 @@ Options -Indexes
   Header set X-Content-Type-Options "nosniff"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
 
+  # HSTS: fuerza HTTPS por 1 ano. Si entran por http, el browser auto-upgrade.
+  # Recien activar despues de confirmar que el sitio anda 100% en HTTPS (ya lo hace).
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+  # Clickjacking: solo embebible desde el mismo origen (futversus.com).
+  # Ningun sitio externo puede meter futversus.com en un iframe malicioso.
+  Header set X-Frame-Options "SAMEORIGIN"
+
+  # No usamos camara, microfono, geolocalizacion, payment, etc.
+  # Bloqueamos todo eso por default — defensa en profundidad contra scripts maliciosos.
+  Header set Permissions-Policy "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+
   <FilesMatch "^predictions\.json$">
     Header set Cache-Control "public, max-age=300"
   </FilesMatch>
