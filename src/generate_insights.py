@@ -189,7 +189,7 @@ def _claude_request(messages: list[dict], tools: list[dict] | None = None, max_t
             "x-api-key":         ANTHROPIC_KEY,
             "anthropic-version": "2023-06-01",
             "content-type":      "application/json",
-            "anthropic-beta":    "web-search-2025-03-05",
+            "anthropic-beta":    "web-search-2026-02-09",
         },
         method="POST",
     )
@@ -360,7 +360,7 @@ Ejemplos válidos:
 - Texto en español rioplatense, tono analítico, sin exageraciones.
 - El JSON debe parsearse directo con json.loads()."""
 
-    tools = [{"type": "web_search_20250305", "name": "web_search"}]
+    tools = [{"type": "web_search_20260209", "name": "web_search"}]
 
     try:
         print("[insights] Llamando a Claude con web search...")
