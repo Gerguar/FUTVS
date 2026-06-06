@@ -56,9 +56,8 @@ def claude_with_search(prompt: str, max_tokens: int = 2000) -> str:
         return ""
 
     body = json.dumps({
-        "model": "claude-sonnet-4-20250514",
+        "model": "claude-sonnet-4-5",
         "max_tokens": max_tokens,
-        "tools": [{"type": "web_search_20250305", "name": "web_search"}],
         "messages": [{"role": "user", "content": prompt}],
     }).encode()
 
