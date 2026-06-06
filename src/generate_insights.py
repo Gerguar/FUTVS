@@ -450,12 +450,40 @@ Ejemplos válidos:
             import urllib.error
             if isinstance(e, urllib.error.HTTPError):
                 err_info["http_code"] = e.code
-                body = e.read().decode("utf-8", errors="replace")
-                err_info["http_body"] = body[:1000]
-                print(f"[insights] HTTP {e.code} de Anthropic: {body[:300]}")
+                raw_body = e.read()
+                err_info["body_len"] = len(raw_body)
+                err_info["http_body"] = raw_body.decode("utf-8", errors="replace")[:2000]
+                err_info["resp_headers"] = dict(e.headers.items())[:10] if hasattr(e.headers, 'items') else None
+                print(f"[insights] HTTP {e.code} de Anthropic: {err_info['http_body'][:300]}")
         except Exception as inner:
             err_info["inner_err"] = str(inner)
         print(f"[insights] Error llamando a Claude: {e}")
+        # Probar llamada minima SIN tools para aislar la causa
+        try:
+            print("[insights] Probando llamada simple SIN tools...")
+            simple_req = urllib.request.Request(
+                "https://api.anthropic.com/v1/messages",
+                data=json.dumps({
+                    "model": "claude-haiku-4-5-20251001",
+                    "max_tokens": 50,
+                    "messages": [{"role": "user", "content": "Decí 'hola'"}],
+                }).encode(),
+                headers={
+                    "x-api-key": ANTHROPIC_KEY,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+                method="POST",
+            )
+            with urllib.request.urlopen(simple_req, timeout=20) as r:
+                simple_resp = json.loads(r.read())
+                err_info["simple_call"] = "OK"
+                err_info["simple_text"] = _extract_text(simple_resp)[:100]
+        except urllib.error.HTTPError as he:
+            err_info["simple_call"] = f"HTTP {he.code}"
+            err_info["simple_body"] = he.read().decode("utf-8", errors="replace")[:500]
+        except Exception as se:
+            err_info["simple_call"] = f"err: {se}"
         _write_debug(err_info)
         return [], [], ""
 
