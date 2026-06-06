@@ -341,7 +341,22 @@ Reglas adicionales:
 - Hasta 6 alertas y 6 tendencias.
 - Mejor incluir una lesión de partido moderada (warning) que dejar todo vacío,
   mientras cumpla las frases canónicas listadas arriba.
-- Si no encontrás NADA que cumpla criterios, devolvé "alertas": [].
+- Si no encontrás NADA que cumpla criterios para alertas, devolvé "alertas": [].
+
+TENDENCIAS — SIEMPRE devolvé al menos 3 (no se pueden dejar vacías). Las
+tendencias NO requieren noticia de los últimos 14 días — pueden ser:
+- Datos históricos verificables del Mundial 2026 o ediciones anteriores
+  (récords, formato 48 equipos, novedades de FIFA, etc).
+- Estadísticas de las selecciones en sus últimos amistosos / eliminatorias.
+- Tendencias goleadoras de jugadores clave (Messi, Mbappé, Haaland, etc).
+- Comportamiento histórico de equipos en debuts mundialistas.
+- Datos de plantillas (edades, promedio, jugadores Premier vs LaLiga, etc).
+Ejemplos válidos:
+  - "Argentina lleva 5 partidos consecutivos sin recibir gol como local."
+  - "El 60% de los anfitriones histórico llegó al menos a cuartos de final."
+  - "Mbappé promedia 0.92 goles por partido en eliminatorias UEFA."
+  - "El Mundial 2026 es el primero con 48 equipos: 104 partidos en total."
+
 - Texto en español rioplatense, tono analítico, sin exageraciones.
 - El JSON debe parsearse directo con json.loads()."""
 
