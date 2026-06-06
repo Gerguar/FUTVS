@@ -1176,7 +1176,7 @@ button,a{touch-action:manipulation}
       <div style="color:var(--faint);font-size:.88rem">No se pudieron cargar los insights.<br>Intentá de nuevo más tarde.</div>
     </div>
     <div style="margin-top:1.5rem;text-align:center">
-      <button onclick="showPage('home')" style="background:transparent;color:var(--green);border:1px solid var(--green);padding:10px 28px;border-radius:30px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">← Volver al inicio</button>
+      <button onclick="nav('/')"  style="background:transparent;color:var(--green);border:1px solid var(--green);padding:10px 28px;border-radius:30px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">← Volver al inicio</button>
     </div>
   </div>
 </div>
@@ -1266,7 +1266,7 @@ button,a{touch-action:manipulation}
 <!-- ESTADISTICAS (redirect a insights) -->
 <div id="estadisticas" class="page" style="position:relative;z-index:1">
   <div class="fp-page">
-    <button class="fp-back" onclick="showPage('home')">← Inicio</button>
+    <button class="fp-back" onclick="nav('/')">← Inicio</button>
     <div class="fp-eyebrow">Recursos</div>
     <div class="fp-title">📊 Estadísticas</div>
     <div class="fp-lead">Las estadísticas detalladas se muestran en la sección Insights, donde encontrás forma reciente, rendimiento vs expectativas y oportunidades del algoritmo.</div>
@@ -1280,7 +1280,7 @@ button,a{touch-action:manipulation}
 <!-- GLOSARIO -->
 <div id="glosario" class="page" style="position:relative;z-index:1">
   <div class="fp-page">
-    <button class="fp-back" onclick="showPage('home')">← Inicio</button>
+    <button class="fp-back" onclick="nav('/')">← Inicio</button>
     <div class="fp-eyebrow">Recursos</div>
     <div class="fp-title">📖 Glosario</div>
     <div class="fp-lead">Términos estadísticos y conceptos clave del modelo FutVS.</div>
@@ -1334,7 +1334,7 @@ button,a{touch-action:manipulation}
 <!-- BLOG -->
 <div id="blog" class="page" style="position:relative;z-index:1">
   <div class="fp-page">
-    <button class="fp-back" onclick="showPage('home')">← Inicio</button>
+    <button class="fp-back" onclick="nav('/')">← Inicio</button>
     <div class="fp-eyebrow">Recursos</div>
     <div class="fp-title">✍️ Blog</div>
     <div class="fp-lead">Artículos sobre metodología, análisis de temporada y fútbol estadístico.</div>
@@ -1375,7 +1375,7 @@ button,a{touch-action:manipulation}
 <!-- SUGERIR PARTIDO -->
 <div id="sugerir" class="page" style="position:relative;z-index:1">
   <div class="fp-page">
-    <button class="fp-back" onclick="showPage('home')">← Inicio</button>
+    <button class="fp-back" onclick="nav('/')">← Inicio</button>
     <div class="fp-eyebrow">Contacto</div>
     <div class="fp-title">🗳️ Sugerir partido</div>
     <div class="fp-lead">¿Hay un partido que querés ver analizado y no está en FutVS? Mandanos la sugerencia y lo evaluamos para incorporarlo.</div>
@@ -1425,7 +1425,7 @@ button,a{touch-action:manipulation}
 <!-- COLABORACIONES -->
 <div id="colaboraciones" class="page" style="position:relative;z-index:1">
   <div class="fp-page">
-    <button class="fp-back" onclick="showPage('home')">← Inicio</button>
+    <button class="fp-back" onclick="nav('/')">← Inicio</button>
     <div class="fp-eyebrow">Contacto</div>
     <div class="fp-title">🤝 Colaboraciones</div>
     <div class="fp-lead">FutVS es un proyecto independiente abierto a colaboraciones con periodistas, analistas, desarrolladores y medios deportivos.</div>
@@ -1460,7 +1460,7 @@ button,a{touch-action:manipulation}
 <!-- PRENSA -->
 <div id="prensa" class="page" style="position:relative;z-index:1">
   <div class="fp-page">
-    <button class="fp-back" onclick="showPage('home')">← Inicio</button>
+    <button class="fp-back" onclick="nav('/')">← Inicio</button>
     <div class="fp-eyebrow">Contacto</div>
     <div class="fp-title">📰 Prensa</div>
     <div class="fp-lead">Información para medios de comunicación, bloggers y creadores de contenido sobre FutVS.</div>
@@ -1499,7 +1499,7 @@ button,a{touch-action:manipulation}
 <!-- SOBRE NOSOTROS -->
 <div id="nosotros" class="page" style="position:relative;z-index:1">
   <div class="fp-page">
-    <button class="fp-back" onclick="showPage('home')">← Inicio</button>
+    <button class="fp-back" onclick="nav('/')">← Inicio</button>
     <div class="fp-eyebrow">FutVS</div>
     <div class="fp-title">👋 Sobre nosotros</div>
     <div class="fp-lead">FutVS nació de la intersección entre la pasión por el fútbol y el análisis de datos.</div>
@@ -1541,7 +1541,7 @@ button,a{touch-action:manipulation}
 <!-- METODOLOGÍA -->
 <div id="metodologia" class="page" style="position:relative;z-index:1">
   <div class="fp-page">
-    <button class="fp-back" onclick="showPage('home')">← Inicio</button>
+    <button class="fp-back" onclick="nav('/')">← Inicio</button>
     <div class="fp-eyebrow">FutVS</div>
     <div class="fp-title">🔬 Metodología</div>
     <div class="fp-lead">Cómo el modelo genera probabilidades 1X2 para cada partido.</div>
@@ -1587,7 +1587,7 @@ button,a{touch-action:manipulation}
 <!-- PAUTAS EDITORIALES -->
 <div id="pautas" class="page" style="position:relative;z-index:1">
   <div class="fp-page">
-    <button class="fp-back" onclick="showPage('home')">← Inicio</button>
+    <button class="fp-back" onclick="nav('/')">← Inicio</button>
     <div class="fp-eyebrow">FutVS</div>
     <div class="fp-title">📋 Pautas editoriales</div>
     <div class="fp-lead">Criterios que definen qué partidos cubrimos, cómo presentamos los datos y qué significa cada pronóstico.</div>
@@ -1621,7 +1621,7 @@ button,a{touch-action:manipulation}
 <!-- PRIVACIDAD -->
 <div id="privacidad" class="page" style="position:relative;z-index:1">
   <div class="fp-page">
-    <button class="fp-back" onclick="showPage('home')">← Inicio</button>
+    <button class="fp-back" onclick="nav('/')">← Inicio</button>
     <div class="fp-eyebrow">Legal</div>
     <div class="fp-title">🔒 Política de Privacidad</div>
     <div class="fp-lead">Cómo FutVS maneja (o no maneja) tus datos personales.</div>
@@ -1655,7 +1655,7 @@ button,a{touch-action:manipulation}
 <!-- TÉRMINOS DE USO -->
 <div id="terminos" class="page" style="position:relative;z-index:1">
   <div class="fp-page">
-    <button class="fp-back" onclick="showPage('home')">← Inicio</button>
+    <button class="fp-back" onclick="nav('/')">← Inicio</button>
     <div class="fp-eyebrow">Legal</div>
     <div class="fp-title">📄 Términos de uso</div>
     <div class="fp-lead">Al usar FutVS aceptás los siguientes términos.</div>
@@ -1687,7 +1687,7 @@ button,a{touch-action:manipulation}
 <!-- COOKIES -->
 <div id="cookies" class="page" style="position:relative;z-index:1">
   <div class="fp-page">
-    <button class="fp-back" onclick="showPage('home')">← Inicio</button>
+    <button class="fp-back" onclick="nav('/')">← Inicio</button>
     <div class="fp-eyebrow">Legal</div>
     <div class="fp-title">🍪 Política de Cookies</div>
     <div class="fp-lead">FutVS tiene una política de cookies muy simple: casi no usamos ninguna.</div>
@@ -1809,7 +1809,7 @@ button,a{touch-action:manipulation}
 <div id="player" class="page">
   <div class="player-page">
     <div style="display:flex;gap:.6rem;margin-bottom:1.2rem">
-      <button class="back-btn" onclick="showPage('home')">← Inicio</button>
+      <button class="back-btn" onclick="nav('/')">← Inicio</button>
       <button class="back-btn" onclick="showPage('detail')">← Partido</button>
     </div>
     <div class="player-banner" id="player-banner"></div>
@@ -1821,7 +1821,7 @@ button,a{touch-action:manipulation}
 <div id="comparador" class="page">
   <div class="player-page" style="max-width:980px">
     <div style="display:flex;gap:.6rem;margin-bottom:1.2rem">
-      <button class="back-btn" onclick="showPage('home')">← Inicio</button>
+      <button class="back-btn" onclick="nav('/')">← Inicio</button>
     </div>
     <h1 style="font-family:'Inter',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:.5px;margin:0 0 .3rem;text-align:center">⚖️ COMPARADOR DE EQUIPOS</h1>
     <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-align:center;margin:0 0 1.8rem">solo se comparan equipos de la misma liga · selecciones entre sí</p>
