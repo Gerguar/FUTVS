@@ -3191,7 +3191,12 @@ function drawPlayerRadar(canvasId,stats,pos,col,eafc){
   const ctx=canvas.getContext('2d')
   ctx.scale(dpr,dpr)
   ctx.clearRect(0,0,CW,CH)
-  const cx=CW/2,cy=CH/2,maxR=Math.min(CW,CH)*.36,RINGS=5
+  // Radio del radar: dejamos margen para las etiquetas (label + valor numerico)
+  // que se posicionan en maxR + ETIQUETA_OFFSET hacia afuera. Antes era 0.36
+  // y 32px, lo cual hacia que 'Velocidad' arriba y 'Regate' abajo casi se
+  // salieran del cuadro. Reduzco ambos para tener padding visual.
+  const cx=CW/2,cy=CH/2,maxR=Math.min(CW,CH)*.30,RINGS=5
+  const ETIQUETA_OFFSET=24
   const posMap={'POR':'POR','GK':'POR','DEF':'DEF','CB':'DEF','DC':'DEF','CAR':'DEF','LD':'DEF','RB':'DEF','LI':'DEF','LB':'DEF','LAD':'DEF','LAI':'DEF','MED':'MED','MC':'MED','MF':'MED','CM':'MED','DM':'MED','AM':'MED','MCO':'MED','MDC':'MED','DEL':'DEL','FW':'DEL','ST':'DEL','CF':'DEL','SS':'DEL','EI':'DEL','ED':'DEL'}
   const pk=posMap[(pos||'').toUpperCase()]||'MED'
   const s=stats
@@ -3316,7 +3321,7 @@ function drawPlayerRadar(canvasId,stats,pos,col,eafc){
   // Etiquetas con valor y barra lateral
   const barH=14,barW=80,barX=CW-barW-8
   attrs.forEach((attr,i)=>{
-    const a=start+i*step,lR=maxR+32
+    const a=start+i*step,lR=maxR+ETIQUETA_OFFSET
     const lx=cx+lR*Math.cos(a),ly=cy+lR*Math.sin(a)
     ctx.textAlign=lx<cx-8?'right':lx>cx+8?'left':'center'
     ctx.font='500 9px monospace';ctx.fillStyle='#9ca3af';ctx.fillText(attr.label,lx,ly-3)
