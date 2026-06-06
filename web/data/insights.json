@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
-  "generated_at_utc": "2026-06-05T23:50:50+00:00",
-  "dato_curioso": "El modelo FutVS procesa más de 12.500 partidos históricos para generar cada pronóstico.",
+  "generated_at_utc": "2026-06-06T00:04:44+00:00",
+  "dato_curioso": "El partido con mayor expectativa de goles es México vs Sudáfrica, con 0 goles esperados según el modelo Dixon-Coles.",
   "forma_reciente": [
     {
       "id": 112,
@@ -153,7 +153,7 @@
   "alertas": [],
   "xg_performance": [],
   "meta": {
-    "n_partidos_analizados": 0,
+    "n_partidos_analizados": 20,
     "n_equipos_con_forma": 238,
     "n_tendencias": 0,
     "n_alertas": 0,
