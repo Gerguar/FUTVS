@@ -96,13 +96,13 @@ def build_ai_insights() -> dict:
     prompt = f"""Hoy es {today}. Sos el analista de FutVS, una plataforma de análisis estadístico de fútbol.
 
 Buscá en la web las últimas noticias de fútbol de los últimos 7 días y generá un análisis estructurado.
-Enfocate en: Mundial 2026, Champions League, Premier League, La Liga, Serie A, Bundesliga, Ligue 1.
+PRIORIDAD MÁXIMA: Mundial 2026 (empieza el 11 de junio de 2026 en USA, México y Canadá). Enfocate principalmente en selecciones nacionales — lesiones, convocatorias, amistosos de preparación, favoritos por grupo. Las ligas de clubes son secundarias.
 
 Buscá información sobre:
-1. Rendimiento vs expectativas: equipos o jugadores que están superando o por debajo de sus xG/estadísticas esperadas
-2. Alertas importantes: lesiones de jugadores clave, sanciones, cambios de entrenador, noticias que afecten próximos partidos
-3. Tendencias: rachas de resultados, tendencias de goles (over/under), patrones estadísticos recientes
-4. Noticias destacadas de la semana: fichajes, resultados sorprendentes, hitos estadísticos
+1. Rendimiento vs expectativas: selecciones que están superando o por debajo de su xG en amistosos previos al Mundial 2026
+2. Alertas importantes: lesiones o bajas de jugadores clave en selecciones para el Mundial, sanciones, cambios de último momento
+3. Tendencias: grupos del Mundial, selecciones en racha, estadísticas de preparación, favoritos estadísticos
+4. Noticias destacadas: convocatorias definitivas, resultados de amistosos recientes, datos curiosos del Mundial 2026
 
 Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin texto antes ni después, sin markdown):
 {{
