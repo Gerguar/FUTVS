@@ -1,0 +1,4 @@
+# Mantener line endings LF en archivos server-side de Apache/LiteSpeed.
+# Esos parsers (especialmente LiteSpeed en shared hosting) pueden fallar
+# silenciosamente si reciben CRLF en directivas dentro de IfModule blocks.
+web/.htaccess text eol=lf
