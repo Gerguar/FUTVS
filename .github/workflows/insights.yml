@@ -1,13 +1,14 @@
-name: insights
+name: insights (cada 6h + manual)
+
+# Genera data/insights.json y data/insights_semana.json
+# a partir de predictions.json y Supabase.
+# Corre justo después del predict (que corre en :00 de cada 6h),
+# así los insights siempre reflejan las predicciones más frescas.
 
 on:
   schedule:
-    - cron: "10 */6 * * *"
+    - cron: "30 */6 * * *"   # 30 min después del predict
   workflow_dispatch: {}
-
-concurrency:
-  group: git-push
-  cancel-in-progress: false
 
 jobs:
   insights:
@@ -19,7 +20,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: main
 
       - uses: actions/setup-python@v5
         with:
@@ -29,25 +29,20 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
-      - name: Generate insights
+      - name: Generar insights.json e insights_semana.json
         env:
-          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          ANTHROPIC_API_KEY:    ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python -m src.generate_insights --out web/data/insights.json
+        run: python -m src.generate_insights
 
       - name: Commit insights
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add web/data/insights.json web/data/claude_debug.json || true
+          git add data/insights.json data/insights_semana.json || true
           if ! git diff --cached --quiet; then
-            git stash
-            git pull --rebase origin main
-            git stash pop
-            git add web/data/insights.json web/data/claude_debug.json || true
             git commit -m "chore: refresh insights $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            git push origin main
+            git push
           else
-            echo "no changes in insights"
+            echo "no changes"
           fi
