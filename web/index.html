@@ -1482,7 +1482,7 @@ button,a{touch-action:manipulation}
       <div class="fp-card-title">Tecnología</div>
       <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.2rem">
         <span class="fp-tag">Python</span><span class="fp-tag">XGBoost</span><span class="fp-tag">Dixon-Coles</span>
-        <span class="fp-tag">GitHub Actions</span><span class="fp-tag">Supabase</span><span class="fp-tag">Netlify</span>
+        <span class="fp-tag">GitHub Actions</span><span class="fp-tag">Supabase</span>
         <span class="fp-tag">football-data.org</span><span class="fp-tag">Understat</span><span class="fp-tag">EA FC 26</span>
       </div>
     </div>
@@ -1514,19 +1514,19 @@ button,a{touch-action:manipulation}
       <div class="fp-card-title">Stack técnico</div>
       <div class="fp-step">
         <div class="fp-step-num">1</div>
-        <div class="fp-step-text"><strong>Ingesta de datos</strong> — GitHub Actions corre cada 6h bajando fixtures, resultados y odds de football-data.org y football-data.co.uk.</div>
+        <div class="fp-step-text"><strong>Datos</strong> — Reunimos fixtures, resultados, cuotas y ratings de jugadores desde fuentes públicas y los actualizamos de forma automática.</div>
       </div>
       <div class="fp-step">
         <div class="fp-step-num">2</div>
-        <div class="fp-step-text"><strong>Modelo</strong> — Dixon-Coles estima goles esperados. Elo trackea la fuerza relativa de cada equipo. XGBoost combina todo más ratings de jugadores (EA FC 26).</div>
+        <div class="fp-step-text"><strong>Modelo</strong> — Convertimos historial, forma reciente, fuerza de planteles y mercado en probabilidades simples de leer.</div>
       </div>
       <div class="fp-step">
         <div class="fp-step-num">3</div>
-        <div class="fp-step-text"><strong>Persistencia</strong> — Los pronósticos se guardan en Supabase (PostgreSQL). El frontend lee live con la anon key.</div>
+        <div class="fp-step-text"><strong>Publicación</strong> — Los pronósticos y datos se publican en la web apenas se recalculan, sin carga manual.</div>
       </div>
       <div class="fp-step">
         <div class="fp-step-num">4</div>
-        <div class="fp-step-text"><strong>Frontend</strong> — Vanilla JS desplegado en Netlify. Sin build steps, sin dependencias pesadas. Un solo HTML de ~90KB.</div>
+        <div class="fp-step-text"><strong>Producto</strong> — La interfaz está pensada para comparar partidos, equipos y jugadores sin esconder la incertidumbre del fútbol.</div>
       </div>
     </div>
 
@@ -1547,38 +1547,32 @@ button,a{touch-action:manipulation}
     <div class="fp-lead">Cómo el modelo genera probabilidades 1X2 para cada partido.</div>
 
     <div class="fp-card">
-      <div class="fp-card-title">Paso 1 — Dixon-Coles</div>
-      <p>Ajustamos un modelo de <strong>Poisson bivariado</strong> con corrección Dixon-Coles sobre ~12.500 partidos históricos. Para cada equipo estimamos un parámetro de <strong>ataque</strong> y uno de <strong>defensa</strong>, más una ventaja de local global.</p>
-      <p>La corrección τ (tau) ajusta la probabilidad de resultados bajos (0-0, 1-0, 0-1, 1-1) que el Poisson clásico subestima. Los partidos más recientes ponderan más (decaimiento exponencial con ξ=0.0035).</p>
+      <div class="fp-card-title">Punto de partida</div>
+      <p>FutVS parte de una idea simple: un pronóstico útil no debería apoyarse sólo en intuición, racha o nombres propios. Miramos el historial de cada equipo, su rendimiento reciente y el contexto del partido para estimar qué tan probable es cada resultado.</p>
+      <p>El objetivo no es adivinar marcadores exactos, sino ordenar escenarios: victoria local, empate o victoria visitante, con una probabilidad clara para cada uno.</p>
     </div>
 
     <div class="fp-card">
-      <div class="fp-card-title">Paso 2 — Elo</div>
-      <p>Paralelamente mantenemos un <strong>rating Elo dinámico</strong> por equipo. Se actualiza después de cada partido según resultado y diferencia de goles (margin factor). Captura tendencias recientes que el DC de ventana larga puede perder.</p>
+      <div class="fp-card-title">Qué señales usamos</div>
+      <p>Combinamos resultados históricos, forma de los últimos partidos, diferencia de goles, fuerza relativa del plantel, localía, calendario y, cuando está disponible, información del mercado. Cada señal aporta una parte distinta del panorama.</p>
+      <p>Para el Mundial, además, se le da más peso a selecciones, planteles confirmados, sedes, lesiones claras y partidos recientes de preparación.</p>
     </div>
 
     <div class="fp-card">
-      <div class="fp-card-title">Paso 3 — Features y XGBoost</div>
-      <p>Con DC + Elo construimos un vector de ~49 features por partido: probabilidades DC, lambdas, diferencias Elo, forma reciente (últimos 5 y 10 partidos), fatiga, momentum, y <strong>ratings de plantel</strong> (ataque, defensa, XI promedio vía EA FC 26).</p>
-      <p>Un <strong>XGBoost multiclase</strong> entrenado sobre esto genera las probabilidades finales 1X2. Se evalúa con Log Loss en un holdout temporal honesto (sin leakage).</p>
+      <div class="fp-card-title">Cómo se interpreta</div>
+      <p>Las probabilidades no son certezas. Un equipo con 60% de chances sigue pudiendo perder; lo importante es que el número refleje mejor el equilibrio real del partido que una lectura puramente narrativa.</p>
+      <p>También mostramos factores de contexto para que el usuario entienda por qué un partido se inclina hacia un lado: forma, plantel, mercado, historial o ventaja de sede.</p>
     </div>
 
     <div class="fp-card">
-      <div class="fp-card-title">Evaluación</div>
-      <table class="fp-table">
-        <thead><tr><th>Modelo</th><th>Log Loss</th><th>Referencia</th></tr></thead>
-        <tbody>
-          <tr><td>Aleatorio (1/3 cada uno)</td><td>1.099</td><td>Piso</td></tr>
-          <tr><td>Prior histórico (frecuencias)</td><td>~1.06</td><td>Baseline simple</td></tr>
-          <tr><td><strong>FutVS (producción)</strong></td><td><strong>~1.015</strong></td><td>✅ Actual</td></tr>
-          <tr><td>Bookmakers top 5 ligas</td><td>0.95–0.98</td><td>Techo práctico</td></tr>
-        </tbody>
-      </table>
+      <div class="fp-card-title">Cómo controlamos calidad</div>
+      <p>El modelo se revisa contra partidos ya jugados para detectar si está sobrestimando favoritos, ignorando empates o reaccionando tarde a cambios de forma. Esa revisión ayuda a ajustar el sistema sin perseguir resultados aislados.</p>
+      <p>Preferimos probabilidades prudentes antes que predicciones espectaculares. En fútbol, la incertidumbre es parte del juego.</p>
     </div>
 
     <div class="fp-card">
       <div class="fp-card-title">Actualización</div>
-      <p>El pipeline corre automáticamente <strong>cada 6 horas</strong> vía GitHub Actions. El modelo completo se reentrena <strong>cada domingo</strong>. Los pronósticos tienen un horizonte de 14 días.</p>
+      <p>Los datos se actualizan automáticamente varias veces por día. Cuando cambian resultados, cuotas, planteles o bajas relevantes, los pronósticos e insights se recalculan para reflejar la información disponible más reciente.</p>
     </div>
   </div>
 </div>
