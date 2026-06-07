@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-07T23:06:17.085316+00:00",
-  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones: se jugarán 104 partidos en 39 días, récord histórico",
+  "generated_at_utc": "2026-06-07T23:22:30.481273+00:00",
+  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40% más que Catar 2022",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,22 +119,22 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina supera xG en amistosos pre-Mundial: 2.8 goles vs 2.1 esperados en últimos 3 partidos"
+      "texto": "Argentina supera xG 2.1 vs 3 goles en amistosos pre-Mundial, efectividad del 143%"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "España convierte más de lo esperado: 7 goles con xG de 4.9 en preparación para debut vs Costa Rica"
+      "texto": "España convierte 7 goles con xG de 4.8 en últimos dos amistosos, racha goleadora"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil por debajo: 3 goles con xG de 5.2 en amistosos, preocupa definición antes del Mundial"
+      "texto": "Brasil genera xG 3.2 pero solo anota 1 gol en amistosos, preocupa definición"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Alemania genera poco: xG de 1.3 por partido en preparación, el más bajo entre favoritos europeos"
+      "texto": "Inglaterra con xG 2.8 y 1 gol marcado, ineficacia ofensiva a días del debut"
     }
   ],
   "alertas": [
@@ -165,9 +165,9 @@
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Pese al desgarro, Uruguay confirmó que Giorgian de Arrascaeta estará en la lista de la Celeste para el Mundial",
+      "texto": "Se confirmó el desgarro de Giorgian de Arrascaeta: plazo de recuperación y qué pasa con su ida al Mundial 2026",
       "fuente": "Diario EL PAIS Uruguay",
-      "fuente_url": "https://www.elpais.com.uy/ovacion/mundial/pese-al-desgarro-uruguay-confirmo-que-giorgian-de-arrascaeta-estara-en-la-lista-de-la-celeste-para-el-mundial",
+      "fuente_url": "https://www.elpais.com.uy/ovacion/mundial/se-confirmo-el-desgarro-de-giorgian-de-arrascaeta-plazo-de-recuperacion-y-que-pasa-con-su-ida-al-mundial-2026",
       "fecha": "2026-06-03"
     }
   ],
@@ -175,23 +175,46 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo E más abierto: 4 selecciones con cuotas entre 2.5-4.0, ningún favorito claro estadísticamente"
+      "texto": "Grupo E con promedio 3.4 goles en amistosos, España y Japón perfil ofensivo"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Francia lidera ranking xG defensivo: solo 0.4 xG concedido por partido en últimos 5 amistosos"
+      "texto": "Colombia 8 partidos invicta, mejor racha rumbo al Mundial junto a Argentina"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Inglaterra invicta en 8 partidos pre-Mundial, mejor racha de preparación desde 1966"
+      "texto": "Uruguay marca 12 goles en últimos 3 amistosos, Núñez y Darwin en racha"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "México favorito Grupo A vs Uruguay según modelos predictivos: 62% probabilidad de primer lugar"
+      "texto": "Marruecos favorito estadístico Grupo F con 68% posesión promedio en preparación"
     }
   ],
-  "oportunidades": []
+  "oportunidades": [
+    {
+      "partido": "Portugal vs RD del Congo",
+      "competition": "Mundial 2026",
+      "apuesta": "Empate",
+      "p_modelo": 29.6,
+      "p_mercado": 16.9,
+      "edge": 12.7,
+      "xg_home": 1.08,
+      "xg_away": null,
+      "kickoff": "2026-06-17T17:00:00"
+    },
+    {
+      "partido": "Ghana vs Panamá",
+      "competition": "Mundial 2026",
+      "apuesta": "Victoria Panamá",
+      "p_modelo": 38.5,
+      "p_mercado": 26.5,
+      "edge": 12.0,
+      "xg_home": 1.17,
+      "xg_away": null,
+      "kickoff": "2026-06-17T23:00:00"
+    }
+  ]
 }
