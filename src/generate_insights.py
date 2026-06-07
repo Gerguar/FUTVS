@@ -335,13 +335,78 @@ ALERTA_KEYWORDS = [
     ("en duda",               "info",     "🔍"),
 ]
 
+# Anti-falso-positivo: si el titulo o descripcion menciona DEPORTES NO-FUTBOL,
+# se descarta aunque tenga "lesion" o "baja".
+ALERTA_OTROS_DEPORTES = [
+    "basket", "básket", "basquet", "básquet", "nba", "wnba", "euroliga",
+    "mlb", "beisbol", "béisbol", "baseball", "softball",
+    "nfl", "futbol americano", "fútbol americano",
+    "hockey", "nhl", "rugby", "padel", "pádel", "tenis", "tennis",
+    "boxeo", "ufc", "mma", "natacion", "natación", "atletismo",
+    "f1 ", "formula 1", "fórmula 1", "motogp", "nascar", "indycar",
+    "ciclismo", "esports", "esports", "voley", "vóley", "voleibol", "handball",
+    "halterofilia", "remo", "judo", "karate", "taekwondo", "esgrima",
+]
+
+# Anti-falso-positivo: titulares que NO son alertas reales aunque contengan
+# la palabra "lesion" o similares (notas positivas, anecdotas, homenajes).
+ALERTA_NO_ES_ALERTA = [
+    "homenaje", "emociona", "gesto a", "saluda a", "visita a", "ayuda a",
+    "se reune con", "se reúne con", "regala", "regalo", "felicit",
+    "celebra", "festeja", "campeon ", "campeón ", "trofeo", "premio",
+    "leyenda", "historico", "histórico", "recuerda", "recuerdo",
+    "documental", "entrevista", "biograf",
+]
+
 # Reusar filtros antiestafa de fetch_news para no duplicar codigo.
-def _clasificar_alerta(titulo: str) -> tuple[str, str] | None:
+def _clasificar_alerta(titulo: str, descripcion: str = "") -> tuple[str, str] | None:
+    """Devuelve (nivel, flag) si el titulo es una alerta REAL del Mundial 2026,
+    None si no aplica o es falso positivo."""
     t = titulo.lower()
+    d = (descripcion or "").lower()
+    combined = t + " " + d
+
+    # 1. Filtro otros deportes (basket, beisbol, etc).
+    for kw in ALERTA_OTROS_DEPORTES:
+        if kw in combined:
+            return None
+
+    # 2. Filtro "no es alerta" (homenajes, gestos, etc).
+    for kw in ALERTA_NO_ES_ALERTA:
+        if kw in t:  # solo titulo (descripcion puede tener contexto adicional)
+            return None
+
+    # 3. Buscar keyword de alerta.
+    matched = None
     for kw, nivel, flag in ALERTA_KEYWORDS:
         if kw in t:
-            return nivel, flag
-    return None
+            matched = (nivel, flag)
+            break
+    if matched is None:
+        return None
+
+    # 4. Filtro de relevancia al Mundial 2026 o futbol pro.
+    # Debe mencionar al menos una palabra que ancle al contexto.
+    ANCLAS_CONTEXT = [
+        "mundial", "seleccion", "selección", "argentina", "brasil", "uruguay",
+        "espana", "españa", "francia", "alemania", "inglaterra", "italia",
+        "portugal", "mexico", "méxico", "colombia", "chile", "peru", "perú",
+        "ecuador", "paraguay", "venezuela", "japon", "japón", "corea",
+        "marruecos", "senegal", "ghana", "nigeria", "egipto", "tunez", "túnez",
+        "argelia", "iran", "irán", "arabia", "qatar", "estados unidos", "canada",
+        "canadá", "panama", "panamá", "haiti", "haití", "honduras",
+        "real madrid", "barcelona", "atletico", "atlético", "bayern",
+        "manchester", "liverpool", "arsenal", "chelsea", "tottenham",
+        "psg", "milan", "milán", "inter ", "juventus", "roma", "napoli", "napoli",
+        "cristiano", "ronaldo", "messi", "mbappe", "mbappé", "haaland",
+        "vinicius", "vinícius", "lamine", "yamal", "bellingham", "pedri",
+        "rodrygo", "militao", "militão", "neymar", "vinicius", "endrick",
+        "fútbol", "futbol", "soccer", "fifa", "uefa", "champions league",
+    ]
+    if not any(a in combined for a in ANCLAS_CONTEXT):
+        return None
+
+    return matched
 
 def _normalizar_titulo(titulo: str, max_len: int = 140) -> str:
     """Limpia un titulo de NewsAPI: saca fuente al final, trunca con elipsis."""
@@ -397,7 +462,8 @@ def build_alertas_from_newsapi() -> list[dict]:
             titulo = (a.get("title") or "").strip()
             if not titulo:
                 continue
-            clas = _clasificar_alerta(titulo)
+            desc = (a.get("description") or "").strip()
+            clas = _clasificar_alerta(titulo, desc)
             if not clas:
                 total_sin_keyword += 1
                 continue
