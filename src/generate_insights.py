@@ -344,7 +344,8 @@ ALERTA_OTROS_DEPORTES = [
     "hockey", "nhl", "rugby", "padel", "pádel", "tenis", "tennis",
     "boxeo", "ufc", "mma", "natacion", "natación", "atletismo",
     "f1 ", "formula 1", "fórmula 1", "motogp", "nascar", "indycar",
-    "ciclismo", "esports", "esports", "voley", "vóley", "voleibol", "handball",
+    "ciclismo", "ciclista", "tour de francia", "giro de italia", "vuelta a espana", "vuelta a españa",
+    "esports", "voley", "vóley", "voleibol", "handball",
     "halterofilia", "remo", "judo", "karate", "taekwondo", "esgrima",
 ]
 
@@ -356,6 +357,11 @@ ALERTA_NO_ES_ALERTA = [
     "celebra", "festeja", "campeon ", "campeón ", "trofeo", "premio",
     "leyenda", "historico", "histórico", "recuerda", "recuerdo",
     "documental", "entrevista", "biograf",
+    # Anti-publicidad / non-news
+    "vpn", "oferta", "descuento", "cuesta menos", "precio", "mejor precio",
+    "cupon", "cupón", "promocion", "promoción", "rebaja",
+    # Politica / economia / tecnologia con "baja" o "lesion" metaforico
+    "bolsa baja", "inflacion", "inflación", "criptomoneda", "bitcoin",
 ]
 
 # Reusar filtros antiestafa de fetch_news para no duplicar codigo.
@@ -385,23 +391,38 @@ def _clasificar_alerta(titulo: str, descripcion: str = "") -> tuple[str, str] | 
     if matched is None:
         return None
 
-    # 4. Filtro de relevancia al Mundial 2026 o futbol pro.
-    # Debe mencionar al menos una palabra que ancle al contexto.
+    # 4. Filtro de relevancia FUERTE: solo terminos que aseguran contexto futbol.
+    # Los nombres de paises solos (España, Francia) NO sirven porque aparecen
+    # en cualquier nota (VPN España, Tour de Francia, etc).
     ANCLAS_CONTEXT = [
-        "mundial", "seleccion", "selección", "argentina", "brasil", "uruguay",
-        "espana", "españa", "francia", "alemania", "inglaterra", "italia",
-        "portugal", "mexico", "méxico", "colombia", "chile", "peru", "perú",
-        "ecuador", "paraguay", "venezuela", "japon", "japón", "corea",
-        "marruecos", "senegal", "ghana", "nigeria", "egipto", "tunez", "túnez",
-        "argelia", "iran", "irán", "arabia", "qatar", "estados unidos", "canada",
-        "canadá", "panama", "panamá", "haiti", "haití", "honduras",
-        "real madrid", "barcelona", "atletico", "atlético", "bayern",
-        "manchester", "liverpool", "arsenal", "chelsea", "tottenham",
-        "psg", "milan", "milán", "inter ", "juventus", "roma", "napoli", "napoli",
-        "cristiano", "ronaldo", "messi", "mbappe", "mbappé", "haaland",
-        "vinicius", "vinícius", "lamine", "yamal", "bellingham", "pedri",
-        "rodrygo", "militao", "militão", "neymar", "vinicius", "endrick",
-        "fútbol", "futbol", "soccer", "fifa", "uefa", "champions league",
+        # Terminos explicitos de futbol
+        "fútbol", "futbol", "soccer",
+        # Competiciones futbol
+        "mundial 2026", "copa mundial", "mundialista", "mundialistas",
+        "fifa", "uefa", "conmebol", "concacaf", "afc ", "ofc ",
+        "champions league", "premier league", "laliga", "la liga",
+        "serie a", "bundesliga", "ligue 1", "copa america", "copa américa",
+        "eurocopa", "libertadores", "sudamericana", "europa league",
+        # Roles deportivos clave
+        "seleccion", "selección", "convocatoria", "convocado", "convocados",
+        "amistoso", "amistosos", "eliminatorias", "eliminatoria",
+        # Nombres jugadores top
+        "cristiano ronaldo", "messi", "mbappe", "mbappé", "haaland",
+        "vinicius", "vinícius", "lamine yamal", "bellingham", "pedri",
+        "rodrygo", "militao", "militão", "neymar", "endrick", "raphinha",
+        "harry kane", "lewandowski", "salah", "de bruyne", "modric",
+        # Clubes grandes
+        "real madrid", "fc barcelona", "atletico de madrid", "atlético de madrid",
+        "bayern munich", "bayern múnich", "borussia dortmund",
+        "manchester united", "manchester city", "liverpool fc",
+        "arsenal fc", "chelsea fc", "tottenham hotspur",
+        "psg", "paris saint-germain", "ac milan", "ac milán",
+        "inter de milan", "inter de milán", "juventus", "ssc napoli",
+        # Combinaciones "seleccion + pais" para asegurar contexto
+        "seleccion argentina", "selección argentina", "argentina futbol",
+        "seleccion brasil", "selección brasil", "brasil futbol",
+        "albiceleste", "canarinha", "la roja", "les bleus", "azzurri",
+        "tres leones", "the three lions",
     ]
     if not any(a in combined for a in ANCLAS_CONTEXT):
         return None
