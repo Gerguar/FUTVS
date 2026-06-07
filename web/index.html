@@ -1909,6 +1909,10 @@ function safeColor(value, fallback) {
     : fallback
 }
 
+function isActiveWorldCupPlayer(player) {
+  return !String(player?.notas || '').startsWith('[FUERA_MUNDIAL]')
+}
+
 const LEAGUE_KEYS = {
   'Champions League':'champions','La Liga':'laliga',
   'Premier League':'premier','Serie A':'seriea',
@@ -2468,8 +2472,8 @@ async function loadMatchDetail(m) {
       matchStatsPromise,
     ])
 
-    m.home.players = homePlayers.map(transformJugador)
-    m.away.players = awayPlayers.map(transformJugador)
+    m.home.players = homePlayers.filter(isActiveWorldCupPlayer).map(transformJugador)
+    m.away.players = awayPlayers.filter(isActiveWorldCupPlayer).map(transformJugador)
     // Stats reales de la temporada actual (para la seccion "Estadisticas de la temporada")
     m.home.seasonStats = homeSeason
     m.away.seasonStats = awaySeason
@@ -4000,13 +4004,13 @@ async function loadRanking() {
   if (rkLoaded) { rkRender(); return }
   try {
     const [jugadores, equipos] = await Promise.all([
-      sb('jugadores?select=id,nombre,posicion,nacionalidad,rating,equipo_id&rating=not.is.null&rating=gte.70&order=rating.desc&limit=1000'),
+      sb('jugadores?select=id,nombre,posicion,nacionalidad,rating,equipo_id,notas&rating=not.is.null&rating=gte.70&order=rating.desc&limit=1000'),
       sb('equipos?select=id,nombre,escudo_url')
     ])
     const eqMap = {}
     equipos.forEach(e => { eqMap[e.id] = e })
     rkAllPlayers = jugadores
-      .filter(j => j.rating && j.nombre)
+      .filter(j => j.rating && j.nombre && isActiveWorldCupPlayer(j))
       .map((j, i) => ({
         ...j,
         // Normalizamos a espanol para deduplicar entre Brasil/Brazil etc.

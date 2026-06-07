@@ -1,0 +1,76 @@
+name: world-cup-squads (diario + manual)
+
+on:
+  schedule:
+    - cron: "40 5 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: git-push
+  cancel-in-progress: false
+
+jobs:
+  squads:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Sincronizar reemplazos y bajas confirmadas
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.sync_squads_mundial
+
+      - name: Enriquecer jugadores nuevos con EA FC 26
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.enrich_jugadores_mundial
+
+      - name: Recalcular fuerza de planteles
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.team_ratings
+
+      - name: Integrar bajas confirmadas al modelo
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.integrate_lesiones_mundial
+
+      - name: Recalcular pronosticos del Mundial
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.predict_mundial
+
+      - name: Commit team_ratings si cambio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/team_ratings.json
+          if ! git diff --cached --quiet; then
+            git stash
+            git pull --rebase origin main
+            git stash pop
+            git add data/team_ratings.json
+            git commit -m "chore: refresh World Cup squads $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push origin main
+          else
+            echo "no changes"
+          fi

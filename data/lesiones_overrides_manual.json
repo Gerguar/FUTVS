@@ -30,6 +30,12 @@
     "razon": "Fuera del Mundial por lesión de rodilla en amistoso vs Curazao (Infobae 31-may-2026)"
   },
   {
+    "equipo_id": 112,
+    "jugador": "Leonardo Balerdi",
+    "delta_pp": 3.0,
+    "razon": "Lesión muscular en el sóleo derecho, fuera del Mundial (AFA/Reuters 6-jun-2026)"
+  },
+  {
     "equipo_id": 111,
     "jugador": "Lamine Yamal",
     "delta_pp": 0,

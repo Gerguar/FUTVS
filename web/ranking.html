@@ -268,7 +268,7 @@ async function loadData() {
     // Traemos jugadores con rating + su equipo (escudo)
     // Supabase: join con equipos via equipo_id
     const [jugadores, equipos] = await Promise.all([
-      sbGet('jugadores?select=id,nombre,posicion,nacionalidad,rating,equipo_id&rating=not.is.null&rating=gte.70&order=rating.desc&limit=1000'),
+      sbGet('jugadores?select=id,nombre,posicion,nacionalidad,rating,equipo_id,notas&rating=not.is.null&rating=gte.70&order=rating.desc&limit=1000'),
       sbGet('equipos?select=id,nombre,escudo_url')
     ])
 
@@ -276,7 +276,7 @@ async function loadData() {
     equipos.forEach(e => { equipoMap[e.id] = e })
 
     allPlayers = jugadores
-      .filter(j => j.rating && j.nombre)
+      .filter(j => j.rating && j.nombre && !String(j.notas || '').startsWith('[FUERA_MUNDIAL]'))
       .map((j, i) => ({
         ...j,
         equipo: equipoMap[j.equipo_id] || null,

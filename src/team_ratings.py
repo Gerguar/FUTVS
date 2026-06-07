@@ -68,8 +68,12 @@ def compute_team_ratings() -> dict[str, dict]:
 
     # 2) jugadores con rating (excluye nulos)
     jugadores = _paged_get(
-        "jugadores?select=equipo_id,posicion,rating&rating=not.is.null"
+        "jugadores?select=equipo_id,posicion,rating,notas&rating=not.is.null"
     )
+    jugadores = [
+        player for player in jugadores
+        if not str(player.get("notas") or "").startswith("[FUERA_MUNDIAL]")
+    ]
     print(f"[team-ratings] jugadores con rating: {len(jugadores)}")
 
     # 3) Agrupamos por equipo y posicion
