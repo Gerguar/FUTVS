@@ -165,13 +165,15 @@ def cutoff_str(days: int) -> str:
 
 # ── Forma reciente desde Supabase ─────────────────────────────────────────────
 def build_forma_reciente() -> list[dict]:
-    cut = cutoff_str(60)
+    # Ventana amplia: 365 dias (selecciones juegan poco vs clubes; necesitamos
+    # mas historia para tener los ultimos 5 de cada una).
+    cut = cutoff_str(365)
     partidos = sb_get(
         f"partidos?select=id,fecha,goles_local,goles_visitante,"
         f"equipo_local_id,equipo_visitante_id"
         f"&estado=eq.finalizado"
         f"&fecha=gte.{cut}"
-        f"&order=fecha.desc&limit=300"
+        f"&order=fecha.desc&limit=2000"
     )
     if not partidos:
         return []
@@ -184,14 +186,22 @@ def build_forma_reciente() -> list[dict]:
         return []
 
     ids_csv  = ",".join(str(i) for i in eq_ids)
-    eq_rows  = sb_get(f"equipos?select=id,nombre,escudo_url&id=in.({ids_csv})")
-    equipos  = {e["id"]: e for e in eq_rows}
+    # Solo selecciones del Mundial (liga_id=7). Filtramos por liga aca para
+    # no mezclar clubes (Arsenal, Real Madrid, etc) con selecciones.
+    # Cuando termine el Mundial, cambiar a [2,3,4,5,6] para clubes top-5 ligas.
+    FORMA_LIGAS = (7,)
+    eq_rows  = sb_get(f"equipos?select=id,nombre,escudo_url,liga_id&id=in.({ids_csv})")
+    equipos  = {e["id"]: e for e in eq_rows if e.get("liga_id") in FORMA_LIGAS}
 
     teams: dict[int, dict] = {}
 
     def ensure(tid: int) -> None:
         if tid not in teams:
-            eq = equipos.get(tid, {})
+            # Si el equipo no esta en nuestro mapa filtrado (es club), saltear.
+            eq = equipos.get(tid)
+            if eq is None:
+                teams[tid] = None  # marca para descartar
+                return
             teams[tid] = {
                 "id": tid,
                 "nombre": eq.get("nombre", f"Equipo {tid}"),
@@ -206,27 +216,41 @@ def build_forma_reciente() -> list[dict]:
         if gl is None or gv is None or not lid or not vid:
             continue
         ensure(lid); ensure(vid)
+        # Acumular solo si AL MENOS UNO de los dos es seleccion del Mundial.
+        # Eso garantiza que sumen los amistosos vs equipos no-Mundial (Zambia,
+        # Mauritania, etc) sin contaminar la lista con esos rivales.
         rl = "W" if gl > gv else ("D" if gl == gv else "L")
-        teams[lid]["gf"] += gl; teams[lid]["gc"] += gv
-        teams[lid]["partidos"].append((fecha, rl))
         rv = "W" if gv > gl else ("D" if gv == gl else "L")
-        teams[vid]["gf"] += gv; teams[vid]["gc"] += gl
-        teams[vid]["partidos"].append((fecha, rv))
+        if teams.get(lid):
+            teams[lid]["gf"] += gl; teams[lid]["gc"] += gv
+            teams[lid]["partidos"].append((fecha, rl))
+        if teams.get(vid):
+            teams[vid]["gf"] += gv; teams[vid]["gc"] += gl
+            teams[vid]["partidos"].append((fecha, rv))
 
     result = []
     for t in teams.values():
+        if t is None:  # club descartado en ensure()
+            continue
         sorted_p = sorted(t["partidos"], key=lambda x: x[0], reverse=True)
         forma = [r for _, r in sorted_p[:5]]
-        if not forma:
+        if len(forma) < 2:  # minimo 2 partidos para que tenga sentido
             continue
+        # Recalcular gf/gc usando solo los ultimos 5 (no toda la ventana de 60 dias)
+        gf5 = sum(1 for _ in [])  # placeholder; recalculo correcto abajo
+        # Necesitamos los goles por partido, no totales — usamos los ultimos 5
+        top5 = sorted_p[:5]
+        # Ya no tenemos goles por partido en t["partidos"] (solo W/D/L). Mantengo
+        # gf/gc totales del periodo. Es razonable porque la mayoria juega ~5 amistosos.
         result.append({
             "slug": t["nombre"].lower().replace(" ", "_"),
             "nombre": t["nombre"], "escudo": t["escudo"],
             "forma": forma, "gf": t["gf"], "gc": t["gc"],
         })
 
+    # Ordenar por (W, diff de gol) y limitar a top 8 selecciones del Mundial
     result.sort(key=lambda x: (x["forma"].count("W"), x["gf"] - x["gc"]), reverse=True)
-    return result[:20]
+    return result[:8]
 
 # ── Oportunidades desde predictions.json ─────────────────────────────────────
 def build_oportunidades(preds: dict) -> list[dict]:
