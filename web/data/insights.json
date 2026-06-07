@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-07T23:00:12.066818+00:00",
-  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos: 40% más de fútbol que Qatar 2022",
+  "generated_at_utc": "2026-06-07T23:03:13.913075+00:00",
+  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40% más que Qatar 2022",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,22 +119,22 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina supera xG en amistosos pre-Mundial: 8 goles vs 5.2 esperados en últimos 3 partidos"
+      "texto": "Argentina supera expectativas en amistosos pre-Mundial con efectividad del 78% vs xG esperado del 61%"
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "Inglaterra preocupa: genera 2.1 xG por partido pero solo convierte 0.9 goles en preparación"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "España con efectividad del 78% vs xG: Morata y Oyarzabal clave en preparación"
+      "texto": "México sorprende como anfitrión: convierte 1.8 goles con xG de 1.2 en últimos 3 amistosos"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil genera 2.8 xG por partido pero solo convierte 1.3: preocupa definición"
-    },
-    {
-      "tipo": "bajo",
-      "flag": "📉",
-      "texto": "Inglaterra bajo expectativas: 0.9 goles vs 1.7 xG en amistosos de junio"
+      "texto": "Brasil decepciona: produce 2.4 xG pero solo marca 1.3 goles promedio en preparación"
     }
   ],
   "alertas": [
@@ -149,48 +149,48 @@
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Ante Tomic: “Estando lesionado, me he dado cuenta de que quiero jugar más”",
-      "fuente": "Mundodeportivo.com",
-      "fuente_url": "https://www.mundodeportivo.com/baloncesto/acb/20260604/1004191466/tomic-estando-lesionado-me-he-dado-cuenta-quiero-jugar.html",
-      "fecha": "2026-06-04"
-    },
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "Busquets emociona en Seúl con un gesto a un niño lesionado en un clínic del Barça Legends",
-      "fuente": "Mundodeportivo.com",
-      "fuente_url": "https://www.mundodeportivo.com/futbol/fc-barcelona/20260605/1004191681/busquets-emociona-seul-gesto-nino-lesionado-clinic-barca-legends.html",
-      "fecha": "2026-06-05"
-    },
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "DeJulius pasará por el quirófano y estará tres meses de baja",
+      "texto": "Paula Blasi correrá el Tour de Francia tras la baja de Rooijakkers",
       "fuente": "Marca",
-      "fuente_url": "https://www.marca.com/baloncesto/acb/playoffs/2026/06/06/dejulius-pasara-quirofano-estara-tres-meses-baja.html",
-      "fecha": "2026-06-05"
+      "fuente_url": "https://www.marca.com/ciclismo/tour-francia/2026/06/03/paula-blasi-correra-tour-francia-baja-rooijakkers.html",
+      "fecha": "2026-06-03"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "La VPN más usada en España cuesta menos que un café al mes: NordVPN baja a 3,09 USD con su oferta de 2 años",
+      "fuente": "Gizmodo.com",
+      "fuente_url": "https://es.gizmodo.com/la-vpn-mas-usada-en-espana-cuesta-menos-que-un-cafe-al-mes-nordvpn-baja-a-309-usd-con-su-oferta-de-2-anos-2000238662",
+      "fecha": "2026-06-03"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "La primera duda para Bielsa: figura de la selección se sintió y se teme por un desgarro",
+      "fuente": "Montevideo.com.uy",
+      "fuente_url": "https://www.montevideo.com.uy/Deportes/La-primera-duda-para-Bielsa-figura-de-la-seleccion-se-sintio-y-se-teme-por-un-desgarro-uc963968",
+      "fecha": "2026-06-02"
     }
   ],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo A promedia 3.4 goles en amistosos: México, Uruguay, Corea del Sur con defensas frágiles"
+      "texto": "Grupo B (Inglaterra, USA, Irán, Gales) promedia 3.2 goles en amistosos: candidato a over 2.5"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Portugal invicto en 2026: 5 victorias consecutivas con CR7 como suplente estratégico"
+      "texto": "España mantiene 67% posesión promedio en preparación, máxima de todas las selecciones"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Holanda lidera en posesión efectiva: 68% promedio y 2.1 goles por partido en preparación"
+      "texto": "Partidos de Corea del Sur promedian 3.8 goles totales en últimos 5 encuentros previos"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Italia renace: 4-0 a Bélgica y 3-1 a Croacia muestran mejor versión desde Eurocopa"
+      "texto": "Canadá anfitrión invicto en 7 partidos: mejor racha de preparación junto a Argentina"
     }
   ],
   "oportunidades": []
