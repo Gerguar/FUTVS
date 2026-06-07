@@ -26,7 +26,7 @@ import os
 import sys
 import urllib.request
 import urllib.parse
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -132,6 +132,14 @@ def is_football_news(a: dict) -> tuple[bool, str]:
     return True, ""
 
 
+def is_recent_article(a: dict, from_date: date, to_date: date) -> bool:
+    try:
+        published = date.fromisoformat((a.get("publishedAt") or "")[:10])
+    except ValueError:
+        return False
+    return from_date <= published <= to_date
+
+
 def score_article(a: dict) -> float:
     """Score an article by relevance signals."""
     score = 0.0
@@ -178,8 +186,8 @@ def main() -> None:
         sys.exit(1)
 
     now = datetime.now(timezone.utc)
-    # Rango: últimos 7 días
-    from_dt = now - timedelta(days=7)
+    # Ventana estricta de cuatro fechas calendario, contando hoy.
+    from_dt = now - timedelta(days=3)
     from_date = from_dt.strftime("%Y-%m-%d")
     to_date = now.strftime("%Y-%m-%d")
 
@@ -200,12 +208,13 @@ def main() -> None:
     for q in QUERIES:
         # Primera vuelta: con sources deportivos (mejor calidad).
         articles = fetch_articles(q, from_date, to_date, page_size=8, sources=sources_csv)
-        # Segunda vuelta: solo idioma es, sin sources (fallback para tener volumen).
-        articles += fetch_articles(q, from_date, to_date, page_size=5, sources=None)
         kept = 0
         for a in articles:
             url = a.get("url", "")
             if url in seen_urls or not url:
+                continue
+            if not is_recent_article(a, from_dt.date(), now.date()):
+                print(f"  · descartado [fuera de fecha]: {(a.get('title') or '')[:70]}")
                 continue
             ok, razon = is_football_news(a)
             if not ok:
@@ -242,14 +251,7 @@ def main() -> None:
         })
 
     if not noticias:
-        print("! No se encontraron noticias válidas. Usando fallback.", file=sys.stderr)
-        noticias = [{
-            "titulo": "Sin noticias disponibles esta semana",
-            "resumen": "No se pudieron obtener noticias de fútbol para esta semana.",
-            "fuente": "FutVersus",
-            "url": "#",
-            "fecha": to_date,
-        }]
+        print("! No se encontraron noticias reales dentro de los últimos 4 días.", file=sys.stderr)
 
     output = {
         "updated": now.strftime("%Y-%m-%dT%H:%M:%SZ"),

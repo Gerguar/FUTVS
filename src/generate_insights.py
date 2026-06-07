@@ -9,11 +9,11 @@ from __future__ import annotations
 
 import json
 import os
-import time
+import urllib.error
+import urllib.parse
 import urllib.request
-from datetime import datetime, timezone, timedelta
+from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
-from collections import defaultdict
 
 # ── Paths ──────────────────────────────────────────────────────────────────
 ROOT         = Path(__file__).resolve().parents[1]
@@ -27,6 +27,30 @@ OUT_SEMANA   = WEB_DATA_DIR / "insights_semana.json"
 SB_URL        = os.environ.get("SUPABASE_URL", "").rstrip("/")
 SB_KEY        = os.environ.get("SUPABASE_SERVICE_KEY", "")
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+NEWS_MAX_AGE_DAYS = 4
+TRUSTED_NEWS_DOMAINS = (
+    "fifa.com",
+    "reuters.com",
+    "apnews.com",
+    "bbc.com",
+    "bbc.co.uk",
+    "espn.com",
+    "tycsports.com",
+    "ole.com.ar",
+    "clarin.com",
+    "lanacion.com.ar",
+    "infobae.com",
+    "afa.com.ar",
+    "uefa.com",
+    "concacaf.com",
+    "conmebol.com",
+    "theguardian.com",
+    "skysports.com",
+    "foxsports.com",
+    "cbssports.com",
+    "goal.com",
+    "transfermarkt.com",
+)
 
 # ── Supabase ─────────────────────────────────────────────────────────────────
 def sb_get(path: str) -> list[dict]:
@@ -57,8 +81,9 @@ def claude_with_search(prompt: str, max_tokens: int = 2000) -> str:
         return ""
 
     body = json.dumps({
-        "model": "claude-sonnet-4-5",
+        "model": "claude-haiku-4-5-20251001",
         "max_tokens": max_tokens,
+        "tools": [{"type": "web_search_20260209", "name": "web_search"}],
         "messages": [{"role": "user", "content": prompt}],
     }).encode()
 
@@ -68,6 +93,7 @@ def claude_with_search(prompt: str, max_tokens: int = 2000) -> str:
         headers={
             "x-api-key": ANTHROPIC_KEY,
             "anthropic-version": "2023-06-01",
+            "anthropic-beta": "web-search-2026-02-09",
             "content-type": "application/json",
         },
         method="POST",
@@ -85,18 +111,93 @@ def claude_with_search(prompt: str, max_tokens: int = 2000) -> str:
         print(f"[insights] claude error: {e}")
         return ""
 
+
+def _trusted_news_url(value: str) -> bool:
+    try:
+        parsed = urllib.parse.urlparse(value)
+    except ValueError:
+        return False
+    host = (parsed.hostname or "").lower()
+    return (
+        parsed.scheme == "https"
+        and bool(parsed.path)
+        and any(host == domain or host.endswith(f".{domain}") for domain in TRUSTED_NEWS_DOMAINS)
+    )
+
+
+def _url_exists(value: str) -> bool:
+    request = urllib.request.Request(
+        value,
+        headers={"User-Agent": "Mozilla/5.0 FutVersus/1.0"},
+        method="HEAD",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=12) as response:
+            return 200 <= response.status < 400
+    except urllib.error.HTTPError as error:
+        # Algunos medios bloquean HEAD o bots, pero 401/403/405 confirman
+        # que el recurso existe.
+        return error.code in {401, 403, 405}
+    except (urllib.error.URLError, TimeoutError, ValueError):
+        return False
+
+
+def filter_verified_news(
+    items: list[dict],
+    *,
+    today: date | None = None,
+    url_checker=_url_exists,
+) -> list[dict]:
+    """Acepta sólo noticias recientes con fuente y URL verificable."""
+    current = today or datetime.now(timezone.utc).date()
+    cutoff = current - timedelta(days=NEWS_MAX_AGE_DAYS - 1)
+    verified = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        try:
+            published = date.fromisoformat(str(item.get("fecha") or ""))
+        except ValueError:
+            continue
+        source = str(item.get("fuente") or "").strip()
+        url = str(item.get("url") or item.get("fuente_url") or "").strip()
+        if not (cutoff <= published <= current):
+            continue
+        if len(source) < 2 or not _trusted_news_url(url):
+            continue
+        if not url_checker(url):
+            continue
+        clean = dict(item)
+        clean["fecha"] = published.isoformat()
+        clean["fuente"] = source
+        clean["url"] = url
+        clean["fuente_url"] = url
+        verified.append(clean)
+    return verified[:4]
+
+
 # ── Generar secciones con Claude + web search ─────────────────────────────────
 def build_ai_insights() -> dict:
     """
     Usa Claude con web search para generar las 4 secciones de insights.
     Devuelve dict con xg_performance, alertas, tendencias, oportunidades, dato_curioso.
     """
-    today = datetime.now(timezone.utc).strftime("%d de %B de %Y")
+    now = datetime.now(timezone.utc)
+    today = now.date()
+    cutoff = today - timedelta(days=NEWS_MAX_AGE_DAYS - 1)
 
-    prompt = f"""Hoy es {today}. Sos el analista de FutVS, una plataforma de análisis estadístico de fútbol.
+    prompt = f"""Hoy es {today.isoformat()}. Sos el analista de FutVS, una plataforma de análisis estadístico de fútbol.
 
-Buscá en la web las últimas noticias de fútbol de los últimos 7 días y generá un análisis estructurado.
+Usá web search y buscá noticias publicadas EXCLUSIVAMENTE entre {cutoff.isoformat()} y {today.isoformat()}, inclusive.
 PRIORIDAD MÁXIMA: Mundial 2026 (empieza el 11 de junio de 2026 en USA, México y Canadá). Enfocate principalmente en selecciones nacionales — lesiones, convocatorias, amistosos de preparación, favoritos por grupo. Las ligas de clubes son secundarias.
+
+REGLAS OBLIGATORIAS:
+- Cada alerta y noticia debe estar respaldada por una página real de una fuente periodística reconocida u organismo oficial.
+- Abrí el resultado y verificá que la página sostenga exactamente el dato informado.
+- No uses redes sociales, snippets del buscador, blogs sin autor ni resultados cuya fecha no puedas confirmar.
+- No inventes URL, fuente, fecha, rival, lesión, convocatoria ni alineación.
+- Si no hay evidencia suficiente, omití el ítem. Es preferible devolver listas vacías.
+- Cada alerta debe incluir fuente, fecha y URL HTTPS directa a la nota.
 
 Buscá información sobre:
 1. Rendimiento vs expectativas: selecciones que están superando o por debajo de su xG en amistosos previos al Mundial 2026
@@ -111,21 +212,20 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin texto 
     {{"tipo": "bajo", "flag": "📉", "texto": "descripción corta en español"}}
   ],
   "alertas": [
-    {{"nivel": "warning", "flag": "⚠️", "texto": "descripción corta en español"}},
-    {{"nivel": "info", "flag": "🔍", "texto": "descripción corta en español"}}
+    {{"tipo": "lesion", "equipo": "Argentina", "nivel": "critical", "flag": "⚠️", "texto": "descripción corta en español", "fuente": "Reuters", "fecha": "YYYY-MM-DD", "url": "https://..."}}
   ],
   "tendencias": [
     {{"tipo": "over", "flag": "🎯", "texto": "descripción corta en español"}},
     {{"tipo": "other", "flag": "📈", "texto": "descripción corta en español"}}
   ],
   "noticias_semana": [
-    {{"titulo": "título de la noticia en español", "fuente": "nombre de la fuente", "fecha": "YYYY-MM-DD", "url": "url o cadena vacía"}},
-    {{"titulo": "título de la noticia en español", "fuente": "nombre de la fuente", "fecha": "YYYY-MM-DD", "url": ""}}
+    {{"titulo": "título de la noticia en español", "fuente": "nombre de la fuente", "fecha": "YYYY-MM-DD", "url": "https://..."}}
   ],
   "dato_curioso": "Un dato estadístico curioso y real del fútbol actual"
 }}
 
-Máximo 4 items por sección. Textos cortos (máximo 120 caracteres). Todo en español. Solo JSON."""
+Máximo 4 items por sección. Textos cortos (máximo 120 caracteres). Todo en español. Solo JSON.
+Para alertas y noticias, usá únicamente fuentes de esta lista: {", ".join(TRUSTED_NEWS_DOMAINS)}."""
 
     print("[insights] llamando a Claude con web search...", flush=True)
     raw = claude_with_search(prompt, max_tokens=2000)
@@ -143,6 +243,11 @@ Máximo 4 items por sección. Textos cortos (máximo 120 caracteres). Todo en es
 
     try:
         data = json.loads(raw)
+        data["alertas"] = filter_verified_news(data.get("alertas", []), today=today)
+        data["noticias_semana"] = filter_verified_news(
+            data.get("noticias_semana", []),
+            today=today,
+        )
         print("[insights] respuesta de Claude parseada correctamente", flush=True)
         return data
     except json.JSONDecodeError as e:
@@ -348,25 +453,6 @@ def main() -> None:
     print(f"[insights] → {OUT_INSIGHTS}", flush=True)
 
     # 5. Armar insights_semana.json
-    fecha_str = now.date().isoformat()
-    if not noticias:
-        # Fallback: generar desde oportunidades y tendencias
-        for o in opps[:3]:
-            noticias.append({
-                "titulo": f"⚡ {o['apuesta']} en {o['partido']} — edge de +{o['edge']:.0f}pp vs mercado",
-                "fuente": "FutVS Modelo", "fecha": fecha_str, "url": "",
-            })
-        for t in tendencias[:2]:
-            noticias.append({
-                "titulo": t.get("flag","") + " " + t.get("texto",""),
-                "fuente": "FutVS Análisis", "fecha": fecha_str, "url": "",
-            })
-    if not noticias:
-        noticias.append({
-            "titulo": "📊 Sin novedades significativas esta semana.",
-            "fuente": "FutVS Modelo", "fecha": fecha_str, "url": "",
-        })
-
     semana = {"week": isoweek(now), "noticias": noticias}
     OUT_SEMANA.write_text(json.dumps(semana, indent=2, ensure_ascii=False))
     print(f"[insights] → {OUT_SEMANA}", flush=True)
