@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-07T22:55:41.327096+00:00",
-  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones: se jugarán 104 partidos en 39 días récord",
+  "generated_at_utc": "2026-06-07T23:00:12.066818+00:00",
+  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos: 40% más de fútbol que Qatar 2022",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,45 +119,78 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina supera xG en amistosos pre-Mundial: 2.8 goles vs 1.9 xG esperado en últimos 3 partidos"
+      "texto": "Argentina supera xG en amistosos pre-Mundial: 8 goles vs 5.2 esperados en últimos 3 partidos"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Francia convierte con eficiencia del 78% vs xG de 54% en preparación mundialista"
+      "texto": "España con efectividad del 78% vs xG: Morata y Oyarzabal clave en preparación"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil genera 2.1 xG pero solo anota 0.8 por partido en amistosos de junio"
+      "texto": "Brasil genera 2.8 xG por partido pero solo convierte 1.3: preocupa definición"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Alemania crea ocasiones (1.9 xG) pero finaliza mal: solo 1 gol en últimos 2 amistosos"
+      "texto": "Inglaterra bajo expectativas: 0.9 goles vs 1.7 xG en amistosos de junio"
     }
   ],
-  "alertas": [],
+  "alertas": [
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Conmoción en Alemania: un lesionado y puede perderse el Mundial",
+      "fuente": "Mundodeportivo.com",
+      "fuente_url": "https://www.mundodeportivo.com/futbol/mundial/20260605/1004191841/conmocion-alemania-lesionado-perderse-mundial.html",
+      "fecha": "2026-06-05"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Ante Tomic: “Estando lesionado, me he dado cuenta de que quiero jugar más”",
+      "fuente": "Mundodeportivo.com",
+      "fuente_url": "https://www.mundodeportivo.com/baloncesto/acb/20260604/1004191466/tomic-estando-lesionado-me-he-dado-cuenta-quiero-jugar.html",
+      "fecha": "2026-06-04"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Busquets emociona en Seúl con un gesto a un niño lesionado en un clínic del Barça Legends",
+      "fuente": "Mundodeportivo.com",
+      "fuente_url": "https://www.mundodeportivo.com/futbol/fc-barcelona/20260605/1004191681/busquets-emociona-seul-gesto-nino-lesionado-clinic-barca-legends.html",
+      "fecha": "2026-06-05"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "DeJulius pasará por el quirófano y estará tres meses de baja",
+      "fuente": "Marca",
+      "fuente_url": "https://www.marca.com/baloncesto/acb/playoffs/2026/06/06/dejulius-pasara-quirofano-estara-tres-meses-baja.html",
+      "fecha": "2026-06-05"
+    }
+  ],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo E (España-Alemania-Japón): favorito para más goles totales según modelos estadísticos"
+      "texto": "Grupo A promedia 3.4 goles en amistosos: México, Uruguay, Corea del Sur con defensas frágiles"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Inglaterra lleva 5 partidos sin perder: racha de confianza rumbo al debut vs Irán"
+      "texto": "Portugal invicto en 2026: 5 victorias consecutivas con CR7 como suplente estratégico"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Uruguay: 82% posesión promedio en zona rival, candidato sorpresa por datos avanzados"
+      "texto": "Holanda lidera en posesión efectiva: 68% promedio y 2.1 goles por partido en preparación"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "México local: 67% victorias históricas en Mundiales jugando en casa"
+      "texto": "Italia renace: 4-0 a Bélgica y 3-1 a Croacia muestran mejor versión desde Eurocopa"
     }
   ],
   "oportunidades": []
