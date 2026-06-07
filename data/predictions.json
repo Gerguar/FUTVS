@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-06-06T16:00:27.193489+00:00",
+  "generated_at_utc": "2026-06-07T10:16:16.773182+00:00",
   "model": {
     "trained_at": "2026-05-24T05:08:42.420043+00:00",
     "method": "DixonColes+Elo+XGBoost(isotonic)",
