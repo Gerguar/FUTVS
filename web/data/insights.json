@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-07T22:19:55.495947+00:00",
-  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40 más que Qatar 2022",
+  "generated_at_utc": "2026-06-07T22:47:06.852687+00:00",
+  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos, casi el doble que Qatar 2022",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,66 +119,45 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina convirtió 7 goles con xG de 4.2 en amistosos previos, finalización letal de Lautaro y Messi"
+      "texto": "Argentina supera xG en amistosos previos: 2.8 goles vs 1.9 esperados en últimos 3 partidos"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "España superó xG por 2.3 en sus últimos dos amistosos, Morata y Williams en racha goleadora"
+      "texto": "España con efectividad del 140% vs xG: 7 goles en 2 amistosos con 5.0 xG esperados"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil generó xG de 3.8 pero solo marcó 1 gol en amistosos vs México y USA, crisis de definición"
+      "texto": "Brasil genera 2.4 xG por partido pero solo anota 1.3 goles de media en preparación"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Inglaterra con xG 5.1 pero solo 3 goles anotados, Kane y Foden desperdiciaron claras"
+      "texto": "Inglaterra con bajo rendimiento: 0.9 goles vs 1.8 xG en amistosos de junio"
     }
   ],
-  "alertas": [
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "Neymar descartado del Mundial 2026 por recaída en lesión de rodilla, baja definitiva para Brasil"
-    },
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "Mbappé con molestias musculares a 4 días del debut, Francia lo evalúa día a día"
-    },
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "De Bruyne sancionado, se pierde primer partido de Bélgica por acumulación de amarillas"
-    },
-    {
-      "nivel": "info",
-      "flag": "🔍",
-      "texto": "Cristiano Ronaldo confirmado en Portugal a sus 41 años, última participación mundialista"
-    }
-  ],
+  "alertas": [],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo B (Inglaterra, USA, Irán, Gales) promedia 3.4 goles en amistosos, candidato a over 2.5"
+      "texto": "Grupo B proyecta más goles: promedio 3.2 por partido según análisis pre-Mundial"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Anfitriones invictos: USA 4-0-0, México 3-1-0, Canadá 3-0-1 en preparación mundialista"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "Francia y Argentina lideran ranking FIFA como máximos favoritos, cuotas 5.5 y 6.0 respectivamente"
+      "texto": "Francia lidera ranking de favoritos con 18% probabilidad de ganar según modelos estadísticos"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "12 selecciones promediaron más de 2 goles por partido en fase de preparación, Mundial ofensivo"
+      "texto": "Argentina invicta en 2026: 5 victorias en amistosos preparatorios previo al Mundial"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Selecciones de Concacaf suman 12 goles en últimos 4 días de preparación"
     }
   ],
   "oportunidades": []
