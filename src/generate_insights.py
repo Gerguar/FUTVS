@@ -206,7 +206,7 @@ def build_forma_reciente() -> list[dict]:
                 "id": tid,
                 "nombre": eq.get("nombre", f"Equipo {tid}"),
                 "escudo": eq.get("escudo_url", ""),
-                "gf": 0, "gc": 0, "partidos": [],
+                "partidos": [],
             }
 
     for p in partidos:
@@ -222,30 +222,25 @@ def build_forma_reciente() -> list[dict]:
         rl = "W" if gl > gv else ("D" if gl == gv else "L")
         rv = "W" if gv > gl else ("D" if gv == gl else "L")
         if teams.get(lid):
-            teams[lid]["gf"] += gl; teams[lid]["gc"] += gv
-            teams[lid]["partidos"].append((fecha, rl))
+            teams[lid]["partidos"].append((fecha, rl, gl, gv))
         if teams.get(vid):
-            teams[vid]["gf"] += gv; teams[vid]["gc"] += gl
-            teams[vid]["partidos"].append((fecha, rv))
+            teams[vid]["partidos"].append((fecha, rv, gv, gl))
 
     result = []
     for t in teams.values():
         if t is None:  # club descartado en ensure()
             continue
         sorted_p = sorted(t["partidos"], key=lambda x: x[0], reverse=True)
-        forma = [r for _, r in sorted_p[:5]]
+        top5 = sorted_p[:5]
+        forma = [r for _, r, _, _ in top5]
         if len(forma) < 2:  # minimo 2 partidos para que tenga sentido
             continue
-        # Recalcular gf/gc usando solo los ultimos 5 (no toda la ventana de 60 dias)
-        gf5 = sum(1 for _ in [])  # placeholder; recalculo correcto abajo
-        # Necesitamos los goles por partido, no totales — usamos los ultimos 5
-        top5 = sorted_p[:5]
-        # Ya no tenemos goles por partido en t["partidos"] (solo W/D/L). Mantengo
-        # gf/gc totales del periodo. Es razonable porque la mayoria juega ~5 amistosos.
+        gf5 = sum(gf for _, _, gf, _ in top5)
+        gc5 = sum(gc for _, _, _, gc in top5)
         result.append({
             "slug": t["nombre"].lower().replace(" ", "_"),
             "nombre": t["nombre"], "escudo": t["escudo"],
-            "forma": forma, "gf": t["gf"], "gc": t["gc"],
+            "forma": forma, "gf": gf5, "gc": gc5,
         })
 
     # Ordenar por (W, diff de gol) y limitar a top 8 selecciones del Mundial
