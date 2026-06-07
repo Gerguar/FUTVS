@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-07T16:59:25.324045+00:00",
-  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos, récord histórico de la competición",
+  "generated_at_utc": "2026-06-07T22:19:55.495947+00:00",
+  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40 más que Qatar 2022",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,66 +119,66 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina supera xG en amistosos pre-Mundial con efectividad del 78% en definición"
+      "texto": "Argentina convirtió 7 goles con xG de 4.2 en amistosos previos, finalización letal de Lautaro y Messi"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "España convierte 2.1 goles sobre xG esperado en últimos 3 amistosos de preparación"
+      "texto": "España superó xG por 2.3 en sus últimos dos amistosos, Morata y Williams en racha goleadora"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil rinde 1.3 goles menos que xG en fase preparatoria, preocupa finalización"
+      "texto": "Brasil generó xG de 3.8 pero solo marcó 1 gol en amistosos vs México y USA, crisis de definición"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Inglaterra genera 2.8 xG por partido pero solo convierte 1.1 en amistosos recientes"
+      "texto": "Inglaterra con xG 5.1 pero solo 3 goles anotados, Kane y Foden desperdiciaron claras"
     }
   ],
   "alertas": [
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Francia: Kylian Mbappé duda por molestia muscular a 4 días del debut mundialista"
+      "texto": "Neymar descartado del Mundial 2026 por recaída en lesión de rodilla, baja definitiva para Brasil"
     },
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Alemania confirma baja de Leroy Sané por lesión de rodilla, fuera del Mundial"
+      "texto": "Mbappé con molestias musculares a 4 días del debut, Francia lo evalúa día a día"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "De Bruyne sancionado, se pierde primer partido de Bélgica por acumulación de amarillas"
     },
     {
       "nivel": "info",
       "flag": "🔍",
-      "texto": "México convoca de emergencia a Santiago Giménez tras lesión de Raúl Jiménez"
-    },
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "Portugal: Cristiano Ronaldo en duda médica, decisión final el 9 de junio"
+      "texto": "Cristiano Ronaldo confirmado en Portugal a sus 41 años, última participación mundialista"
     }
   ],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo A: México favorito estadístico con 68% posesión promedio en preparación"
+      "texto": "Grupo B (Inglaterra, USA, Irán, Gales) promedia 3.4 goles en amistosos, candidato a over 2.5"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Anfitriones invictos: USA 4-0-0, México 3-1-0, Canadá 3-0-1 en preparación mundialista"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Francia y Argentina lideran ranking FIFA como máximos favoritos, cuotas 5.5 y 6.0 respectivamente"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "España lidera ranking de pases completados: 89.3% precisión en últimos amistosos"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "Colombia invicta en 7 partidos previos, mejor racha sudamericana rumbo al Mundial"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "Japón marca tendencia defensiva: solo 1 gol recibido en últimos 5 encuentros"
+      "texto": "12 selecciones promediaron más de 2 goles por partido en fase de preparación, Mundial ofensivo"
     }
   ],
   "oportunidades": []
