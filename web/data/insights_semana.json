@@ -2,26 +2,26 @@
   "week": "2026-W23",
   "noticias": [
     {
-      "titulo": "Lista definitiva de Argentina: Messi confirmado, sorprende convocatoria de Garnacho",
-      "fuente": "TyC Sports",
+      "titulo": "Convocatorias definitivas cerradas: 48 selecciones confirman sus 26 jugadores",
+      "fuente": "FIFA",
+      "fecha": "2026-06-06",
+      "url": ""
+    },
+    {
+      "titulo": "Inauguración Mundial 2026: México vs Polonia abre torneo en Estadio Azteca",
+      "fuente": "ESPN",
       "fecha": "2026-06-05",
       "url": ""
     },
     {
-      "titulo": "Mbappé capitán de Francia: 'Este será mi Mundial', declara previo al debut",
-      "fuente": "L'Équipe",
+      "titulo": "Argentina, Brasil y Uruguay completan últimos amistosos antes del debut mundialista",
+      "fuente": "CONMEBOL",
       "fecha": "2026-06-04",
       "url": ""
     },
     {
-      "titulo": "Estados Unidos vs Polonia 2-1: anfitriones convencen en último amistoso pre-Mundial",
-      "fuente": "ESPN",
-      "fecha": "2026-06-03",
-      "url": ""
-    },
-    {
-      "titulo": "Ceremonia inaugural confirmada para 11 junio en Ciudad de México, espectáculo de 2 horas",
-      "fuente": "FIFA.com",
+      "titulo": "Sorteo final de partidos: horarios confirmados para fase de grupos del Mundial",
+      "fuente": "FIFA",
       "fecha": "2026-06-02",
       "url": ""
     }

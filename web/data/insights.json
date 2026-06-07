@@ -1,18 +1,48 @@
 {
-  "generated_at_utc": "2026-06-06T23:12:11.899313+00:00",
-  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40% más de fútbol que Qatar 2022",
+  "generated_at_utc": "2026-06-07T00:10:03.328809+00:00",
+  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones, 104 partidos y 16 sedes en 3 países simultáneamente",
   "forma_reciente": [
     {
-      "slug": "méxico",
-      "nombre": "México",
-      "escudo": "https://flagcdn.com/w160/mx.png",
+      "slug": "alemania",
+      "nombre": "Alemania",
+      "escudo": "https://flagcdn.com/w160/de.png",
       "forma": [
+        "W",
+        "W",
         "W",
         "W",
         "W"
       ],
-      "gf": 8,
-      "gc": 1
+      "gf": 26,
+      "gc": 9
+    },
+    {
+      "slug": "argentina",
+      "nombre": "Argentina",
+      "escudo": "https://flagcdn.com/w160/ar.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "gf": 20,
+      "gc": 3
+    },
+    {
+      "slug": "japón",
+      "nombre": "Japón",
+      "escudo": "https://flagcdn.com/w160/jp.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "gf": 19,
+      "gc": 6
     },
     {
       "slug": "marruecos",
@@ -20,266 +50,135 @@
       "escudo": "https://flagcdn.com/w160/ma.png",
       "forma": [
         "W",
-        "W"
-      ],
-      "gf": 9,
-      "gc": 0
-    },
-    {
-      "slug": "irlanda",
-      "nombre": "Irlanda",
-      "escudo": "https://flagcdn.com/w160/ie.png",
-      "forma": [
+        "W",
+        "W",
         "D",
-        "W",
         "W"
       ],
-      "gf": 7,
-      "gc": 1
-    },
-    {
-      "slug": "corea_del_sur",
-      "nombre": "Corea del Sur",
-      "escudo": "https://flagcdn.com/w160/kr.png",
-      "forma": [
-        "W",
-        "W"
-      ],
-      "gf": 6,
-      "gc": 0
-    },
-    {
-      "slug": "república_checa",
-      "nombre": "República Checa",
-      "escudo": "https://flagcdn.com/w160/cz.png",
-      "forma": [
-        "W",
-        "W"
-      ],
-      "gf": 7,
-      "gc": 2
-    },
-    {
-      "slug": "nigeria",
-      "nombre": "Nigeria",
-      "escudo": "https://flagcdn.com/w160/ng.png",
-      "forma": [
-        "D",
-        "W",
-        "W"
-      ],
-      "gf": 7,
-      "gc": 2
-    },
-    {
-      "slug": "irán",
-      "nombre": "Irán",
-      "escudo": "https://flagcdn.com/w160/ir.png",
-      "forma": [
-        "W",
-        "W"
-      ],
-      "gf": 5,
-      "gc": 1
-    },
-    {
-      "slug": "arsenal",
-      "nombre": "Arsenal",
-      "escudo": "https://crests.football-data.org/57.svg",
-      "forma": [
-        "L",
-        "W",
-        "W"
-      ],
-      "gf": 7,
+      "gf": 50,
       "gc": 6
     },
     {
-      "slug": "paraguay",
-      "nombre": "Paraguay",
-      "escudo": "https://flagcdn.com/w160/py.png",
+      "slug": "austria",
+      "nombre": "Austria",
+      "escudo": "https://flagcdn.com/w160/at.png",
       "forma": [
+        "W",
+        "W",
+        "W",
+        "D",
         "W"
       ],
-      "gf": 4,
-      "gc": 0
+      "gf": 27,
+      "gc": 4
+    },
+    {
+      "slug": "costa_de_marfil",
+      "nombre": "Costa de Marfil",
+      "escudo": "https://flagcdn.com/w160/ci.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "W"
+      ],
+      "gf": 30,
+      "gc": 8
+    },
+    {
+      "slug": "francia",
+      "nombre": "Francia",
+      "escudo": "https://flagcdn.com/w160/fr.png",
+      "forma": [
+        "L",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "gf": 24,
+      "gc": 8
     },
     {
       "slug": "turquía",
       "nombre": "Turquía",
       "escudo": "https://flagcdn.com/w160/tr.png",
       "forma": [
+        "W",
+        "W",
+        "W",
+        "D",
         "W"
       ],
-      "gf": 4,
-      "gc": 0
-    },
-    {
-      "slug": "brasil",
-      "nombre": "Brasil",
-      "escudo": "https://flagcdn.com/w160/br.png",
-      "forma": [
-        "W"
-      ],
-      "gf": 6,
-      "gc": 2
-    },
-    {
-      "slug": "alemania",
-      "nombre": "Alemania",
-      "escudo": "https://flagcdn.com/w160/de.png",
-      "forma": [
-        "W"
-      ],
-      "gf": 4,
-      "gc": 0
-    },
-    {
-      "slug": "villarreal",
-      "nombre": "Villarreal",
-      "escudo": "https://crests.football-data.org/94.png",
-      "forma": [
-        "W"
-      ],
-      "gf": 5,
-      "gc": 1
-    },
-    {
-      "slug": "indonesia",
-      "nombre": "Indonesia",
-      "escudo": null,
-      "forma": [
-        "W"
-      ],
-      "gf": 3,
-      "gc": 0
-    },
-    {
-      "slug": "haití",
-      "nombre": "Haití",
-      "escudo": "https://flagcdn.com/w160/ht.png",
-      "forma": [
-        "L",
-        "W"
-      ],
-      "gf": 5,
-      "gc": 2
-    },
-    {
-      "slug": "cabo_verde",
-      "nombre": "Cabo Verde",
-      "escudo": "https://flagcdn.com/w160/cv.png",
-      "forma": [
-        "W"
-      ],
-      "gf": 3,
-      "gc": 0
-    },
-    {
-      "slug": "suiza",
-      "nombre": "Suiza",
-      "escudo": "https://flagcdn.com/w160/ch.png",
-      "forma": [
-        "W"
-      ],
-      "gf": 4,
-      "gc": 1
-    },
-    {
-      "slug": "escocia",
-      "nombre": "Escocia",
-      "escudo": "https://flagcdn.com/w160/gb-sct.png",
-      "forma": [
-        "W"
-      ],
-      "gf": 4,
-      "gc": 1
-    },
-    {
-      "slug": "como_1907",
-      "nombre": "Como 1907",
-      "escudo": "https://crests.football-data.org/7397.png",
-      "forma": [
-        "W"
-      ],
-      "gf": 4,
-      "gc": 1
-    },
-    {
-      "slug": "west_ham",
-      "nombre": "West Ham",
-      "escudo": "https://crests.football-data.org/563.png",
-      "forma": [
-        "W"
-      ],
-      "gf": 3,
-      "gc": 0
+      "gf": 23,
+      "gc": 13
     }
   ],
   "xg_performance": [
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina supera xG en amistosos pre-Mundial con 8 goles vs 5.2 esperados en últimos 3 partidos"
+      "texto": "Argentina superó xG esperado en amistosos previos, convirtiendo con 23% más eficiencia que lo proyectado"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "España convierte al 140% de su xG en preparación, Morata en racha con 4 goles en 2 amistosos"
+      "texto": "Francia ha generado 2.8 xG por partido en preparación, convirtiendo 3.4 goles de promedio"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil genera 2.8 xG por partido pero solo anota 1.3, preocupa definición a días del Mundial"
+      "texto": "Brasil solo convirtió 60% de su xG en últimos amistosos, preocupación en definición"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Francia con 3.1 xG y solo 1 gol en último amistoso vs Alemania, falta efectividad sin Benzema"
+      "texto": "Inglaterra genera chances pero subutiliza: 1.9 xG generados vs 1.2 goles reales en preparación"
     }
   ],
   "alertas": [
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Neymar confirmado fuera del Mundial 2026, lesión de rodilla no recuperada a tiempo"
+      "texto": "Lesión de último momento afecta preparación de selecciones a 4 días del inicio del Mundial"
     },
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Bélgica pierde a De Bruyne por lesión muscular, duda para debut vs Canadá el 12 de junio"
+      "texto": "Varios equipos ajustan listas de 26 jugadores antes del cierre del 9 de junio"
     },
     {
       "nivel": "info",
       "flag": "🔍",
-      "texto": "Uruguay convoca a Luis Suárez a sus 39 años, último Mundial del Pistolero"
+      "texto": "México confirma su 11 titular para debut vs Polonia el 13 de junio en estadio Azteca"
     },
     {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "Inglaterra sin James Maddison por sanción FIFA, afecta mediocampo ante Serbia"
+      "nivel": "info",
+      "flag": "🔍",
+      "texto": "Estados Unidos finaliza microciclo de adaptación en sedes, define alineación titular"
     }
   ],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo E favorito para Over 2.5: España, Alemania y Japón promedian 3.2 goles por partido"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "México sólido en casa, 5 partidos sin perder en estadios sede, +7 de diferencia de gol"
+      "texto": "Grupo de la muerte: España, Alemania y Japón tienen +70% posesión promedio en amistosos"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Portugal anota en primeros 15 mins en últimos 6 amistosos, tendencia early goal confirmada"
+      "texto": "Selecciones sudamericanas promedian 2.6 goles por partido en fase final de preparación"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Argentina lidera apuestas con 19% de probabilidad de campeonato según modelos estadísticos"
+      "texto": "48 equipos participan por primera vez en formato expandido del Mundial 2026"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Datos muestran que anfitriones USA, México y Canadá aumentaron 18% su rendimiento defensivo"
     }
   ],
   "oportunidades": []
