@@ -286,6 +286,145 @@ def build_oportunidades(preds: dict) -> list[dict]:
             seen.add(o["partido"]); unique.append(o)
     return unique[:5]
 
+# ── Alertas desde NewsAPI (en vez de Claude, para evitar alucinaciones) ──────
+# Decision del 7-jun-2026: las alertas se alimentan SOLO de NewsAPI porque
+# Claude sin web_search inventaba lesiones (Neymar rodilla, De Bruyne sancion,
+# etc). Aca consultamos NewsAPI con keywords especificas y filtramos las que
+# realmente son alertas (lesiones, sanciones, bajas confirmadas).
+
+ALERTA_QUERIES = [
+    # qInTitle con OR — NewsAPI lo soporta.
+    "lesion mundial",
+    "baja mundial",
+    "descartado mundial",
+    "fuera del mundial",
+    "sancion mundial",
+    "suspendido mundial",
+    "rotura mundial",
+]
+
+# Mapeo keyword -> nivel + flag (orden importa: las criticas primero)
+ALERTA_KEYWORDS = [
+    # (keyword en titulo lowercase, nivel, flag emoji)
+    ("se pierde el mundial",  "critical", "🚨"),
+    ("descartado del mundial","critical", "🚨"),
+    ("fuera del mundial",     "critical", "🚨"),
+    ("rotura de ligament",    "critical", "🚨"),
+    ("operad",                "critical", "🚨"),  # operado/operada/operada
+    ("baja confirmada",       "critical", "🚨"),
+    ("baja para el mundial",  "critical", "🚨"),
+    ("queda fuera",           "critical", "🚨"),
+    ("se perdera el mundial", "critical", "🚨"),
+    ("no jugara el mundial",  "critical", "🚨"),
+    ("lesion grave",          "critical", "🚨"),
+    ("rotura",                "warning",  "⚠️"),
+    ("desgarro",              "warning",  "⚠️"),
+    ("lesionado",             "warning",  "⚠️"),
+    ("lesion",                "warning",  "⚠️"),
+    ("baja",                  "warning",  "⚠️"),
+    ("sancion",               "warning",  "⚠️"),
+    ("suspendido",            "warning",  "⚠️"),
+    ("amarillas",             "warning",  "⚠️"),
+    ("convocatoria",          "info",     "🔍"),
+    ("convocados",            "info",     "🔍"),
+    ("lista de",              "info",     "🔍"),
+    ("en duda",               "info",     "🔍"),
+]
+
+# Reusar filtros antiestafa de fetch_news para no duplicar codigo.
+def _clasificar_alerta(titulo: str) -> tuple[str, str] | None:
+    t = titulo.lower()
+    for kw, nivel, flag in ALERTA_KEYWORDS:
+        if kw in t:
+            return nivel, flag
+    return None
+
+def _normalizar_titulo(titulo: str, max_len: int = 140) -> str:
+    """Limpia un titulo de NewsAPI: saca fuente al final, trunca con elipsis."""
+    titulo = (titulo or "").strip()
+    for sep in [" - ", " | ", " — "]:
+        if sep in titulo:
+            parts = titulo.rsplit(sep, 1)
+            # Si lo de la derecha es corto, es el nombre del medio
+            if len(parts[1]) < 40:
+                titulo = parts[0].strip()
+    if len(titulo) > max_len:
+        titulo = titulo[:max_len].rsplit(" ", 1)[0] + "…"
+    return titulo
+
+def build_alertas_from_newsapi() -> list[dict]:
+    """Genera alertas desde NewsAPI usando queries especificas de lesiones,
+    bajas, sanciones. Filtra titulos no-futbol y deduplica por jugador.
+    Devuelve hasta 4 alertas ordenadas por nivel (critical > warning > info)."""
+    from . import fetch_news as fn
+    if not fn.NEWS_API_KEY:
+        print("[insights] NEWS_API_KEY ausente — no se generan alertas", flush=True)
+        return []
+
+    now = datetime.now(timezone.utc)
+    from_date = (now - timedelta(days=7)).strftime("%Y-%m-%d")
+    to_date = now.strftime("%Y-%m-%d")
+    sources_csv = ",".join(fn.FOOTBALL_SOURCES)
+
+    seen_urls: set[str] = set()
+    candidatos: list[dict] = []
+
+    for q in ALERTA_QUERIES:
+        try:
+            # Primera vuelta: medios deportivos.
+            arts = fn.fetch_articles(q, from_date, to_date, page_size=8, sources=sources_csv)
+            # Segunda vuelta: idioma es sin restriccion de fuente (mas cobertura).
+            arts += fn.fetch_articles(q, from_date, to_date, page_size=5, sources=None)
+        except Exception as e:
+            print(f"[insights] error fetch alertas '{q}': {e}", flush=True)
+            continue
+
+        for a in arts:
+            url = a.get("url") or ""
+            if not url or url in seen_urls:
+                continue
+            # Filtro futbol estricto (reusa logica de fetch_news)
+            ok, razon = fn.is_football_news(a)
+            if not ok:
+                continue
+            titulo = (a.get("title") or "").strip()
+            if not titulo:
+                continue
+            clas = _clasificar_alerta(titulo)
+            if not clas:
+                # No matcheo ninguna keyword de alerta → descarta
+                continue
+            nivel, flag = clas
+            seen_urls.add(url)
+            candidatos.append({
+                "nivel": nivel,
+                "flag": flag,
+                "texto": _normalizar_titulo(titulo),
+                "fuente": (a.get("source") or {}).get("name") or "",
+                "fuente_url": url,
+                "fecha": (a.get("publishedAt") or "")[:10],
+            })
+
+    # Ordenar: critical primero, despues warning, despues info
+    rank = {"critical": 0, "warning": 1, "info": 2}
+    candidatos.sort(key=lambda x: rank.get(x["nivel"], 9))
+
+    # Deduplicar por titulo casi identico (mismo jugador en distintos medios)
+    # Estrategia simple: comparar primeras 5 palabras del titulo normalizado.
+    seen_keys: set[str] = set()
+    unique: list[dict] = []
+    for c in candidatos:
+        key = " ".join(c["texto"].lower().split()[:5])
+        if key in seen_keys:
+            continue
+        seen_keys.add(key)
+        unique.append(c)
+        if len(unique) >= 4:
+            break
+
+    print(f"[insights] alertas NewsAPI: {len(unique)} (de {len(candidatos)} candidatos)", flush=True)
+    return unique
+
 # ── dato_curioso fallback ─────────────────────────────────────────────────────
 DATOS_CURIOSOS = [
     "El modelo FutVS procesa más de 12.500 partidos históricos para generar cada pronóstico.",
@@ -317,14 +456,18 @@ def main() -> None:
     opps = build_oportunidades(preds)
     print(f"[insights] {len(opps)} oportunidades desde modelo", flush=True)
 
-    # 3. Noticias y análisis con Claude + web search
+    # 3. Noticias y análisis con Claude + web search (xg/tendencias/dato)
     ai = build_ai_insights()
 
     xg_perf    = ai.get("xg_performance", [])
-    alertas    = ai.get("alertas", [])
     tendencias = ai.get("tendencias", [])
     noticias   = ai.get("noticias_semana", [])
     dato       = ai.get("dato_curioso") or pick_dato_curioso()
+
+    # 3.b. ALERTAS desde NewsAPI (NO desde Claude — evita alucinaciones).
+    # Decision del 7-jun-2026 despues de detectar 3 alertas falsas inventadas
+    # por Claude (Neymar lesion rodilla, De Bruyne sancion, Mbappe 4 dias).
+    alertas = build_alertas_from_newsapi()
 
     print(f"[insights] AI: {len(xg_perf)} xG, {len(alertas)} alertas, "
           f"{len(tendencias)} tendencias, {len(noticias)} noticias", flush=True)
