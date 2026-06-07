@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-07T06:42:57.528549+00:00",
-  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos totales, casi el doble que ediciones anteriores",
+  "generated_at_utc": "2026-06-07T16:59:25.324045+00:00",
+  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos, récord histórico de la competición",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,66 +119,66 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina supera xG esperado en amistosos pre-Mundial con Messi en forma óptima"
+      "texto": "Argentina supera xG en amistosos pre-Mundial con efectividad del 78% en definición"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Francia convierte más de lo esperado en preparación, Mbappé clave en definición"
+      "texto": "España convierte 2.1 goles sobre xG esperado en últimos 3 amistosos de preparación"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil genera chances pero no define: xG alto vs goles reales bajos en últimos tests"
+      "texto": "Brasil rinde 1.3 goles menos que xG en fase preparatoria, preocupa finalización"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Inglaterra bajo rendimiento ofensivo en amistosos finales previo al debut mundialista"
+      "texto": "Inglaterra genera 2.8 xG por partido pero solo convierte 1.1 en amistosos recientes"
     }
   ],
   "alertas": [
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Duda médica de Neymar para debut de Brasil el 12/06 vs Serbia por molestia muscular"
+      "texto": "Francia: Kylian Mbappé duda por molestia muscular a 4 días del debut mundialista"
     },
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Bélgica pierde a De Bruyne por lesión de último momento, fuera del Mundial 2026"
+      "texto": "Alemania confirma baja de Leroy Sané por lesión de rodilla, fuera del Mundial"
     },
     {
       "nivel": "info",
       "flag": "🔍",
-      "texto": "Estados Unidos confirma 26 convocados con Pulisic como capitán para inauguración"
+      "texto": "México convoca de emergencia a Santiago Giménez tras lesión de Raúl Jiménez"
     },
     {
-      "nivel": "info",
-      "flag": "🔍",
-      "texto": "España incluye sorpresivamente a Lamine Yamal de 16 años en lista final del Mundial"
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Portugal: Cristiano Ronaldo en duda médica, decisión final el 9 de junio"
     }
   ],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo B (Inglaterra, USA, Irán, Gales) proyecta más goles promedio según preparación"
+      "texto": "Grupo A: México favorito estadístico con 68% posesión promedio en preparación"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Selecciones europeas en racha: 12 partidos sin perder en amistosos pre-Mundial"
+      "texto": "España lidera ranking de pases completados: 89.3% precisión en últimos amistosos"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Argentina favorita estadística con 18% probabilidad de campeonato según modelos"
+      "texto": "Colombia invicta en 7 partidos previos, mejor racha sudamericana rumbo al Mundial"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Sedes México registran mayor altitud: factor rendimiento para selecciones sudamericanas"
+      "texto": "Japón marca tendencia defensiva: solo 1 gol recibido en últimos 5 encuentros"
     }
   ],
   "oportunidades": []
