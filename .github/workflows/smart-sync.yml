@@ -1,12 +1,10 @@
-name: smart-sync (resultados, trigger por kickoff+120min)
+name: smart-sync (resultados + Mundial en vivo)
 
 # Estrategia:
 # - Cron cada 30 min.
-# - Job 'check' (~15s, sin instalar deps Python): pregunta a Supabase si hay
-#   partidos con estado='programado' Y fecha < (now - 120 min). Si los hay,
-#   significa que ya deberian estar finalizados segun nuestra heuristica de
-#   "kickoff + 120 min" (90 min juego + 15 entretiempo + add time + buffer
-#   para que football-data.org marque FINISHED).
+# - Job 'check' (~15s, sin instalar deps Python): activa el sync si hay partidos
+#   vencidos hace 120 min, o si un partido del Mundial ya llego al kickoff o
+#   figura en curso. Durante el Mundial esto refresca estado/resultado cada 30 min.
 # - Job 'sync' (~3 min): solo corre si 'check' encontro candidatos. Hace
 #   data_ingest + supabase_sync para refrescar el parquet y propagar los
 #   FINISHED a Supabase.
@@ -34,18 +32,30 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
           set -euo pipefail
-          # Cutoff = now - 120 min en formato ISO UTC.
+          NOW=$(date -u +%Y-%m-%dT%H:%M:%S)
           CUTOFF=$(date -u -d "-120 minutes" +%Y-%m-%dT%H:%M:%S)
-          URL="${SUPABASE_URL}/rest/v1/partidos?select=id&estado=eq.programado&fecha=lt.${CUTOFF}"
-          # head: si Prefer=count=exact, devuelve el Content-Range que nos da el total.
-          COUNT_HDR=$(curl -sI "$URL" \
+          URL_OVERDUE="${SUPABASE_URL}/rest/v1/partidos?select=id&estado=eq.programado&fecha=lt.${CUTOFF}"
+          URL_WC_DUE="${SUPABASE_URL}/rest/v1/partidos?select=id&liga_id=eq.7&temporada=eq.2026&estado=eq.programado&fecha=lte.${NOW}"
+          URL_WC_LIVE="${SUPABASE_URL}/rest/v1/partidos?select=id&liga_id=eq.7&temporada=eq.2026&estado=eq.en_curso"
+
+          count_url() {
+            curl -sI "$1" \
                           -H "apikey: $SUPABASE_SERVICE_KEY" \
                           -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
                           -H "Prefer: count=exact" \
                           -H "Range: 0-0" \
-                       | grep -i content-range | tr -d '\r' | awk -F'/' '{print $2}')
-          COUNT=${COUNT_HDR:-0}
-          echo "Encontrados $COUNT partidos en estado=programado con kickoff < $CUTOFF"
+              | awk 'tolower($0) ~ /^content-range:/ {split($0, parts, "/"); gsub("\r", "", parts[2]); print parts[2]}'
+          }
+
+          OVERDUE=$(count_url "$URL_OVERDUE")
+          WC_DUE=$(count_url "$URL_WC_DUE")
+          WC_LIVE=$(count_url "$URL_WC_LIVE")
+          OVERDUE=${OVERDUE:-0}
+          WC_DUE=${WC_DUE:-0}
+          WC_LIVE=${WC_LIVE:-0}
+          COUNT=$((OVERDUE + WC_DUE + WC_LIVE))
+
+          echo "Vencidos +120m: $OVERDUE | Mundial desde kickoff: $WC_DUE | Mundial en curso: $WC_LIVE"
           if [ "$COUNT" -gt 0 ]; then
             echo "needs_sync=true" >> "$GITHUB_OUTPUT"
             echo "pending_count=$COUNT" >> "$GITHUB_OUTPUT"
@@ -91,7 +101,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
-        run: python -m src.ingest_wc2026 || echo "[wc2026] fallo no critico, sigue el sync"
+        run: python -m src.ingest_wc2026
 
       - name: Sync ranking Elo selecciones (eloratings.net)
         env:

@@ -41,6 +41,13 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
+      - name: Sync fixture, horarios y resultados Mundial 2026
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+        run: python -m src.ingest_wc2026
+
       - name: Refresh partidos selecciones 2025 (martj42 -> Supabase)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

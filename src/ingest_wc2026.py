@@ -22,6 +22,7 @@ import json
 import os
 import urllib.error
 import urllib.request
+from datetime import datetime, timezone
 
 from .supabase_writer import sb_get, sb_post, sb_patch
 
@@ -29,6 +30,9 @@ from .supabase_writer import sb_get, sb_post, sb_patch
 FD_BASE = "https://api.football-data.org/v4"
 LIGA_SELECCIONES = 7
 TEMPORADA = "2026"
+EXPECTED_TOTAL_MATCHES = 104
+MIN_DEFINED_MATCHES = 72
+MATCH_WINDOW_DAYS = 7
 
 # Nombre que devuelve football-data.org -> nombre en mi tabla `equipos`.
 FD_TO_ES: dict[str, str] = {
@@ -96,6 +100,39 @@ FD_STATUS_MAP = {
 }
 
 
+def _parse_utc(value: str) -> datetime:
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def find_existing_match(
+    existing: list[dict],
+    home_id: int,
+    away_id: int,
+    fecha_iso: str,
+    claimed_ids: set[int] | None = None,
+) -> dict | None:
+    """Busca el mismo cruce cerca de la fecha nueva para conservar su partido_id."""
+    claimed = claimed_ids if claimed_ids is not None else set()
+    source_date = _parse_utc(fecha_iso)
+    candidates = []
+    for row in existing:
+        row_id = int(row["id"])
+        if row_id in claimed:
+            continue
+        if row["equipo_local_id"] != home_id or row["equipo_visitante_id"] != away_id:
+            continue
+        diff_days = abs((_parse_utc(row["fecha"]) - source_date).total_seconds()) / 86400
+        if diff_days <= MATCH_WINDOW_DAYS:
+            candidates.append((diff_days, row_id, row))
+    if not candidates:
+        return None
+    candidates.sort(key=lambda item: (item[0], item[1]))
+    return candidates[0][2]
+
+
 def fetch_wc_matches() -> list[dict]:
     token = os.environ.get("FOOTBALL_DATA_TOKEN")
     if not token:
@@ -114,24 +151,36 @@ def main() -> None:
 
     matches = fetch_wc_matches()
     print(f"[wc2026] football-data devolvio {len(matches)} matches del Mundial 2026")
+    if len(matches) < EXPECTED_TOTAL_MATCHES:
+        raise RuntimeError(
+            f"Fixture incompleto: se esperaban {EXPECTED_TOTAL_MATCHES} partidos "
+            f"y football-data devolvio {len(matches)}"
+        )
 
     # Indice nombre ES -> equipo_id
     equipos = sb_get(f"equipos?select=id,nombre&liga_id=eq.{LIGA_SELECCIONES}")
     name_to_id = {e["nombre"]: e["id"] for e in equipos}
     print(f"[wc2026] equipos liga {LIGA_SELECCIONES} en DB: {len(name_to_id)}")
+    if len(name_to_id) < 48:
+        raise RuntimeError(
+            f"Faltan selecciones del Mundial en Supabase: hay {len(name_to_id)}, se esperaban 48"
+        )
 
-    # Indice de partidos existentes (dedupe por fecha+local+visitante)
-    existing = sb_get(f"partidos?select=id,fecha,equipo_local_id,equipo_visitante_id&liga_id=eq.{LIGA_SELECCIONES}")
-    by_key: dict[tuple, dict] = {}
-    for r in existing:
-        key = (r["fecha"][:10], r["equipo_local_id"], r["equipo_visitante_id"])
-        by_key[key] = r
+    # Solo comparamos contra el fixture 2026, no amistosos historicos de liga 7.
+    existing = sb_get(
+        "partidos?select=id,fecha,equipo_local_id,equipo_visitante_id,"
+        "estado,goles_local,goles_visitante,grupo"
+        f"&liga_id=eq.{LIGA_SELECCIONES}&temporada=eq.{TEMPORADA}&limit=500"
+    )
     print(f"[wc2026] partidos liga {LIGA_SELECCIONES} en DB: {len(existing)}")
 
     nuevos: list[dict] = []
     a_actualizar: list[tuple[int, dict]] = []
+    claimed_ids: set[int] = set()
+    source_keys: set[tuple[int, int, str]] = set()
     skip_tbd = 0
-    skip_no_team = 0
+    defined_matches = 0
+    errors: list[str] = []
 
     for m in matches:
         home_name = m.get("homeTeam", {}).get("name")
@@ -139,21 +188,32 @@ def main() -> None:
         if home_name is None or away_name is None:
             skip_tbd += 1
             continue
+        defined_matches += 1
         home_es = FD_TO_ES.get(home_name)
         away_es = FD_TO_ES.get(away_name)
         if not home_es or not away_es:
-            skip_no_team += 1
-            print(f"  ! sin mapping: {home_name!r} vs {away_name!r}")
+            errors.append(f"sin mapping: {home_name!r} vs {away_name!r}")
             continue
         home_id = name_to_id.get(home_es)
         away_id = name_to_id.get(away_es)
         if not home_id or not away_id:
-            skip_no_team += 1
-            print(f"  ! sin equipo_id: {home_es!r} (id={home_id}) vs {away_es!r} (id={away_id})")
+            errors.append(
+                f"sin equipo_id: {home_es!r} (id={home_id}) vs "
+                f"{away_es!r} (id={away_id})"
+            )
             continue
 
         fecha_iso = m.get("utcDate")  # ej "2026-06-11T20:00:00Z"
-        estado = FD_STATUS_MAP.get(m.get("status"), "programado")
+        if not fecha_iso:
+            errors.append(f"sin utcDate: {home_name!r} vs {away_name!r}")
+            continue
+        raw_status = m.get("status")
+        estado = FD_STATUS_MAP.get(raw_status)
+        if estado is None:
+            errors.append(
+                f"status desconocido {raw_status!r}: {home_name!r} vs {away_name!r}"
+            )
+            continue
         score = m.get("score", {}).get("fullTime", {}) or {}
         gl = score.get("home")
         gv = score.get("away")
@@ -174,13 +234,36 @@ def main() -> None:
             "grupo": grupo,
         }
 
-        key = (fecha_iso[:10], home_id, away_id)
-        if key in by_key:
-            a_actualizar.append((by_key[key]["id"], payload))
+        source_key = (home_id, away_id, fecha_iso)
+        if source_key in source_keys:
+            errors.append(f"partido duplicado en fuente: {home_es} vs {away_es} @ {fecha_iso}")
+            continue
+        source_keys.add(source_key)
+
+        current = find_existing_match(
+            existing, home_id, away_id, fecha_iso, claimed_ids
+        )
+        if current:
+            current_id = int(current["id"])
+            claimed_ids.add(current_id)
+            a_actualizar.append((current_id, payload))
         else:
             nuevos.append(payload)
 
-    print(f"[wc2026] nuevos={len(nuevos)} actualizar={len(a_actualizar)} skip_tbd={skip_tbd} skip_no_team={skip_no_team}")
+    if defined_matches < MIN_DEFINED_MATCHES:
+        errors.append(
+            f"fixture definido incompleto: {defined_matches} partidos con ambos equipos "
+            f"(minimo esperado {MIN_DEFINED_MATCHES})"
+        )
+    if errors:
+        for error in errors:
+            print(f"  ! {error}")
+        raise RuntimeError(f"Fixture Mundial invalido: {len(errors)} errores")
+
+    print(
+        f"[wc2026] nuevos={len(nuevos)} actualizar={len(a_actualizar)} "
+        f"skip_tbd={skip_tbd}"
+    )
 
     if args.dry_run:
         print()
@@ -197,27 +280,22 @@ def main() -> None:
     BATCH = 50
     for i in range(0, len(nuevos), BATCH):
         chunk = nuevos[i:i + BATCH]
-        try:
-            sb_post("partidos", chunk, prefer="return=minimal")
-            inserted += len(chunk)
-        except Exception as e:
-            print(f"  ! error insert: {e}")
+        sb_post("partidos", chunk, prefer="return=minimal")
+        inserted += len(chunk)
     print(f"[wc2026] insertados {inserted} partidos")
 
-    # Patch existentes (cambia score/estado/grupo si cambio)
+    # Patch existentes: conserva partido_id y corrige horario, score, estado y grupo.
     patched = 0
     for pid, payload in a_actualizar:
         patch_data = {
+            "fecha": payload["fecha"],
             "estado": payload["estado"],
             "goles_local": payload["goles_local"],
             "goles_visitante": payload["goles_visitante"],
             "grupo": payload.get("grupo"),
         }
-        try:
-            sb_patch(f"partidos?id=eq.{pid}", patch_data)
-            patched += 1
-        except Exception as e:
-            print(f"  ! error patch id={pid}: {e}")
+        sb_patch(f"partidos?id=eq.{pid}", patch_data)
+        patched += 1
     print(f"[wc2026] actualizados {patched} partidos existentes")
 
 
