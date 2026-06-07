@@ -1888,6 +1888,27 @@ async function sb(path) {
 }
 
 // ── HELPERS ──
+function htmlEsc(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function safeMediaUrl(value) {
+  if (typeof value !== 'string') return ''
+  const url = value.trim()
+  return /^(https?:\/\/|\/)/i.test(url) ? url : ''
+}
+
+function safeColor(value, fallback) {
+  return typeof value === 'string' && /^#[0-9a-f]{3,8}$/i.test(value.trim())
+    ? value.trim()
+    : fallback
+}
+
 const LEAGUE_KEYS = {
   'Champions League':'champions','La Liga':'laliga',
   'Premier League':'premier','Serie A':'seriea',
@@ -1971,15 +1992,15 @@ function showLoader(containerId) {
 }
 function showError(msg, containerId = 'matches-container') {
   const el = document.getElementById(containerId)
-  if (el) el.innerHTML = `<div class="loader" style="color:var(--red)">⚠️ ${msg}</div>`
+  if (el) el.innerHTML = `<div class="loader" style="color:var(--red)">⚠️ ${htmlEsc(msg)}</div>`
 }
 
 // ── TRANSFORMADORES ──
 function transformEquipo(e) {
   return {
     id: e.id, name: e.nombre, abbr: e.abreviacion,
-    bg: e.color_prim || '#333', color: e.color_sec || '#fff',
-    crest: e.escudo_url,
+    bg: safeColor(e.color_prim, '#333'), color: safeColor(e.color_sec, '#fff'),
+    crest: safeMediaUrl(e.escudo_url),
     stats: { goles: 0, recibidos: 0, posesion: '50%', remates: 0 },
     form: [], players: []
   }
@@ -2489,23 +2510,27 @@ async function loadMatchDetail(m) {
 function matchCardHtml(m) {
   const finished = m.status === 'finalizado'
   const cardClass = finished ? 'match-card match-card-finished' : 'match-card'
+  const homeName = htmlEsc(m.home.name)
+  const awayName = htmlEsc(m.away.name)
+  const homeCrest = htmlEsc(safeMediaUrl(m.home.crest))
+  const awayCrest = htmlEsc(safeMediaUrl(m.away.crest))
   const scoreRow = finished && m.score
     ? `<div class="match-score-row"><span class="match-score-lbl">RESULTADO</span><span class="match-score-val">${m.score.home} - ${m.score.away}</span></div>`
     : ''
   return `
     <div class="${cardClass}" onclick="showDetail(${m.id})">
-      <div class="league-badge">${m.league}</div>
+      <div class="league-badge">${htmlEsc(m.league)}</div>
       <div class="teams-col">
         <div class="team-row">
-          <img class="crest-img" src="${m.home.crest}" alt="${m.home.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div style="width:36px;height:36px;border-radius:50%;background:${m.home.bg};color:${m.home.color};display:none;align-items:center;justify-content:center;font-weight:900;font-size:.7rem;font-family:'JetBrains Mono',monospace;flex-shrink:0">${m.home.abbr}</div>
-          <div class="team-name-card">${m.home.name}</div>
+          <img class="crest-img" src="${homeCrest}" alt="${homeName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div style="width:36px;height:36px;border-radius:50%;background:${m.home.bg};color:${m.home.color};display:none;align-items:center;justify-content:center;font-weight:900;font-size:.7rem;font-family:'JetBrains Mono',monospace;flex-shrink:0">${htmlEsc(m.home.abbr)}</div>
+          <div class="team-name-card">${homeName}</div>
         </div>
         <div class="vs-col">VS</div>
         <div class="team-row">
-          <img class="crest-img" src="${m.away.crest}" alt="${m.away.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div style="width:36px;height:36px;border-radius:50%;background:${m.away.bg};color:${m.away.color};display:none;align-items:center;justify-content:center;font-weight:900;font-size:.7rem;font-family:'JetBrains Mono',monospace;flex-shrink:0">${m.away.abbr}</div>
-          <div class="team-name-card">${m.away.name}</div>
+          <img class="crest-img" src="${awayCrest}" alt="${awayName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div style="width:36px;height:36px;border-radius:50%;background:${m.away.bg};color:${m.away.color};display:none;align-items:center;justify-content:center;font-weight:900;font-size:.7rem;font-family:'JetBrains Mono',monospace;flex-shrink:0">${htmlEsc(m.away.abbr)}</div>
+          <div class="team-name-card">${awayName}</div>
         </div>
       </div>
       <div class="card-meta">${m.date} · ${m.time} HS</div>
@@ -2935,7 +2960,7 @@ function renderDetailBody(m) {
   // diferencias entre selecciones del Mundial sean mas visibles sin
   // hacer el eje dinamico.
   radarChart=new Chart(ctx,{type:'radar',data:{labels,datasets:[{label:m.home.name,data:dH,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.12)',borderWidth:2,pointBackgroundColor:'#22c55e',pointRadius:3},{label:m.away.name,data:dA,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.1)',borderWidth:2,pointBackgroundColor:'#ef4444',pointRadius:3,borderDash:[5,3]}]},options:{responsive:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#0d1014',borderColor:'#2e3848',borderWidth:1,titleColor:'#e8eaed',bodyColor:'#6b7280',callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw}`}}},scales:{r:{min:60,max:90,backgroundColor:'transparent',grid:{color:'rgba(255,255,255,.06)'},angleLines:{color:'rgba(255,255,255,.06)'},ticks:{display:false},pointLabels:{color:'#6b7280',font:{size:10,family:'JetBrains Mono'}}}}}})
-  document.getElementById('radar-legend').innerHTML=`<div class="rl-item"><div class="rl-dot" style="background:#22c55e"></div><span style="color:#22c55e">${m.home.name}</span></div><div class="rl-item"><div class="rl-dot" style="background:#ef4444;outline:2px dashed #ef4444;outline-offset:2px"></div><span style="color:#ef4444">${m.away.name}</span></div>`
+  document.getElementById('radar-legend').innerHTML=`<div class="rl-item"><div class="rl-dot" style="background:#22c55e"></div><span style="color:#22c55e">${htmlEsc(m.home.name)}</span></div><div class="rl-item"><div class="rl-dot" style="background:#ef4444;outline:2px dashed #ef4444;outline-offset:2px"></div><span style="color:#ef4444">${htmlEsc(m.away.name)}</span></div>`
 
   // Lineup compare
   renderLineupCompare(m)
@@ -2958,8 +2983,8 @@ function renderSidePlayers(containerId,headerId,players,matchId,side) {
     return `
     <div class="side-player-card ${hc}${isExtra?' extra':''}"${isExtra?' style="display:none"':''} onclick="showPlayer(${matchId},${i},'${side}')">
       <div class="spc-info">
-        <div class="spc-name">${p.name}</div>
-        <div class="spc-pos">${p.pos}</div>
+        <div class="spc-name">${htmlEsc(p.name)}</div>
+        <div class="spc-pos">${htmlEsc(p.pos)}</div>
         <div class="spc-sub">${p.stats.goles}G · ${p.stats.asistencias}A · ${p.stats.partidos}PJ</div>
       </div>
       <div class="spc-rating" style="color:${col}">${p.rating}</div>
@@ -3005,14 +3030,14 @@ function renderLineupCompare(m) {
     const winner=avgH>avgA?'home':avgH<avgA?'away':'draw'
     const bc=winner==='home'?'#22c55e':winner==='away'?'#ef4444':'#f59e0b'
     const bb=winner==='home'?'rgba(34,197,94,.12)':winner==='away'?'rgba(239,68,68,.12)':'rgba(245,158,11,.12)'
-    const bt=winner==='home'?m.home.abbr+' ▲':winner==='away'?m.away.abbr+' ▲':'PAREJO'
+    const bt=winner==='home'?htmlEsc(m.home.abbr)+' ▲':winner==='away'?htmlEsc(m.away.abbr)+' ▲':'PAREJO'
     // En las cards: muestro TODOS pero marco los top N con un badge "TOP".
     const hpTopSet=new Set(hp.map(p=>p.name)), apTopSet=new Set(ap.map(p=>p.name))
-    const pcard=(p,col,isTop)=>`<div class="lc-pcard${isTop?' lc-pcard-top':''}"><div><div class="lc-pcard-name">${p.name}${isTop?' <span class="lc-top-mark">★</span>':''}</div><div class="lc-pcard-pos">${p.pos}</div></div><div class="lc-pcard-rating" style="color:${col}">${p.rating}</div></div>`
+    const pcard=(p,col,isTop)=>`<div class="lc-pcard${isTop?' lc-pcard-top':''}"><div><div class="lc-pcard-name">${htmlEsc(p.name)}${isTop?' <span class="lc-top-mark">★</span>':''}</div><div class="lc-pcard-pos">${htmlEsc(p.pos)}</div></div><div class="lc-pcard-rating" style="color:${col}">${p.rating}</div></div>`
     // Stats promedio: usar tambien los top N (mismos jugadores).
     const statRows=statDefs.map(sd=>{const svH=avgStat(hp,sd.fn),svA=avgStat(ap,sd.fn);const t=svH+svA||1;const fH=Math.round(svH/t*100),fA=100-fH;return`<div class="lc-stat-row"><span class="lc-stat-val" style="color:#22c55e">${svH}</span><div class="lc-stat-bars"><div class="lc-stat-fill-h" style="width:${fH}%"></div></div><span class="lc-stat-name">${sd.lbl}</span><div class="lc-stat-bars"><div class="lc-stat-fill-a" style="width:${fA}%"></div></div><span class="lc-stat-val" style="color:#ef4444">${svA}</span></div>`}).join('')
     const groupLabel=`Top ${g.top} por rating`
-    return`<div class="lc-group"><div class="lc-header" onclick="toggleLC(${gi})"><div class="lc-header-left"><span class="lc-icon">${g.icon}</span><span class="lc-title">${g.label}</span><span class="lc-badge" style="color:${bc};background:${bb}">${bt}</span></div><div class="lc-ratings"><span class="lc-rat-h">${avgH}</span><span class="lc-rat-sep">vs</span><span class="lc-rat-a">${avgA}</span><span class="lc-chevron" id="lc-chev-${gi}">▼</span></div></div><div class="lc-body" id="lc-body-${gi}"><div class="lc-global-bar-wrap"><div class="lc-global-labels"><span class="lc-global-lbl" style="color:#22c55e">${m.home.name} · ${avgH}</span><span class="lc-global-lbl" style="color:#ef4444">${m.away.name} · ${avgA}</span></div><div class="lc-global-bar"><div class="lc-global-seg" style="background:#22c55e;width:${pctH}%">${pctH>12?pctH+'%':''}</div><div class="lc-global-seg" style="background:#ef4444;width:${pctA}%">${pctA>12?pctA+'%':''}</div></div><div class="lc-avg-hint">★ ${groupLabel} · plantel completo abajo</div></div><div class="lc-players-grid"><div><div class="lc-team-label" style="color:#22c55e">${m.home.name}</div>${hpAll.map(p=>pcard(p,'#22c55e',hpTopSet.has(p.name))).join('')}</div><div><div class="lc-team-label" style="color:#ef4444">${m.away.name}</div>${apAll.map(p=>pcard(p,'#ef4444',apTopSet.has(p.name))).join('')}</div></div><div class="lc-stat-section-title">Estadísticas promedio (top ${g.top})</div><div style="display:flex;justify-content:space-between;margin-bottom:.5rem"><span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#22c55e;font-weight:700">${m.home.abbr}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#ef4444;font-weight:700">${m.away.abbr}</span></div>${statRows}</div></div>`
+    return`<div class="lc-group"><div class="lc-header" onclick="toggleLC(${gi})"><div class="lc-header-left"><span class="lc-icon">${g.icon}</span><span class="lc-title">${g.label}</span><span class="lc-badge" style="color:${bc};background:${bb}">${bt}</span></div><div class="lc-ratings"><span class="lc-rat-h">${avgH}</span><span class="lc-rat-sep">vs</span><span class="lc-rat-a">${avgA}</span><span class="lc-chevron" id="lc-chev-${gi}">▼</span></div></div><div class="lc-body" id="lc-body-${gi}"><div class="lc-global-bar-wrap"><div class="lc-global-labels"><span class="lc-global-lbl" style="color:#22c55e">${htmlEsc(m.home.name)} · ${avgH}</span><span class="lc-global-lbl" style="color:#ef4444">${htmlEsc(m.away.name)} · ${avgA}</span></div><div class="lc-global-bar"><div class="lc-global-seg" style="background:#22c55e;width:${pctH}%">${pctH>12?pctH+'%':''}</div><div class="lc-global-seg" style="background:#ef4444;width:${pctA}%">${pctA>12?pctA+'%':''}</div></div><div class="lc-avg-hint">★ ${groupLabel} · plantel completo abajo</div></div><div class="lc-players-grid"><div><div class="lc-team-label" style="color:#22c55e">${htmlEsc(m.home.name)}</div>${hpAll.map(p=>pcard(p,'#22c55e',hpTopSet.has(p.name))).join('')}</div><div><div class="lc-team-label" style="color:#ef4444">${htmlEsc(m.away.name)}</div>${apAll.map(p=>pcard(p,'#ef4444',apTopSet.has(p.name))).join('')}</div></div><div class="lc-stat-section-title">Estadísticas promedio (top ${g.top})</div><div style="display:flex;justify-content:space-between;margin-bottom:.5rem"><span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#22c55e;font-weight:700">${htmlEsc(m.home.abbr)}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#ef4444;font-weight:700">${htmlEsc(m.away.abbr)}</span></div>${statRows}</div></div>`
   }).join('')
   document.getElementById('lineup-compare').innerHTML=html
 }
@@ -3354,8 +3379,8 @@ function showPlayer(matchId,playerIdx,side){
   _currentMinData={mby,mbyAcc}
 
   document.getElementById('player-banner').innerHTML=`
-    <div class="player-avatar-big" style="background:${bgCol};color:${col}">${initials}</div>
-    <div style="flex:1;min-width:0"><div class="pbi-name" style="color:${col}">${p.name}</div><div class="pbi-meta">${p.pos} · ${team.name.toUpperCase()} · ${m.league}</div><div class="pbi-notes">${p.stats.notas}</div></div>
+    <div class="player-avatar-big" style="background:${bgCol};color:${col}">${htmlEsc(initials)}</div>
+    <div style="flex:1;min-width:0"><div class="pbi-name" style="color:${col}">${htmlEsc(p.name)}</div><div class="pbi-meta">${htmlEsc(p.pos)} · ${htmlEsc(team.name.toUpperCase())} · ${htmlEsc(m.league)}</div><div class="pbi-notes">${htmlEsc(p.stats.notas)}</div></div>
     <div style="text-align:right;flex-shrink:0"><div class="ovr-num" style="color:${col}">${p.rating}</div><div class="ovr-lbl">RATING OVR</div></div>`
 
   const hasRadar = hasFullEafcRadar(p.eafc, p.pos)
@@ -3363,7 +3388,7 @@ function showPlayer(matchId,playerIdx,side){
   const hasMarket = !!(p.market?.length)
   const hasMinutes = !!mby.length
   const marketPaneHtml = hasMarket
-    ? `<div id="pane-market"><div class="player-chart-box player-market-chart"><canvas id="marketChart"></canvas></div><div class="min-strip">${p.market.map(d=>`<div class="min-chip"><span class="min-chip-yr">${d.y} · ${d.club}</span><span class="min-chip-val" style="color:${col}">€${d.v}M</span></div>`).join('')}</div></div>` : ''
+    ? `<div id="pane-market"><div class="player-chart-box player-market-chart"><canvas id="marketChart"></canvas></div><div class="min-strip">${p.market.map(d=>`<div class="min-chip"><span class="min-chip-yr">${d.y} · ${htmlEsc(d.club)}</span><span class="min-chip-val" style="color:${col}">€${d.v}M</span></div>`).join('')}</div></div>` : ''
   const minutesPaneHtml = hasMinutes
     ? `<div id="pane-minutes" style="${hasMarket ? 'display:none' : ''}"><div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:.7rem"><div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:900;color:${col}">${totalMin.toLocaleString()} min TOTAL</div></div><div class="chart-tabs"><button class="chart-tab active" id="tab-annual" onclick="switchMinTab('annual','${col}')">Por año</button><button class="chart-tab" id="tab-accum" onclick="switchMinTab('accum','${col}')">Acumulado</button></div><div class="player-chart-box player-minutes-chart"><canvas id="minutesChart"></canvas></div><div class="min-strip">${mby.map(d=>`<div class="min-chip"><span class="min-chip-yr">${d.y}</span><span class="min-chip-val" style="color:${col}">${d.m.toLocaleString()}'</span></div>`).join('')}</div></div>` : ''
   const switcherTabsHtml = (hasMarket && hasMinutes)
@@ -3380,7 +3405,7 @@ function showPlayer(matchId,playerIdx,side){
       ['Asistencias', p.stats.asistencias],
       ['Amarillas', p.stats.amarillas],
       ['Rojas', p.stats.rojas],
-    ].map(([k,v])=>`<div class="pstat-row"><span class="pstat-k">${k}</span><span class="pstat-v" style="color:${col}">${v}</span></div>`).join('')}</div>
+    ].map(([k,v])=>`<div class="pstat-row"><span class="pstat-k">${k}</span><span class="pstat-v" style="color:${col}">${htmlEsc(v)}</span></div>`).join('')}</div>
     <div class="pstat-card">${hasRadar ? `<div class="pstat-title">📡 Radar de habilidades</div><canvas id="player-radar" width="540" height="380" style="width:100%;border-radius:6px;display:block;background:#080c10"></canvas><div id="player-radar-bars" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3a5a3a;text-align:center;margin-top:6px">atributos oficiales EA FC 26</div>` : `<div class="pstat-title">📡 Radar de habilidades</div><div style="text-align:center;color:var(--faint);padding:3rem 1rem;font-size:.85rem">Sin atributos EA FC cargados para este jugador.</div>`}</div>
     <div class="form-row-full" style="flex-direction:column;gap:.6rem">
       <div class="pstat-title" style="margin-bottom:0">🗺️ Zonas de influencia</div>
@@ -3559,7 +3584,7 @@ async function openComparador() {
     populateCompLigas()
     populateCompTeams()
   } catch (e) {
-    document.getElementById('comp-result').innerHTML = `<div style="color:var(--red)">Error cargando datos: ${e.message}</div>`
+    document.getElementById('comp-result').innerHTML = `<div style="color:var(--red)">Error cargando datos: ${htmlEsc(e.message)}</div>`
   }
 }
 
@@ -3592,7 +3617,7 @@ function populateCompTeams() {
   }
   const a = document.getElementById('comp-team-a')
   const b = document.getElementById('comp-team-b')
-  const opts = lista.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('')
+  const opts = lista.map(e => `<option value="${Number(e.id)}">${htmlEsc(e.nombre)}</option>`).join('')
   a.innerHTML = opts
   b.innerHTML = opts
   // Default: primer y segundo equipo distintos
@@ -3753,14 +3778,14 @@ async function renderComparador() {
   ptsB = Math.round(ptsB * 10) / 10
 
   // ── Render ──
-  const flagOrCrest = (eq) => eq.escudo_url
-    ? `<img src="${eq.escudo_url}" alt="${eq.nombre}" onerror="this.style.display='none'">`
-    : `<div style="width:48px;height:48px;border-radius:6px;background:${eq.color_prim||'#222'};display:flex;align-items:center;justify-content:center;font-weight:900;color:${eq.color_sec||'#fff'};font-family:'JetBrains Mono',monospace;font-size:.85rem">${eq.abreviacion||'?'}</div>`
+  const flagOrCrest = (eq) => safeMediaUrl(eq.escudo_url)
+    ? `<img src="${htmlEsc(safeMediaUrl(eq.escudo_url))}" alt="${htmlEsc(eq.nombre)}" onerror="this.style.display='none'">`
+    : `<div style="width:48px;height:48px;border-radius:6px;background:${safeColor(eq.color_prim,'#222')};display:flex;align-items:center;justify-content:center;font-weight:900;color:${safeColor(eq.color_sec,'#fff')};font-family:'JetBrains Mono',monospace;font-size:.85rem">${htmlEsc(eq.abreviacion||'?')}</div>`
 
   let html = `<div class="comp-header">
-    <div class="comp-team-header">${flagOrCrest(eqA)}<span>${eqA.nombre}</span></div>
+    <div class="comp-team-header">${flagOrCrest(eqA)}<span>${htmlEsc(eqA.nombre)}</span></div>
     <div class="comp-vs">VS</div>
-    <div class="comp-team-header">${flagOrCrest(eqB)}<span>${eqB.nombre}</span></div>
+    <div class="comp-team-header">${flagOrCrest(eqB)}<span>${htmlEsc(eqB.nombre)}</span></div>
   </div>`
 
   for (const r of rows) {
@@ -3771,9 +3796,9 @@ async function renderComparador() {
     const ptsStrA = `<span class="comp-pts-mini">${r.ptsA > 0 ? '+' : ''}${r.ptsA}pt</span>`
     const ptsStrB = `<span class="comp-pts-mini">${r.ptsB > 0 ? '+' : ''}${r.ptsB}pt</span>`
     html += `<div class="comp-row">
-      <span class="comp-val ${aWins?'winner':''}">${r.valA}${ptsStrA}</span>
-      <span class="comp-label">${r.label}</span>
-      <span class="comp-val ${bWins?'winner':''}">${r.valB}${ptsStrB}</span>
+      <span class="comp-val ${aWins?'winner':''}">${htmlEsc(r.valA)}${ptsStrA}</span>
+      <span class="comp-label">${htmlEsc(r.label)}</span>
+      <span class="comp-val ${bWins?'winner':''}">${htmlEsc(r.valB)}${ptsStrB}</span>
     </div>`
   }
 
@@ -3789,7 +3814,7 @@ async function renderComparador() {
     const ptsG = Math.max(ptsA, ptsB), ptsP = Math.min(ptsA, ptsB)
     html += `<div class="comp-winner-banner">
       <div class="cwb-trophy">🏆</div>
-      <div class="cwb-name">GANA ${ganador.nombre.toUpperCase()}</div>
+      <div class="cwb-name">GANA ${htmlEsc(ganador.nombre.toUpperCase())}</div>
       <div class="cwb-score">${ptsG} puntos contra ${ptsP}</div>
     </div>`
   }
@@ -4004,7 +4029,7 @@ async function loadRanking() {
     rkApplyFilters()
   } catch(e) {
     const t = document.getElementById('rk-table')
-    if (t) t.innerHTML = `<div class="rank-empty">😕 No se pudo cargar el ranking.<br><span style="font-size:.75rem;color:var(--faint)">${e.message}</span></div>`
+    if (t) t.innerHTML = `<div class="rank-empty">😕 No se pudo cargar el ranking.<br><span style="font-size:.75rem;color:var(--faint)">${htmlEsc(e.message)}</span></div>`
   }
 }
 
@@ -4091,7 +4116,7 @@ function rkRenderGroups() {
   keys.forEach(key => {
     const label = rkTab === 'posicion' ? (posLabels[key] || key) : `🌍 ${key}`
     const members = groups[key].slice(0, 10)
-    html += `<div class="rank-section-hdr">${label} · top ${members.length}</div>`
+    html += `<div class="rank-section-hdr">${htmlEsc(label)} · top ${members.length}</div>`
     members.forEach((p, i) => { html += rkRowHTML(p, i + 1) })
   })
   table.innerHTML = html
@@ -4101,20 +4126,22 @@ function rkRowHTML(p, rank) {
   const pct = Math.round(((p.rating - 70) / (99 - 70)) * 100)
   const medalClass = rank === 1 ? 'rk-gold' : rank === 2 ? 'rk-silver' : rank === 3 ? 'rk-bronze' : ''
   const rankLabel = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank
-  const escudo = p.equipo?.escudo_url
-    ? `<img class="rank-crest" src="${p.equipo.escudo_url}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+  const pos = ['DEL','MED','DEF','POR'].includes(p.posicion) ? p.posicion : 'MED'
+  const crestUrl = safeMediaUrl(p.equipo?.escudo_url)
+  const escudo = crestUrl
+    ? `<img class="rank-crest" src="${htmlEsc(crestUrl)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
     : ''
-  const fallback = `<div class="rank-crest-fb" ${p.equipo?.escudo_url ? 'style="display:none"' : ''}>${(p.equipo?.nombre||'?').substring(0,3).toUpperCase()}</div>`
+  const fallback = `<div class="rank-crest-fb" ${crestUrl ? 'style="display:none"' : ''}>${htmlEsc((p.equipo?.nombre||'?').substring(0,3).toUpperCase())}</div>`
   return `<div class="rank-row">
     <div class="rank-num ${medalClass}">${rankLabel}</div>
     <div class="rank-player-cell">${escudo}${fallback}
       <div class="rank-player-info">
-        <span class="rank-player-name">${p.nombre}</span>
-        <span class="rank-player-club">${p.equipo?.nombre || '—'}</span>
+        <span class="rank-player-name">${htmlEsc(p.nombre)}</span>
+        <span class="rank-player-club">${htmlEsc(p.equipo?.nombre || '—')}</span>
       </div>
     </div>
-    <div class="rank-cell-pos"><span class="rk-pos-badge rk-pos-${p.posicion||'MED'}">${p.posicion||'?'}</span></div>
-    <div class="rank-cell-nat rank-nat-cell">${p.nacionalidad||'—'}</div>
+    <div class="rank-cell-pos"><span class="rk-pos-badge rk-pos-${pos}">${htmlEsc(p.posicion||'?')}</span></div>
+    <div class="rank-cell-nat rank-nat-cell">${htmlEsc(p.nacionalidad||'—')}</div>
     <div class="rank-rating-cell">
       <span class="rank-rating-val">${p.rating}</span>
       <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%"></div></div>

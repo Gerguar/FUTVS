@@ -9,6 +9,9 @@ on:
     - cron: "0 6 * * 1"  # Lunes 06:00 UTC
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+
 jobs:
   squads:
     runs-on: ubuntu-latest

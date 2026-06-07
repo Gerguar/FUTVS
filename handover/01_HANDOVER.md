@@ -36,11 +36,8 @@ FTP_USERNAME            = (usuario FTP de Hostinger, ej: u123456789)
 FTP_PASSWORD            = (password FTP)
 ```
 
-Service_role key actual:
-
-```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5ZW91d3F0ZWJydmlvZXNyYmNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODYxMTgzMiwiZXhwIjoyMDk0MTg3ODMyfQ.SeSXQAKVAHO5CI5L7C0rdp_34bWSu8vSvVS-FG_-GDQ
-```
+La service_role key no se incluye en handovers ni en el repositorio. Se toma
+exclusivamente de GitHub Secrets o del `.env` local.
 
 Anon key (en el HTML, public read-only):
 

@@ -2,6 +2,10 @@
 DirectoryIndex index.html
 Options -Indexes
 
+<FilesMatch "^(\.ftp-deploy-sync-state.*|claude_debug\.json|package\.json|server\.js)$">
+  Require all denied
+</FilesMatch>
+
 # SPA fallback: cualquier ruta que no sea un archivo/carpeta real -> index.html
 # Necesario para que /comparador, /comparador?a=X y otros funcionen al acceder
 # directamente o al hacer F5 (sin esto Hostinger devuelve 404).
@@ -15,6 +19,7 @@ Options -Indexes
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https: data:; connect-src 'self' https://dyeouwqtebrvioesrbcf.supabase.co; font-src 'self' data: https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
   # Estos 3 los bloquea Hostinger a nivel server-WAF (testeado: ni con
   # 'always set', ni reordenando, ni quitando puntos y coma se aplican).
   # Quedan declarados para cuando se habiliten via panel/Cloudflare.

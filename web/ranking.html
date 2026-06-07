@@ -197,6 +197,21 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 const SB_URL = 'https://dyeouwqtebrvioesrbcf.supabase.co'
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5ZW91d3F0ZWJydmlvZXNyYmNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MTE4MzIsImV4cCI6MjA5NDE4NzgzMn0.t_9uVZLKl-khTfjnOvlebTUIYZ9C2fMVDM-6ZqMDMaA'
 
+function htmlEsc(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function safeMediaUrl(value) {
+  if (typeof value !== 'string') return ''
+  const url = value.trim()
+  return /^(https?:\/\/|\/)/i.test(url) ? url : ''
+}
+
 const PAGE_SIZE = 25
 let allPlayers = []       // todos con rating, con equipo
 let filtered = []         // después de filtros
@@ -280,7 +295,7 @@ async function loadData() {
     applyFilters()
   } catch(e) {
     document.getElementById('rank-table').innerHTML =
-      `<div class="rank-empty">😕 No se pudo cargar el ranking.<br><span style="font-size:.75rem;color:var(--faint)">${e.message}</span></div>`
+      `<div class="rank-empty">😕 No se pudo cargar el ranking.<br><span style="font-size:.75rem;color:var(--faint)">${htmlEsc(e.message)}</span></div>`
   }
 }
 
@@ -394,7 +409,7 @@ function renderByGroup(field) {
   keys.forEach(key => {
     const label = field === 'posicion' ? (posLabels[key] || key) : `🌍 ${key}`
     const members = groups[key].slice(0, 10) // top 10 por grupo
-    html += `<div class="rank-section-hdr" style="padding-left:16px">${label} · top ${members.length}</div>`
+    html += `<div class="rank-section-hdr" style="padding-left:16px">${htmlEsc(label)} · top ${members.length}</div>`
     members.forEach((p, i) => { html += rowHTML(p, i + 1) })
   })
 
@@ -405,12 +420,14 @@ function rowHTML(p, rank) {
   const pct = Math.round(((p.rating - 70) / (99 - 70)) * 100)
   const medalClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : ''
   const medalIcon = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank
+  const pos = ['DEL','MED','DEF','POR'].includes(p.posicion) ? p.posicion : 'MED'
 
-  const escudo = p.equipo?.escudo_url
-    ? `<img class="rank-crest" src="${p.equipo.escudo_url}" alt="${p.equipo.nombre || ''}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+  const crestUrl = safeMediaUrl(p.equipo?.escudo_url)
+  const escudo = crestUrl
+    ? `<img class="rank-crest" src="${htmlEsc(crestUrl)}" alt="${htmlEsc(p.equipo.nombre || '')}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
     : ''
   const fallback = p.equipo
-    ? `<div class="rank-crest-fb" ${escudo ? 'style="display:none"' : ''}>${(p.equipo.nombre||'?').substring(0,3).toUpperCase()}</div>`
+    ? `<div class="rank-crest-fb" ${escudo ? 'style="display:none"' : ''}>${htmlEsc((p.equipo.nombre||'?').substring(0,3).toUpperCase())}</div>`
     : `<div class="rank-crest-fb">—</div>`
 
   return `<div class="rank-row">
@@ -418,12 +435,12 @@ function rowHTML(p, rank) {
     <div class="rank-player">
       ${escudo}${fallback}
       <div class="rank-player-info">
-        <span class="rank-player-name">${p.nombre}</span>
-        <span class="rank-player-club">${p.equipo?.nombre || '—'}</span>
+        <span class="rank-player-name">${htmlEsc(p.nombre)}</span>
+        <span class="rank-player-club">${htmlEsc(p.equipo?.nombre || '—')}</span>
       </div>
     </div>
-    <div class="rank-cell-pos"><span class="pos-badge pos-${p.posicion || 'MED'}">${p.posicion || '?'}</span></div>
-    <div class="rank-cell-nat rank-nat">${p.nacionalidad || '—'}</div>
+    <div class="rank-cell-pos"><span class="pos-badge pos-${pos}">${htmlEsc(p.posicion || '?')}</span></div>
+    <div class="rank-cell-nat rank-nat">${htmlEsc(p.nacionalidad || '—')}</div>
     <div class="rank-rating">
       <span class="rank-rating-val">${p.rating}</span>
       <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%"></div></div>
