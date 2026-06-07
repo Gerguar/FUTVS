@@ -11,5 +11,10 @@
     "133|Christoph Baumgartner",
     "264|Billy Gilmour"
   ],
-  "lesion_pending": {}
+  "lesion_pending": {
+    "112|Leonardo Balerdi": {
+      "first_seen_at": "2026-06-07T08:38:04.350806+00:00",
+      "delta_pp": 3.0
+    }
+  }
 }
