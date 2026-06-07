@@ -152,9 +152,94 @@ Máximo 4 items por sección. Textos cortos (máximo 120 caracteres). Todo en es
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 def load_predictions() -> dict:
-    if not PREDS_PATH.exists():
+    """Devuelve {'matches': [...]} con partidos para alimentar 'oportunidades'.
+
+    1) Si predictions.json tiene matches, los usa (clubes).
+    2) Si no (off-season de clubes), levanta partidos PROGRAMADOS del Mundial
+       desde Supabase + cuotas Pinnacle desde data/wc2026_market_odds.json.
+       Eso permite que la seccion 'Oportunidades del algoritmo' funcione
+       durante el Mundial."""
+    if PREDS_PATH.exists():
+        try:
+            data = json.loads(PREDS_PATH.read_text())
+            if data.get("matches"):
+                return data
+        except Exception:
+            pass
+
+    # Fallback Mundial: levantar partidos programados liga 7 + sus pronosticos
+    print("[insights] predictions.json vacio — usando fallback Mundial", flush=True)
+    try:
+        rows = sb_get(
+            "partidos?select=id,fecha,equipo_local:equipo_local_id(nombre),"
+            "equipo_visitante:equipo_visitante_id(nombre),"
+            "pronosticos(prob_local,prob_empate,prob_visitante,notas)"
+            "&estado=eq.programado&liga_id=eq.7&order=fecha&limit=50"
+        )
+    except Exception as e:
+        print(f"[insights] fallback Mundial falló: {e}", flush=True)
         return {"matches": []}
-    return json.loads(PREDS_PATH.read_text())
+
+    # Cargar cuotas Pinnacle (devigged) mapeadas por partido_id
+    market_path = DATA_DIR / "wc2026_market_odds.json"
+    market_by_id = {}
+    if market_path.exists():
+        try:
+            market_by_id = json.loads(market_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    print(f"[insights] fallback: {len(rows)} partidos Mundial | {len(market_by_id)} con Pinnacle", flush=True)
+
+    matches = []
+    for r in rows:
+        h = (r.get("equipo_local") or {}).get("nombre", "?")
+        a = (r.get("equipo_visitante") or {}).get("nombre", "?")
+        pr = r.get("pronosticos")
+        if isinstance(pr, list):
+            pr = pr[0] if pr else None
+        if not pr:
+            continue
+        # Probabilidades del MODELO
+        prob_h = float(pr.get("prob_local") or 0) / 100.0
+        prob_d = float(pr.get("prob_empate") or 0) / 100.0
+        prob_a = float(pr.get("prob_visitante") or 0) / 100.0
+        if prob_h + prob_d + prob_a < 0.5:
+            continue
+
+        # Probabilidades del MERCADO (Pinnacle devigged)
+        m = market_by_id.get(str(r["id"])) or {}
+        if m:
+            market_probabilities = {
+                "home": float(m.get("p_market_home") or 0),
+                "draw": float(m.get("p_market_draw") or 0),
+                "away": float(m.get("p_market_away") or 0),
+            }
+        else:
+            market_probabilities = None
+
+        # xG esperado parseado del campo notas (formato 'xG esperado: 1.69-0.35')
+        xg_home = xg_away = None
+        notas = pr.get("notas") or ""
+        import re
+        m_xg = re.search(r"xG[^0-9]*([\d.]+)\s*-\s*([\d.]+)", notas, re.IGNORECASE)
+        if m_xg:
+            try:
+                xg_home = float(m_xg.group(1))
+                xg_away = float(m_xg.group(2))
+            except ValueError:
+                pass
+
+        matches.append({
+            "home": {"name": h},
+            "away": {"name": a},
+            "competition": {"name": "Mundial 2026"},
+            "kickoff_ts_utc": r.get("fecha", ""),
+            "probabilities": {"home": prob_h, "draw": prob_d, "away": prob_a},
+            **({"market_probabilities": market_probabilities} if market_probabilities else {}),
+            **({"expected_goals": {"home": xg_home, "away": xg_away}} if xg_home is not None else {}),
+        })
+
+    return {"matches": matches}
 
 def isoweek(dt: datetime) -> str:
     return f"{dt.year}-W{dt.isocalendar()[1]:02d}"
