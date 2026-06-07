@@ -293,14 +293,18 @@ def build_oportunidades(preds: dict) -> list[dict]:
 # realmente son alertas (lesiones, sanciones, bajas confirmadas).
 
 ALERTA_QUERIES = [
-    # qInTitle con OR — NewsAPI lo soporta.
-    "lesion mundial",
-    "baja mundial",
-    "descartado mundial",
-    "fuera del mundial",
-    "sancion mundial",
-    "suspendido mundial",
-    "rotura mundial",
+    # Queries SIMPLES de 1 palabra. NewsAPI las usa con qInTitle (matchea
+    # solo titulo). El filtro de futbol (is_football_news) y la lista de
+    # keywords de ALERTA_KEYWORDS hacen el resto del filtrado.
+    "lesion",
+    "lesionado",
+    "baja",
+    "descartado",
+    "rotura",
+    "desgarro",
+    "operado",
+    "suspendido",
+    "sancion",
 ]
 
 # Mapeo keyword -> nivel + flag (orden importa: las criticas primero)
