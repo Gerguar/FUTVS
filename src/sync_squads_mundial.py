@@ -162,8 +162,8 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
-    equipos = sb_get(
-        f"equipos?select=id,nombre&liga_id=eq.{LIGA_SELECCIONES}&limit=100"
+    equipos = paged_sb_get(
+        f"equipos?select=id,nombre&liga_id=eq.{LIGA_SELECCIONES}"
     )
     name_to_id = {row["nombre"]: int(row["id"]) for row in equipos}
     normalized_name_to_id = {

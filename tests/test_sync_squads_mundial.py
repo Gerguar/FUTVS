@@ -3,6 +3,7 @@ from src.sync_squads_mundial import (
     active_notes,
     diff_squad,
     inactive_notes,
+    paged_sb_get,
     players_match,
 )
 
@@ -39,3 +40,21 @@ def test_inactive_notes_are_reversible():
 
     assert marked.startswith(INACTIVE_PREFIX)
     assert active_notes(marked) == "Bayern Munich"
+
+
+def test_paged_sb_get_does_not_drop_rows_after_first_page(monkeypatch):
+    pages = {
+        0: [{"id": index} for index in range(100)],
+        100: [{"id": 189, "nombre": "Sudáfrica"}],
+    }
+
+    def fake_sb_get(path):
+        offset = int(path.split("offset=")[1])
+        return pages[offset]
+
+    monkeypatch.setattr("src.sync_squads_mundial.sb_get", fake_sb_get)
+
+    rows = paged_sb_get("equipos?select=id,nombre", page_size=100)
+
+    assert len(rows) == 101
+    assert rows[-1] == {"id": 189, "nombre": "Sudáfrica"}
