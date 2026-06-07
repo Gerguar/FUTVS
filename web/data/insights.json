@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-07T23:03:13.913075+00:00",
-  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40% más que Qatar 2022",
+  "generated_at_utc": "2026-06-07T23:06:17.085316+00:00",
+  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones: se jugarán 104 partidos en 39 días, récord histórico",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,22 +119,22 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina supera expectativas en amistosos pre-Mundial con efectividad del 78% vs xG esperado del 61%"
-    },
-    {
-      "tipo": "bajo",
-      "flag": "📉",
-      "texto": "Inglaterra preocupa: genera 2.1 xG por partido pero solo convierte 0.9 goles en preparación"
+      "texto": "Argentina supera xG en amistosos pre-Mundial: 2.8 goles vs 2.1 esperados en últimos 3 partidos"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "México sorprende como anfitrión: convierte 1.8 goles con xG de 1.2 en últimos 3 amistosos"
+      "texto": "España convierte más de lo esperado: 7 goles con xG de 4.9 en preparación para debut vs Costa Rica"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil decepciona: produce 2.4 xG pero solo marca 1.3 goles promedio en preparación"
+      "texto": "Brasil por debajo: 3 goles con xG de 5.2 en amistosos, preocupa definición antes del Mundial"
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "Alemania genera poco: xG de 1.3 por partido en preparación, el más bajo entre favoritos europeos"
     }
   ],
   "alertas": [
@@ -149,18 +149,10 @@
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Paula Blasi correrá el Tour de Francia tras la baja de Rooijakkers",
-      "fuente": "Marca",
-      "fuente_url": "https://www.marca.com/ciclismo/tour-francia/2026/06/03/paula-blasi-correra-tour-francia-baja-rooijakkers.html",
-      "fecha": "2026-06-03"
-    },
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "La VPN más usada en España cuesta menos que un café al mes: NordVPN baja a 3,09 USD con su oferta de 2 años",
-      "fuente": "Gizmodo.com",
-      "fuente_url": "https://es.gizmodo.com/la-vpn-mas-usada-en-espana-cuesta-menos-que-un-cafe-al-mes-nordvpn-baja-a-309-usd-con-su-oferta-de-2-anos-2000238662",
-      "fecha": "2026-06-03"
+      "texto": "Marcel Ruiz se someterá a una operación por su rotura parcial de ligamentos",
+      "fuente": "Record.com.mx",
+      "fuente_url": "https://www.record.com.mx/historia/marcel-ruiz-se-sometera-a-una-operacion-por-su-rotura-parcial-de-ligamentos-2026053119134619704",
+      "fecha": "2026-05-31"
     },
     {
       "nivel": "warning",
@@ -169,28 +161,36 @@
       "fuente": "Montevideo.com.uy",
       "fuente_url": "https://www.montevideo.com.uy/Deportes/La-primera-duda-para-Bielsa-figura-de-la-seleccion-se-sintio-y-se-teme-por-un-desgarro-uc963968",
       "fecha": "2026-06-02"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Pese al desgarro, Uruguay confirmó que Giorgian de Arrascaeta estará en la lista de la Celeste para el Mundial",
+      "fuente": "Diario EL PAIS Uruguay",
+      "fuente_url": "https://www.elpais.com.uy/ovacion/mundial/pese-al-desgarro-uruguay-confirmo-que-giorgian-de-arrascaeta-estara-en-la-lista-de-la-celeste-para-el-mundial",
+      "fecha": "2026-06-03"
     }
   ],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo B (Inglaterra, USA, Irán, Gales) promedia 3.2 goles en amistosos: candidato a over 2.5"
+      "texto": "Grupo E más abierto: 4 selecciones con cuotas entre 2.5-4.0, ningún favorito claro estadísticamente"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "España mantiene 67% posesión promedio en preparación, máxima de todas las selecciones"
+      "texto": "Francia lidera ranking xG defensivo: solo 0.4 xG concedido por partido en últimos 5 amistosos"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Partidos de Corea del Sur promedian 3.8 goles totales en últimos 5 encuentros previos"
+      "texto": "Inglaterra invicta en 8 partidos pre-Mundial, mejor racha de preparación desde 1966"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Canadá anfitrión invicto en 7 partidos: mejor racha de preparación junto a Argentina"
+      "texto": "México favorito Grupo A vs Uruguay según modelos predictivos: 62% probabilidad de primer lugar"
     }
   ],
   "oportunidades": []
