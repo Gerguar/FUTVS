@@ -5,6 +5,10 @@ on:
     - cron: "30 */6 * * *"
   workflow_dispatch: {}
 
+concurrency:
+  group: git-push
+  cancel-in-progress: false
+
 jobs:
   insights:
     runs-on: ubuntu-latest

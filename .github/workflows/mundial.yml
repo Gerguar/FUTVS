@@ -48,6 +48,12 @@ jobs:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
         run: python -m src.ingest_wc2026
 
+      - name: Actualizar Forma reciente de Insights
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.refresh_insights_forma
+
       - name: Refresh partidos selecciones 2025 (martj42 -> Supabase)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -72,16 +78,16 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python -m src.predict_mundial
 
-      - name: Commit cuotas + ajustes (si cambian)
+      - name: Commit cuotas + ajustes + Forma reciente (si cambian)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/wc2026_market_odds.json data/wc2026_ajustes_lesiones.json || true
+          git add data/wc2026_market_odds.json data/wc2026_ajustes_lesiones.json web/data/insights.json || true
           if ! git diff --cached --quiet; then
             git stash
             git pull --rebase origin main
             git stash pop
-            git add data/wc2026_market_odds.json data/wc2026_ajustes_lesiones.json || true
+            git add data/wc2026_market_odds.json data/wc2026_ajustes_lesiones.json web/data/insights.json || true
             git commit -m "chore: refresh Pinnacle WC odds + lesiones $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             git push origin main
           else
