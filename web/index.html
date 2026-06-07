@@ -1514,19 +1514,19 @@ button,a{touch-action:manipulation}
       <div class="fp-card-title">Stack técnico</div>
       <div class="fp-step">
         <div class="fp-step-num">1</div>
-        <div class="fp-step-text"><strong>Datos</strong> — Reunimos fixtures, resultados, cuotas y ratings de jugadores desde fuentes públicas y los actualizamos de forma automática.</div>
+        <div class="fp-step-text"><strong>Datos</strong> — Reunimos fixtures, resultados, cuotas y ratings de jugadores desde fuentes como football-data.org, Understat y EA FC.</div>
       </div>
       <div class="fp-step">
         <div class="fp-step-num">2</div>
-        <div class="fp-step-text"><strong>Modelo</strong> — Convertimos historial, forma reciente, fuerza de planteles y mercado en probabilidades simples de leer.</div>
+        <div class="fp-step-text"><strong>Modelo</strong> — Usamos Dixon-Coles, Elo y XGBoost para convertir historial, forma, planteles y mercado en probabilidades simples de leer.</div>
       </div>
       <div class="fp-step">
         <div class="fp-step-num">3</div>
-        <div class="fp-step-text"><strong>Publicación</strong> — Los pronósticos y datos se publican en la web apenas se recalculan, sin carga manual.</div>
+        <div class="fp-step-text"><strong>Automatización</strong> — Python y GitHub Actions mantienen resultados, pronósticos e insights actualizados sin carga manual.</div>
       </div>
       <div class="fp-step">
         <div class="fp-step-num">4</div>
-        <div class="fp-step-text"><strong>Producto</strong> — La interfaz está pensada para comparar partidos, equipos y jugadores sin esconder la incertidumbre del fútbol.</div>
+        <div class="fp-step-text"><strong>Producto</strong> — Supabase alimenta una interfaz pensada para comparar partidos, equipos y jugadores sin esconder la incertidumbre del fútbol.</div>
       </div>
     </div>
 
@@ -1549,12 +1549,12 @@ button,a{touch-action:manipulation}
     <div class="fp-card">
       <div class="fp-card-title">Punto de partida</div>
       <p>FutVS parte de una idea simple: un pronóstico útil no debería apoyarse sólo en intuición, racha o nombres propios. Miramos el historial de cada equipo, su rendimiento reciente y el contexto del partido para estimar qué tan probable es cada resultado.</p>
-      <p>El objetivo no es adivinar marcadores exactos, sino ordenar escenarios: victoria local, empate o victoria visitante, con una probabilidad clara para cada uno.</p>
+      <p>La base combina modelos de goles, ratings de fuerza y aprendizaje automático. El objetivo no es adivinar marcadores exactos, sino ordenar escenarios: victoria local, empate o victoria visitante, con una probabilidad clara para cada uno.</p>
     </div>
 
     <div class="fp-card">
       <div class="fp-card-title">Qué señales usamos</div>
-      <p>Combinamos resultados históricos, forma de los últimos partidos, diferencia de goles, fuerza relativa del plantel, localía, calendario y, cuando está disponible, información del mercado. Cada señal aporta una parte distinta del panorama.</p>
+      <p>Combinamos resultados históricos, forma de los últimos partidos, diferencia de goles, fuerza relativa del plantel, localía, calendario y, cuando está disponible, información del mercado. Dixon-Coles ayuda a estimar goles, Elo resume fuerza relativa y XGBoost integra las señales en una probabilidad final.</p>
       <p>Para el Mundial, además, se le da más peso a selecciones, planteles confirmados, sedes, lesiones claras y partidos recientes de preparación.</p>
     </div>
 
@@ -1572,7 +1572,7 @@ button,a{touch-action:manipulation}
 
     <div class="fp-card">
       <div class="fp-card-title">Actualización</div>
-      <p>Los datos se actualizan automáticamente varias veces por día. Cuando cambian resultados, cuotas, planteles o bajas relevantes, los pronósticos e insights se recalculan para reflejar la información disponible más reciente.</p>
+      <p>Los datos se actualizan automáticamente varias veces por día con procesos en Python y GitHub Actions. Cuando cambian resultados, cuotas, planteles o bajas relevantes, los pronósticos e insights se recalculan para reflejar la información disponible más reciente.</p>
     </div>
   </div>
 </div>
