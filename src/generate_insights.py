@@ -373,30 +373,33 @@ def build_alertas_from_newsapi() -> list[dict]:
     seen_urls: set[str] = set()
     candidatos: list[dict] = []
 
+    total_bajados = 0
+    total_no_futbol = 0
+    total_sin_keyword = 0
     for q in ALERTA_QUERIES:
         try:
-            # Primera vuelta: medios deportivos.
             arts = fn.fetch_articles(q, from_date, to_date, page_size=8, sources=sources_csv)
-            # Segunda vuelta: idioma es sin restriccion de fuente (mas cobertura).
             arts += fn.fetch_articles(q, from_date, to_date, page_size=5, sources=None)
         except Exception as e:
             print(f"[insights] error fetch alertas '{q}': {e}", flush=True)
             continue
 
+        kept_q = 0
+        total_bajados += len(arts)
         for a in arts:
             url = a.get("url") or ""
             if not url or url in seen_urls:
                 continue
-            # Filtro futbol estricto (reusa logica de fetch_news)
             ok, razon = fn.is_football_news(a)
             if not ok:
+                total_no_futbol += 1
                 continue
             titulo = (a.get("title") or "").strip()
             if not titulo:
                 continue
             clas = _clasificar_alerta(titulo)
             if not clas:
-                # No matcheo ninguna keyword de alerta → descarta
+                total_sin_keyword += 1
                 continue
             nivel, flag = clas
             seen_urls.add(url)
@@ -408,6 +411,10 @@ def build_alertas_from_newsapi() -> list[dict]:
                 "fuente_url": url,
                 "fecha": (a.get("publishedAt") or "")[:10],
             })
+            kept_q += 1
+        print(f"[insights] q='{q}': bajados={len(arts)} candidatos+={kept_q}", flush=True)
+
+    print(f"[insights] TOTAL bajados={total_bajados} | no_futbol={total_no_futbol} | sin_keyword={total_sin_keyword} | candidatos={len(candidatos)}", flush=True)
 
     # Ordenar: critical primero, despues warning, despues info
     rank = {"critical": 0, "warning": 1, "info": 2}
