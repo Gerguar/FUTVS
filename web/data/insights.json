@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-07T00:10:03.328809+00:00",
-  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones, 104 partidos y 16 sedes en 3 países simultáneamente",
+  "generated_at_utc": "2026-06-07T06:25:34.482792+00:00",
+  "dato_curioso": "Argentina ganó el Mundial 2022 en Qatar, su tercera estrella, venciendo a Francia en una final histórica.",
   "forma_reciente": [
     {
       "slug": "alemania",
@@ -115,71 +115,8 @@
       "gc": 13
     }
   ],
-  "xg_performance": [
-    {
-      "tipo": "sobre",
-      "flag": "🔥",
-      "texto": "Argentina superó xG esperado en amistosos previos, convirtiendo con 23% más eficiencia que lo proyectado"
-    },
-    {
-      "tipo": "sobre",
-      "flag": "🔥",
-      "texto": "Francia ha generado 2.8 xG por partido en preparación, convirtiendo 3.4 goles de promedio"
-    },
-    {
-      "tipo": "bajo",
-      "flag": "📉",
-      "texto": "Brasil solo convirtió 60% de su xG en últimos amistosos, preocupación en definición"
-    },
-    {
-      "tipo": "bajo",
-      "flag": "📉",
-      "texto": "Inglaterra genera chances pero subutiliza: 1.9 xG generados vs 1.2 goles reales en preparación"
-    }
-  ],
-  "alertas": [
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "Lesión de último momento afecta preparación de selecciones a 4 días del inicio del Mundial"
-    },
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "Varios equipos ajustan listas de 26 jugadores antes del cierre del 9 de junio"
-    },
-    {
-      "nivel": "info",
-      "flag": "🔍",
-      "texto": "México confirma su 11 titular para debut vs Polonia el 13 de junio en estadio Azteca"
-    },
-    {
-      "nivel": "info",
-      "flag": "🔍",
-      "texto": "Estados Unidos finaliza microciclo de adaptación en sedes, define alineación titular"
-    }
-  ],
-  "tendencias": [
-    {
-      "tipo": "over",
-      "flag": "🎯",
-      "texto": "Grupo de la muerte: España, Alemania y Japón tienen +70% posesión promedio en amistosos"
-    },
-    {
-      "tipo": "over",
-      "flag": "🎯",
-      "texto": "Selecciones sudamericanas promedian 2.6 goles por partido en fase final de preparación"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "48 equipos participan por primera vez en formato expandido del Mundial 2026"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "Datos muestran que anfitriones USA, México y Canadá aumentaron 18% su rendimiento defensivo"
-    }
-  ],
+  "xg_performance": [],
+  "alertas": [],
+  "tendencias": [],
   "oportunidades": []
 }

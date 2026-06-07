@@ -1,29 +1,4 @@
 {
   "week": "2026-W23",
-  "noticias": [
-    {
-      "titulo": "Convocatorias definitivas cerradas: 48 selecciones confirman sus 26 jugadores",
-      "fuente": "FIFA",
-      "fecha": "2026-06-06",
-      "url": ""
-    },
-    {
-      "titulo": "Inauguración Mundial 2026: México vs Polonia abre torneo en Estadio Azteca",
-      "fuente": "ESPN",
-      "fecha": "2026-06-05",
-      "url": ""
-    },
-    {
-      "titulo": "Argentina, Brasil y Uruguay completan últimos amistosos antes del debut mundialista",
-      "fuente": "CONMEBOL",
-      "fecha": "2026-06-04",
-      "url": ""
-    },
-    {
-      "titulo": "Sorteo final de partidos: horarios confirmados para fase de grupos del Mundial",
-      "fuente": "FIFA",
-      "fecha": "2026-06-02",
-      "url": ""
-    }
-  ]
+  "noticias": []
 }
