@@ -1,21 +1,7 @@
 {
-  "generated_at_utc": "2026-06-07T06:35:43.907099+00:00",
-  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40 más que Qatar 2022",
+  "generated_at_utc": "2026-06-07T06:42:57.528549+00:00",
+  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos totales, casi el doble que ediciones anteriores",
   "forma_reciente": [
-    {
-      "slug": "alemania",
-      "nombre": "Alemania",
-      "escudo": "https://flagcdn.com/w160/de.png",
-      "forma": [
-        "W",
-        "W",
-        "W",
-        "W",
-        "W"
-      ],
-      "gf": 26,
-      "gc": 9
-    },
     {
       "slug": "argentina",
       "nombre": "Argentina",
@@ -27,8 +13,22 @@
         "W",
         "W"
       ],
-      "gf": 20,
-      "gc": 3
+      "gf": 16,
+      "gc": 1
+    },
+    {
+      "slug": "alemania",
+      "nombre": "Alemania",
+      "escudo": "https://flagcdn.com/w160/de.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "gf": 18,
+      "gc": 4
     },
     {
       "slug": "japón",
@@ -41,8 +41,8 @@
         "W",
         "W"
       ],
-      "gf": 19,
-      "gc": 6
+      "gf": 8,
+      "gc": 0
     },
     {
       "slug": "marruecos",
@@ -55,36 +55,8 @@
         "D",
         "W"
       ],
-      "gf": 50,
-      "gc": 6
-    },
-    {
-      "slug": "austria",
-      "nombre": "Austria",
-      "escudo": "https://flagcdn.com/w160/at.png",
-      "forma": [
-        "W",
-        "W",
-        "W",
-        "D",
-        "W"
-      ],
-      "gf": 27,
-      "gc": 4
-    },
-    {
-      "slug": "costa_de_marfil",
-      "nombre": "Costa de Marfil",
-      "escudo": "https://flagcdn.com/w160/ci.png",
-      "forma": [
-        "W",
-        "W",
-        "W",
-        "L",
-        "W"
-      ],
-      "gf": 30,
-      "gc": 8
+      "gf": 15,
+      "gc": 2
     },
     {
       "slug": "francia",
@@ -97,8 +69,22 @@
         "W",
         "W"
       ],
-      "gf": 24,
-      "gc": 8
+      "gf": 13,
+      "gc": 5
+    },
+    {
+      "slug": "costa_de_marfil",
+      "nombre": "Costa de Marfil",
+      "escudo": "https://flagcdn.com/w160/ci.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "W"
+      ],
+      "gf": 12,
+      "gc": 4
     },
     {
       "slug": "turquía",
@@ -111,74 +97,88 @@
         "D",
         "W"
       ],
-      "gf": 23,
-      "gc": 13
+      "gf": 10,
+      "gc": 2
+    },
+    {
+      "slug": "austria",
+      "nombre": "Austria",
+      "escudo": "https://flagcdn.com/w160/at.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "D",
+        "W"
+      ],
+      "gf": 10,
+      "gc": 2
     }
   ],
   "xg_performance": [
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina supera xG 2.1 vs 3 goles en amistosos pre-Mundial, efectividad del 143%"
+      "texto": "Argentina supera xG esperado en amistosos pre-Mundial con Messi en forma óptima"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Inglaterra convierte 5 goles con xG de 3.2 en últimos 2 amistosos preparatorios"
+      "texto": "Francia convierte más de lo esperado en preparación, Mbappé clave en definición"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil solo 1 gol con xG 2.8 en amistoso vs México, preocupa definición ante el debut"
+      "texto": "Brasil genera chances pero no define: xG alto vs goles reales bajos en últimos tests"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "España genera poco peligro: xG 1.1 promedio en preparación, por debajo de expectativas"
+      "texto": "Inglaterra bajo rendimiento ofensivo en amistosos finales previo al debut mundialista"
     }
   ],
   "alertas": [
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Francia pierde a Kylian Mbappé por lesión muscular, duda para debut vs Uruguay el 12/06"
+      "texto": "Duda médica de Neymar para debut de Brasil el 12/06 vs Serbia por molestia muscular"
     },
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Alemania confirma baja de Joshua Kimmich por sanción acumulada en fase clasificatoria"
+      "texto": "Bélgica pierde a De Bruyne por lesión de último momento, fuera del Mundial 2026"
     },
     {
       "nivel": "info",
       "flag": "🔍",
-      "texto": "Portugal incluye sorpresivamente a Joao Félix tras quedar fuera de lista preliminar"
+      "texto": "Estados Unidos confirma 26 convocados con Pulisic como capitán para inauguración"
     },
     {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "Bélgica sin Kevin De Bruyne confirmado: lesión de rodilla lo deja fuera del Mundial"
+      "nivel": "info",
+      "flag": "🔍",
+      "texto": "España incluye sorpresivamente a Lamine Yamal de 16 años en lista final del Mundial"
     }
   ],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo E (España, Alemania, Japón) promedia 3.4 goles por partido en amistosos de preparación"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "Anfitriones invictos: USA, México y Canadá sin derrotas en últimos 8 partidos combinados"
+      "texto": "Grupo B (Inglaterra, USA, Irán, Gales) proyecta más goles promedio según preparación"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "12 de 32 selecciones superan 2.5 goles promedio en amistosos preparatorios del último mes"
+      "texto": "Selecciones europeas en racha: 12 partidos sin perder en amistosos pre-Mundial"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Argentina favorita en casas de apuestas con 18% probabilidad, Francia cae a 14% sin Mbappé"
+      "texto": "Argentina favorita estadística con 18% probabilidad de campeonato según modelos"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Sedes México registran mayor altitud: factor rendimiento para selecciones sudamericanas"
     }
   ],
   "oportunidades": []
