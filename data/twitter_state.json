@@ -5,16 +5,12 @@
   "postmortem_miss_counter": 0,
   "lesion_snapshot": [],
   "lesion_posted_keys": [
+    "112|Leonardo Balerdi",
     "115|Eder Militao",
     "115|Estevao",
     "115|Rodrygo",
     "133|Christoph Baumgartner",
     "264|Billy Gilmour"
   ],
-  "lesion_pending": {
-    "112|Leonardo Balerdi": {
-      "first_seen_at": "2026-06-07T08:38:04.350806+00:00",
-      "delta_pp": 3.0
-    }
-  }
+  "lesion_pending": {}
 }
