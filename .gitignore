@@ -9,7 +9,7 @@ __pycache__/
 .vscode/
 downloaded_files/
 data/eafc26_ratings_cache.json
-# Mantenemos data/ commiteable porque la consume Netlify.
+# Mantenemos data/ commiteable porque alimenta el modelo y algunos outputs versionados.
 # Si tu dataset crece mucho, considerar Git LFS o mover predictions.json a un bucket.
 
 # Scripts puntuales de analisis (one-shot, no parte del pipeline)

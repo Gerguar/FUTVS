@@ -27,4 +27,3 @@ Notas:
 - La rama `hostinger` incluye `package.json` y `server.js` solo para que
   Hostinger la reconozca como app Node valida.
 - Para repos privados, Hostinger pide configurar SSH/deploy key.
-- La configuracion anterior de Netlify puede quedar en el repo mientras migra.

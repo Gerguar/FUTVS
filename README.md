@@ -1,6 +1,6 @@
-# Football Forecast — Champions / Internacionales
+# FutVersus — fútbol internacional
 
-Sistema híbrido de pronóstico 1X2 para competiciones internacionales (UCL, Europa League, Libertadores, etc.).
+Plataforma de análisis y pronóstico probabilístico para fútbol internacional. Hoy el foco operativo está en el Mundial 2026, pero la base del producto sigue preparada para competiciones internacionales y ligas después del Mundial.
 
 Implementa la receta del documento de referencia:
 **Dixon-Coles + Elo + XGBoost multiclase calibrado**, con backtesting temporal (rolling-origin), evaluación por log loss / Brier / curvas de calibración, y odds de mercado como feature.
@@ -9,7 +9,7 @@ Implementa la receta del documento de referencia:
 
 ```
 ┌──────────────────────┐
-│ GitHub Actions cron  │  (gratis, corre cada 6h)
+│ GitHub Actions cron  │
 │  - fetch fixtures    │
 │  - fetch odds        │
 │  - actualiza Elo/DC  │
@@ -25,8 +25,8 @@ Implementa la receta del documento de referencia:
            │  anon key (read-only, RLS)
            ▼
 ┌──────────────────────┐
-│  futpronostico_v9    │
-│  .html (sin cambios) │
+│      FutVersus       │
+│  Hostinger + web/    │
 └──────────────────────┘
 ```
 
@@ -53,7 +53,7 @@ football-forecast/
 │   ├── elo_state.json
 │   ├── models/
 │   └── predictions.json # ← consumido por la web
-├── web/                 # Frontend estático (Netlify)
+├── web/                 # Frontend publicado en Hostinger
 │   ├── index.html
 │   ├── styles.css
 │   └── app.js
@@ -83,12 +83,13 @@ python -m src.train
 python -m src.predict --horizon 7d --out data/predictions.json
 ```
 
-## Deploy en Netlify
+## Deploy en Hostinger
 
-1. Subir este repo a GitHub.
-2. En Netlify: New site → conectar el repo → **Publish directory: `web`**, Build command: vacío.
-3. En GitHub → Settings → Secrets → agregar `FOOTBALL_DATA_TOKEN` y `THE_ODDS_API_KEY`.
-4. El workflow corre solo cada 6 horas y commitea `data/predictions.json`. Netlify rebuildea.
+El sitio público vive en `web/` y se despliega en Hostinger desde GitHub Actions.
+
+Hay dos flujos históricos de Hostinger en el repo: deploy directo por FTP y publicación a rama `hostinger`. Antes de simplificar uno de los dos, confirmar cuál está usando producción.
+
+Ver **HOSTINGER_DEPLOY.md** y **HANDOFF.md** para el estado operativo actual.
 
 ## Metodología (resumen)
 
