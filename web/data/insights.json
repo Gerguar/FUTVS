@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-07T22:47:06.852687+00:00",
-  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos, casi el doble que Qatar 2022",
+  "generated_at_utc": "2026-06-07T22:49:42.279211+00:00",
+  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40% más que Qatar 2022",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,22 +119,22 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina supera xG en amistosos previos: 2.8 goles vs 1.9 esperados en últimos 3 partidos"
+      "texto": "Argentina supera xG en amistosos pre-Mundial: 2.8 goles con 1.9 xG esperado"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "España con efectividad del 140% vs xG: 7 goles en 2 amistosos con 5.0 xG esperados"
+      "texto": "Francia convierte eficientemente: 85% conversión vs 68% esperado en preparación"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil genera 2.4 xG por partido pero solo anota 1.3 goles de media en preparación"
+      "texto": "Brasil bajo expectativas: 1.2 goles reales con 2.1 xG en últimos amistosos"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Inglaterra con bajo rendimiento: 0.9 goles vs 1.8 xG en amistosos de junio"
+      "texto": "Inglaterra desperdicia ocasiones: 1.4 goles con 2.5 xG generado"
     }
   ],
   "alertas": [],
@@ -142,22 +142,22 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo B proyecta más goles: promedio 3.2 por partido según análisis pre-Mundial"
+      "texto": "Grupo favorito para goles: promedio proyectado de 2.9 goles por partido en Grupo F"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Francia lidera ranking de favoritos con 18% probabilidad de ganar según modelos estadísticos"
+      "texto": "España invicta en preparación: 5 victorias consecutivas previo al Mundial"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Alemania recupera forma: mejor defensa en amistosos con solo 0.4 goles recibidos/partido"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Argentina invicta en 2026: 5 victorias en amistosos preparatorios previo al Mundial"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "Selecciones de Concacaf suman 12 goles en últimos 4 días de preparación"
+      "texto": "Selecciones debutantes con alta posesión: promedio 58% en amistosos de preparación"
     }
   ],
   "oportunidades": []
