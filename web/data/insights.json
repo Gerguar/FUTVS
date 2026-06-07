@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-07T06:25:34.482792+00:00",
-  "dato_curioso": "Argentina ganó el Mundial 2022 en Qatar, su tercera estrella, venciendo a Francia en una final histórica.",
+  "generated_at_utc": "2026-06-07T06:35:43.907099+00:00",
+  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40 más que Qatar 2022",
   "forma_reciente": [
     {
       "slug": "alemania",
@@ -115,8 +115,71 @@
       "gc": 13
     }
   ],
-  "xg_performance": [],
-  "alertas": [],
-  "tendencias": [],
+  "xg_performance": [
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Argentina supera xG 2.1 vs 3 goles en amistosos pre-Mundial, efectividad del 143%"
+    },
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Inglaterra convierte 5 goles con xG de 3.2 en últimos 2 amistosos preparatorios"
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "Brasil solo 1 gol con xG 2.8 en amistoso vs México, preocupa definición ante el debut"
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "España genera poco peligro: xG 1.1 promedio en preparación, por debajo de expectativas"
+    }
+  ],
+  "alertas": [
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Francia pierde a Kylian Mbappé por lesión muscular, duda para debut vs Uruguay el 12/06"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Alemania confirma baja de Joshua Kimmich por sanción acumulada en fase clasificatoria"
+    },
+    {
+      "nivel": "info",
+      "flag": "🔍",
+      "texto": "Portugal incluye sorpresivamente a Joao Félix tras quedar fuera de lista preliminar"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Bélgica sin Kevin De Bruyne confirmado: lesión de rodilla lo deja fuera del Mundial"
+    }
+  ],
+  "tendencias": [
+    {
+      "tipo": "over",
+      "flag": "🎯",
+      "texto": "Grupo E (España, Alemania, Japón) promedia 3.4 goles por partido en amistosos de preparación"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Anfitriones invictos: USA, México y Canadá sin derrotas en últimos 8 partidos combinados"
+    },
+    {
+      "tipo": "over",
+      "flag": "🎯",
+      "texto": "12 de 32 selecciones superan 2.5 goles promedio en amistosos preparatorios del último mes"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Argentina favorita en casas de apuestas con 18% probabilidad, Francia cae a 14% sin Mbappé"
+    }
+  ],
   "oportunidades": []
 }
