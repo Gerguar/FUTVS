@@ -879,6 +879,7 @@ button,a{touch-action:manipulation}
 .cmp-footer{margin-top:.55rem;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.05);font-size:.56rem;color:#4b5563;line-height:1.5}
 .cmp-footer strong{font-weight:700}
 @media(max-width:900px){.cmp-card{display:none !important}}
+@media(max-width:800px){#clasicos-col{display:none !important}#comparador>div>div:first-child+div{grid-column:1/-1}#comparador>div>div{grid-template-columns:1fr !important}}
 @media(max-width:700px){.hero-inner{padding:2.5rem 1rem}}
 /* ── FIN HERO CARDS CSS ── */
 
@@ -1817,33 +1818,46 @@ button,a{touch-action:manipulation}
 
 <!-- COMPARADOR DE EQUIPOS -->
 <div id="comparador" class="page">
-  <div class="player-page" style="max-width:980px">
+  <div style="max-width:1200px;margin:0 auto;padding:1.2rem 1rem">
     <div style="display:flex;gap:.6rem;margin-bottom:1.2rem">
       <button class="back-btn" onclick="nav('/')">← Inicio</button>
     </div>
-    <h1 style="font-family:'Inter',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:.5px;margin:0 0 .3rem;text-align:center">⚖️ COMPARADOR DE EQUIPOS</h1>
-    <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-align:center;margin:0 0 1.8rem">solo se comparan equipos de la misma liga · selecciones entre sí</p>
 
-    <!-- Selector -->
-    <div class="comp-mode" style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem">
-      <button class="filter-btn active" id="comp-mode-clubes" onclick="setCompMode('clubes')">Clubes (misma liga)</button>
-      <button class="filter-btn" id="comp-mode-selecciones" onclick="setCompMode('selecciones')">Selecciones</button>
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:1.5rem;align-items:start">
+
+      <!-- Columna izquierda: clásicos sugeridos -->
+      <div id="clasicos-col" style="background:rgba(13,16,20,.84);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1rem;position:sticky;top:80px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--faint);text-transform:uppercase;margin-bottom:.9rem">⚡ Clásicos</div>
+        <div id="clasicos-list" style="display:flex;flex-direction:column;gap:.4rem"></div>
+      </div>
+
+      <!-- Columna derecha: comparador -->
+      <div class="player-page" style="max-width:980px;padding:0">
+        <h1 style="font-family:'Inter',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:.5px;margin:0 0 .3rem;text-align:center">⚖️ COMPARADOR DE EQUIPOS</h1>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-align:center;margin:0 0 1.8rem">solo se comparan equipos de la misma liga · selecciones entre sí</p>
+
+        <!-- Selector -->
+        <div class="comp-mode" style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem">
+          <button class="filter-btn active" id="comp-mode-clubes" onclick="setCompMode('clubes')">Clubes (misma liga)</button>
+          <button class="filter-btn" id="comp-mode-selecciones" onclick="setCompMode('selecciones')">Selecciones</button>
+        </div>
+
+        <!-- Filtros de liga (solo en modo clubes) -->
+        <div id="comp-liga-row" style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem">
+          <select id="comp-liga" class="comp-select" onchange="populateCompTeams()"></select>
+        </div>
+
+        <!-- Selectores de equipos -->
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;margin-bottom:1.8rem">
+          <select id="comp-team-a" class="comp-select" onchange="renderComparador()"></select>
+          <div style="font-family:'JetBrains Mono',monospace;font-weight:900;color:var(--muted);font-size:1rem">VS</div>
+          <select id="comp-team-b" class="comp-select" onchange="renderComparador()"></select>
+        </div>
+
+        <!-- Tabla comparativa -->
+        <div id="comp-result"></div>
+      </div>
     </div>
-
-    <!-- Filtros de liga (solo en modo clubes) -->
-    <div id="comp-liga-row" style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem">
-      <select id="comp-liga" class="comp-select" onchange="populateCompTeams()"></select>
-    </div>
-
-    <!-- Selectores de equipos -->
-    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;margin-bottom:1.8rem">
-      <select id="comp-team-a" class="comp-select" onchange="renderComparador()"></select>
-      <div style="font-family:'JetBrains Mono',monospace;font-weight:900;color:var(--muted);font-size:1rem">VS</div>
-      <select id="comp-team-b" class="comp-select" onchange="renderComparador()"></select>
-    </div>
-
-    <!-- Tabla comparativa -->
-    <div id="comp-result"></div>
   </div>
 </div>
 
@@ -3581,6 +3595,7 @@ async function openComparador() {
   if (_comp.loaded) {
     populateCompLigas()
     populateCompTeams()
+    renderClasicos()
     return
   }
   document.getElementById('comp-result').innerHTML = `<div class="loader" style="color:var(--faint);text-align:center">Cargando datos...</div>`
@@ -3603,6 +3618,7 @@ async function openComparador() {
     _comp.loaded = true
     populateCompLigas()
     populateCompTeams()
+    renderClasicos()
   } catch (e) {
     document.getElementById('comp-result').innerHTML = `<div style="color:var(--red)">Error cargando datos: ${htmlEsc(e.message)}</div>`
   }
@@ -3658,6 +3674,89 @@ function populateCompTeams() {
     a.selectedIndex = 0
     b.selectedIndex = 1
   }
+  renderComparador()
+}
+
+// ── CLÁSICOS SUGERIDOS ──
+const CLASICOS = [
+  // Selecciones
+  { label: 'Argentina vs Brasil',    mode: 'selecciones', a: 'argentina',    b: 'brasil' },
+  { label: 'Argentina vs Francia',   mode: 'selecciones', a: 'argentina',    b: 'francia' },
+  { label: 'Brasil vs Francia',      mode: 'selecciones', a: 'brasil',       b: 'francia' },
+  { label: 'España vs Alemania',     mode: 'selecciones', a: 'espa\u00f1a',  b: 'alemania' },
+  { label: 'Portugal vs España',     mode: 'selecciones', a: 'portugal',     b: 'espa\u00f1a' },
+  { label: 'Inglaterra vs Alemania', mode: 'selecciones', a: 'inglaterra',   b: 'alemania' },
+  // Clubes LaLiga
+  { label: 'Real Madrid vs Barça',   mode: 'clubes', liga: '2', a: 'real madrid',  b: 'barcelona' },
+  { label: 'Barça vs Atlético',      mode: 'clubes', liga: '2', a: 'barcelona',    b: 'atl\u00e9tico de madrid' },
+  // Clubes Premier
+  { label: 'Man City vs Arsenal',    mode: 'clubes', liga: '39', a: 'manchester city', b: 'arsenal' },
+  { label: 'Liverpool vs Man Utd',   mode: 'clubes', liga: '39', a: 'liverpool',       b: 'manchester united' },
+]
+
+function renderClasicos() {
+  const el = document.getElementById('clasicos-list')
+  if (!el) return
+  el.innerHTML = CLASICOS.map((c, i) => `
+    <button onclick="loadClasico(${i})" style="
+      width:100%;text-align:left;background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.07);border-radius:8px;
+      padding:.5rem .7rem;cursor:pointer;transition:all .15s;
+      font-family:'Inter',sans-serif;font-size:.78rem;color:var(--muted);
+      line-height:1.3;
+    "
+    onmouseover="this.style.background='rgba(34,197,94,.08)';this.style.borderColor='rgba(34,197,94,.3)';this.style.color='#e8eaed'"
+    onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(255,255,255,.07)';this.style.color='var(--muted)'"
+    >${c.label}</button>
+  `).join('')
+}
+
+function loadClasico(idx) {
+  const c = CLASICOS[idx]
+  if (!c || !_comp.equipos) return
+
+  // Cambiar modo si es necesario
+  if (c.mode !== _comp.mode) {
+    setCompMode(c.mode)
+  }
+
+  // Si es clubes, cambiar liga
+  if (c.mode === 'clubes' && c.liga) {
+    const ligaSel = document.getElementById('comp-liga')
+    if (ligaSel) { ligaSel.value = c.liga; _comp.ligaSel = c.liga }
+    populateCompTeams()
+  }
+
+  // Buscar equipos por nombre (case-insensitive, parcial)
+  const lista = c.mode === 'clubes'
+    ? _comp.equipos.filter(e => e.liga_id === parseInt(c.liga))
+    : _comp.equipos.filter(e => e.liga_id === 7)
+
+  const findEq = (nombre) => {
+    const n = nombre.toLowerCase()
+    return lista.find(e => e.nombre.toLowerCase().includes(n) || n.includes(e.nombre.toLowerCase()))
+  }
+
+  const eqA = findEq(c.a)
+  const eqB = findEq(c.b)
+
+  if (!eqA || !eqB) {
+    console.warn('[clasicos] equipo no encontrado:', c.a, c.b)
+    return
+  }
+
+  const selA = document.getElementById('comp-team-a')
+  const selB = document.getElementById('comp-team-b')
+  if (selA) selA.value = String(eqA.id)
+  if (selB) selB.value = String(eqB.id)
+
+  // Resaltar botón activo
+  document.querySelectorAll('#clasicos-list button').forEach((btn, i) => {
+    btn.style.background   = i === idx ? 'rgba(34,197,94,.12)' : 'rgba(255,255,255,.04)'
+    btn.style.borderColor  = i === idx ? 'rgba(34,197,94,.4)'  : 'rgba(255,255,255,.07)'
+    btn.style.color        = i === idx ? '#22c55e'              : 'var(--muted)'
+  })
+
   renderComparador()
 }
 
