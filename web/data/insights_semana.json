@@ -1,29 +1,34 @@
 {
-  "week": "2026-W23",
+  "updated": "2026-06-08T18:12:34Z",
+  "week": "5 jun – 8 jun 2026",
   "noticias": [
     {
-      "titulo": "Lista definitiva de Argentina: Messi confirmado, sorprende ausencia de Dybala",
-      "fuente": "TyC Sports",
-      "fecha": "2026-06-06",
-      "url": ""
+      "titulo": "eFootball regala a Messi y Lamine Yamal para celebrar la llegada del Mundial de fútbol 2026",
+      "resumen": "<!--cache-->Konami celebra el Mundial de fútbol 2026 con una campaña de eFootball que regala a Messi y Lamine Yamal, añade la Copa Internacional 2026 y nuevos…",
+      "fuente": "Elespanol.com",
+      "url": "https://vandal.elespanol.com/noticia/1350790470/efootball-regala-a-messi-y-lamine-yamal-para-celebrar-la-llegada-del-mundial-de-futbol-2026/",
+      "fecha": "2026-06-05"
     },
     {
-      "titulo": "México vs Estados Unidos amistoso final: 2-2 con más de 100mil espectadores",
-      "fuente": "ESPN",
-      "fecha": "2026-06-05",
-      "url": ""
+      "titulo": "Examericanista brilla en Canadá: Alejandro Díaz ya es goleador histórico de la Canadian Premier…",
+      "resumen": "El \"Wero\" Díaz vive un gran momento con Pacific FC y sigue escribiendo su nombre en la historia del futbol canadiense",
+      "fuente": "Record.com.mx",
+      "url": "https://www.record.com.mx/historia/examericanista-brilla-en-canada-alejandro-diaz-ya-es-goleador-historico-de-la-canadian-premier-league-2026060713580082556",
+      "fecha": "2026-06-07"
     },
     {
-      "titulo": "Ceremonia inaugural Mundial 2026 será en estadio Azteca el 11 de junio",
-      "fuente": "FIFA",
-      "fecha": "2026-06-04",
-      "url": ""
+      "titulo": "Sorpresas en LALIGA FC FUTURES: Barça, Atlético, Villarreal y Espanyol, eliminados en octavos",
+      "resumen": "Definidos los cuartos de final: Rayo- Elche, Sevilla- Alavés, Getafe-Betis y Girona-Real Madrid",
+      "fuente": "Marca",
+      "url": "https://www.marca.com/futbol/cantera/2026/06/06/sorpresas-laliga-fc-futures-barca-atletico-villarreal-espanyol-eliminados-octavos.html",
+      "fecha": "2026-06-06"
     },
     {
-      "titulo": "Cristiano Ronaldo a sus 41 años liderará a Portugal en su último Mundial",
-      "fuente": "Record",
-      "fecha": "2026-06-03",
-      "url": ""
+      "titulo": "Así he configurado el calendario del Mundial de Fútbol en mi iPhone y Android: es lo mejor que he…",
+      "resumen": "Un minuto es lo que he tardado en configurar el calendario del Mundial de Fútbol para que se integre en mi Google Calendar y poder tener una visual diaria de…",
+      "fuente": "Hipertextual",
+      "url": "https://hipertextual.com/actualidad/asi-he-configurado-el-calendario-del-mundial-de-futbol-en-mi-iphone-y-android-es-lo-mejor-que-he-hecho-en-2026/",
+      "fecha": "2026-06-07"
     }
   ]
 }
