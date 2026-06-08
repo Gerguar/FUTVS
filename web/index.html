@@ -1050,7 +1050,7 @@ button,a{touch-action:manipulation}
       <div class="stat-fl tight">
         <div class="stat-fl-num" id="stat-ajustados">—</div>
         <div class="stat-fl-lbl">Partidos<br>ajustados</div>
-        <div class="stat-fl-sub">diff ≤ 10pp</div>
+        <div class="stat-fl-sub" id="stat-ajustados-sub"></div>
       </div>
       <div class="stat-fl miss">
         <div class="stat-fl-num" id="stat-fallidos">—</div>
@@ -2439,13 +2439,15 @@ async function loadAccuracyStats() {
     }
     const total = ok + tight + miss
     const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v }
-    set('stat-acertados', ok)
-    set('stat-ajustados', tight)
-    set('stat-fallidos', miss)
-    // Subtitulos con %
-    const pct = n => total ? `${Math.round(n/total*100)}% de ${total}` : ''
-    set('stat-acertados-sub', pct(ok))
-    set('stat-fallidos-sub', pct(miss))
+    // Numero grande: porcentaje sobre el total. Subtitulo: 'X de Y'.
+    const pctNum = n => total ? `${Math.round(n/total*100)}%` : '—'
+    const xDeY  = n => total ? `${n} de ${total}` : ''
+    set('stat-acertados', pctNum(ok))
+    set('stat-ajustados', pctNum(tight))
+    set('stat-fallidos',  pctNum(miss))
+    set('stat-acertados-sub', xDeY(ok))
+    set('stat-ajustados-sub', xDeY(tight))
+    set('stat-fallidos-sub',  xDeY(miss))
   } catch(e) {
     console.error('Error stats:', e)
   }
