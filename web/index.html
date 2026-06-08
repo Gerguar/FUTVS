@@ -64,17 +64,21 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
   .home-main .matches-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:760px){
-  .home-main{grid-template-columns:1fr;padding:.4rem 1rem 0;gap:.4rem}
-  .stats-sidebar{flex-direction:row;justify-content:space-around;position:static;padding:.7rem .5rem;background:rgba(20,24,32,.4);border:1px solid var(--border);border-radius:14px;gap:.4rem;margin-left:0}
-  .stat-fl{text-align:center;flex:1;min-width:0}
-  .stat-fl-num{font-size:1.7rem}
-  .stat-fl-lbl{font-size:.55rem;letter-spacing:1.2px;margin-top:3px}
-  .stat-fl-sub{display:none}
+  /* Mobile: mantenemos el sidebar al costado (sticky) como en desktop,
+     pero compacto. Las 3 cards apiladas en columna. */
+  .home-main{grid-template-columns:88px 1fr;padding:.4rem .7rem 0;gap:.6rem}
+  .stats-sidebar{gap:.7rem;padding:.3rem 0 0 0}
+  .stat-fl{text-align:center}
+  .stat-fl-num{font-size:1.35rem}
+  .stat-fl-lbl{font-size:.5rem;letter-spacing:1px;margin-top:2px;line-height:1.2}
+  .stat-fl-sub{font-size:.5rem;margin-top:2px}
   .home-main .matches-grid{padding:.6rem 0 2rem}
 }
 @media(max-width:540px){
-  .stat-fl-num{font-size:1.45rem}
-  .stat-fl-lbl{font-size:.5rem}
+  .home-main{grid-template-columns:74px 1fr;padding:.4rem .55rem 0;gap:.5rem}
+  .stat-fl-num{font-size:1.15rem}
+  .stat-fl-lbl{font-size:.45rem;letter-spacing:.8px}
+  .stat-fl-sub{font-size:.45rem}
   .home-main .matches-grid{grid-template-columns:1fr;padding:.5rem 0 2rem}
 }
 /* Mobile: ocultar el WIN PROB grande del banner del detalle (la barra del
