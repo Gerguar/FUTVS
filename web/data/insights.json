@@ -59,20 +59,6 @@
       "gc": 3
     },
     {
-      "slug": "marruecos",
-      "nombre": "Marruecos",
-      "escudo": "https://flagcdn.com/w160/ma.png",
-      "forma": [
-        "W",
-        "W",
-        "W",
-        "D",
-        "W"
-      ],
-      "gf": 15,
-      "gc": 2
-    },
-    {
       "slug": "francia",
       "nombre": "Francia",
       "escudo": "https://flagcdn.com/w160/fr.png",
@@ -113,6 +99,20 @@
       ],
       "gf": 10,
       "gc": 2
+    },
+    {
+      "slug": "turquía",
+      "nombre": "Turquía",
+      "escudo": "https://flagcdn.com/w160/tr.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "D"
+      ],
+      "gf": 10,
+      "gc": 3
     }
   ],
   "xg_performance": [

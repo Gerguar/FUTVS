@@ -1,114 +1,4 @@
 {
-  "79": {
-    "decimal_h": 1.685,
-    "decimal_d": 3.76,
-    "decimal_a": 5.63,
-    "p_market_home": 0.5723,
-    "p_market_draw": 0.2565,
-    "p_market_away": 0.1713,
-    "overround": 0.0371,
-    "pinnacle_parent_id": 1620849624,
-    "fetched_at_utc": "2026-06-08T14:53:15+00:00"
-  },
-  "95": {
-    "decimal_h": 1.735,
-    "decimal_d": 3.9,
-    "decimal_a": 4.9,
-    "p_market_home": 0.5558,
-    "p_market_draw": 0.2473,
-    "p_market_away": 0.1968,
-    "overround": 0.0368,
-    "pinnacle_parent_id": 1620849625,
-    "fetched_at_utc": "2026-06-08T14:53:15+00:00"
-  },
-  "90": {
-    "decimal_h": 1.478,
-    "decimal_d": 4.45,
-    "decimal_a": 7.29,
-    "p_market_home": 0.6514,
-    "p_market_draw": 0.2164,
-    "p_market_away": 0.1321,
-    "overround": 0.0383,
-    "pinnacle_parent_id": 1620834894,
-    "fetched_at_utc": "2026-06-08T14:53:15+00:00"
-  },
-  "74": {
-    "decimal_h": 1.417,
-    "decimal_d": 4.59,
-    "decimal_a": 8.69,
-    "p_market_home": 0.6795,
-    "p_market_draw": 0.2097,
-    "p_market_away": 0.1108,
-    "overround": 0.0388,
-    "pinnacle_parent_id": 1620858185,
-    "fetched_at_utc": "2026-06-08T14:53:16+00:00"
-  },
-  "78": {
-    "decimal_h": 12.3,
-    "decimal_d": 6.79,
-    "decimal_a": 1.236,
-    "p_market_home": 0.0784,
-    "p_market_draw": 0.142,
-    "p_market_away": 0.7797,
-    "overround": 0.0374,
-    "pinnacle_parent_id": 1620858176,
-    "fetched_at_utc": "2026-06-08T14:53:16+00:00"
-  },
-  "81": {
-    "decimal_h": 4.88,
-    "decimal_d": 3.77,
-    "decimal_a": 1.763,
-    "p_market_home": 0.1976,
-    "p_market_draw": 0.2557,
-    "p_market_away": 0.5467,
-    "overround": 0.0373,
-    "pinnacle_parent_id": 1627278051,
-    "fetched_at_utc": "2026-06-08T14:53:17+00:00"
-  },
-  "85": {
-    "decimal_h": 1.926,
-    "decimal_d": 3.49,
-    "decimal_a": 4.36,
-    "p_market_home": 0.5016,
-    "p_market_draw": 0.2768,
-    "p_market_away": 0.2216,
-    "overround": 0.0351,
-    "pinnacle_parent_id": 1627278052,
-    "fetched_at_utc": "2026-06-08T14:53:17+00:00"
-  },
-  "94": {
-    "decimal_h": 1.293,
-    "decimal_d": 5.71,
-    "decimal_a": 11.2,
-    "p_market_home": 0.7452,
-    "p_market_draw": 0.1688,
-    "p_market_away": 0.086,
-    "overround": 0.0377,
-    "pinnacle_parent_id": 1627277932,
-    "fetched_at_utc": "2026-06-08T14:53:18+00:00"
-  },
-  "77": {
-    "decimal_h": 2.0,
-    "decimal_d": 3.5,
-    "decimal_a": 4.02,
-    "p_market_home": 0.4833,
-    "p_market_draw": 0.2762,
-    "p_market_away": 0.2405,
-    "overround": 0.0345,
-    "pinnacle_parent_id": 1620858178,
-    "fetched_at_utc": "2026-06-08T14:53:18+00:00"
-  },
-  "88": {
-    "decimal_h": 7.78,
-    "decimal_d": 4.51,
-    "decimal_a": 1.455,
-    "p_market_home": 0.1239,
-    "p_market_draw": 0.2137,
-    "p_market_away": 0.6625,
-    "overround": 0.0378,
-    "pinnacle_parent_id": 1620858181,
-    "fetched_at_utc": "2026-06-08T14:53:19+00:00"
-  },
   "96": {
     "decimal_h": 2.08,
     "decimal_d": 3.58,
@@ -118,73 +8,18 @@
     "p_market_away": 0.2649,
     "overround": 0.0341,
     "pinnacle_parent_id": 1620865472,
-    "fetched_at_utc": "2026-06-08T14:53:20+00:00"
+    "fetched_at_utc": "2026-06-08T23:05:09+00:00"
   },
-  "75": {
-    "decimal_h": 2.69,
-    "decimal_d": 3.12,
-    "decimal_a": 2.94,
-    "p_market_home": 0.3601,
-    "p_market_draw": 0.3105,
-    "p_market_away": 0.3295,
-    "overround": 0.0324,
-    "pinnacle_parent_id": 1627277929,
-    "fetched_at_utc": "2026-06-08T14:53:20+00:00"
-  },
-  "93": {
-    "decimal_h": 1.327,
-    "decimal_d": 5.6,
-    "decimal_a": 9.45,
-    "p_market_home": 0.726,
-    "p_market_draw": 0.172,
-    "p_market_away": 0.1019,
-    "overround": 0.0381,
-    "pinnacle_parent_id": 1620849630,
-    "fetched_at_utc": "2026-06-08T14:53:20+00:00"
-  },
-  "84": {
-    "decimal_h": 3.72,
-    "decimal_d": 2.81,
-    "decimal_a": 2.45,
-    "p_market_home": 0.2603,
-    "p_market_draw": 0.3446,
-    "p_market_away": 0.3952,
-    "overround": 0.0329,
-    "pinnacle_parent_id": 1620834898,
-    "fetched_at_utc": "2026-06-08T14:53:21+00:00"
-  },
-  "76": {
-    "decimal_h": 1.82,
-    "decimal_d": 3.72,
-    "decimal_a": 4.6,
-    "p_market_home": 0.5306,
-    "p_market_draw": 0.2595,
-    "p_market_away": 0.2099,
-    "overround": 0.0358,
-    "pinnacle_parent_id": 1627278050,
-    "fetched_at_utc": "2026-06-08T14:53:21+00:00"
-  },
-  "87": {
-    "decimal_h": 1.671,
-    "decimal_d": 3.94,
-    "decimal_a": 5.4,
-    "p_market_home": 0.5768,
-    "p_market_draw": 0.2447,
-    "p_market_away": 0.1785,
-    "overround": 0.0374,
-    "pinnacle_parent_id": 1620849623,
-    "fetched_at_utc": "2026-06-08T14:53:22+00:00"
-  },
-  "92": {
-    "decimal_h": 1.41,
-    "decimal_d": 4.57,
-    "decimal_a": 9.07,
-    "p_market_home": 0.6831,
-    "p_market_draw": 0.2107,
-    "p_market_away": 0.1062,
-    "overround": 0.0384,
-    "pinnacle_parent_id": 1620834896,
-    "fetched_at_utc": "2026-06-08T14:53:22+00:00"
+  "77": {
+    "decimal_h": 1.99,
+    "decimal_d": 3.52,
+    "decimal_a": 4.02,
+    "p_market_home": 0.4853,
+    "p_market_draw": 0.2744,
+    "p_market_away": 0.2403,
+    "overround": 0.0353,
+    "pinnacle_parent_id": 1620858178,
+    "fetched_at_utc": "2026-06-08T23:05:10+00:00"
   },
   "91": {
     "decimal_h": 14.24,
@@ -195,29 +30,18 @@
     "p_market_away": 0.7994,
     "overround": 0.0367,
     "pinnacle_parent_id": 1627278053,
-    "fetched_at_utc": "2026-06-08T14:53:23+00:00"
+    "fetched_at_utc": "2026-06-08T23:05:10+00:00"
   },
-  "83": {
-    "decimal_h": 2.01,
-    "decimal_d": 3.63,
-    "decimal_a": 3.82,
-    "p_market_home": 0.4808,
-    "p_market_draw": 0.2662,
-    "p_market_away": 0.253,
-    "overround": 0.0348,
-    "pinnacle_parent_id": 1620849619,
-    "fetched_at_utc": "2026-06-08T14:53:23+00:00"
-  },
-  "80": {
-    "decimal_h": 6.69,
-    "decimal_d": 4.48,
-    "decimal_a": 1.503,
-    "p_market_home": 0.144,
-    "p_market_draw": 0.215,
-    "p_market_away": 0.641,
-    "overround": 0.0382,
-    "pinnacle_parent_id": 1620865473,
-    "fetched_at_utc": "2026-06-08T14:53:24+00:00"
+  "78": {
+    "decimal_h": 12.3,
+    "decimal_d": 6.79,
+    "decimal_a": 1.236,
+    "p_market_home": 0.0784,
+    "p_market_draw": 0.142,
+    "p_market_away": 0.7797,
+    "overround": 0.0374,
+    "pinnacle_parent_id": 1620858176,
+    "fetched_at_utc": "2026-06-08T23:05:11+00:00"
   },
   "89": {
     "decimal_h": 1.917,
@@ -228,28 +52,204 @@
     "p_market_away": 0.2169,
     "overround": 0.0339,
     "pinnacle_parent_id": 1620849629,
-    "fetched_at_utc": "2026-06-08T14:53:24+00:00"
+    "fetched_at_utc": "2026-06-08T23:05:12+00:00"
   },
-  "97": {
-    "decimal_h": 8.51,
-    "decimal_d": 4.54,
-    "decimal_a": 1.427,
-    "p_market_home": 0.1132,
-    "p_market_draw": 0.2121,
-    "p_market_away": 0.6747,
-    "overround": 0.0384,
-    "pinnacle_parent_id": 1620834897,
-    "fetched_at_utc": "2026-06-08T14:53:25+00:00"
+  "79": {
+    "decimal_h": 1.685,
+    "decimal_d": 3.76,
+    "decimal_a": 5.63,
+    "p_market_home": 0.5723,
+    "p_market_draw": 0.2565,
+    "p_market_away": 0.1713,
+    "overround": 0.0371,
+    "pinnacle_parent_id": 1620849624,
+    "fetched_at_utc": "2026-06-08T23:05:12+00:00"
+  },
+  "75": {
+    "decimal_h": 2.66,
+    "decimal_d": 3.14,
+    "decimal_a": 2.95,
+    "p_market_home": 0.3638,
+    "p_market_draw": 0.3082,
+    "p_market_away": 0.328,
+    "overround": 0.0334,
+    "pinnacle_parent_id": 1627277929,
+    "fetched_at_utc": "2026-06-08T23:05:13+00:00"
+  },
+  "81": {
+    "decimal_h": 5.09,
+    "decimal_d": 3.84,
+    "decimal_a": 1.725,
+    "p_market_home": 0.1895,
+    "p_market_draw": 0.2512,
+    "p_market_away": 0.5593,
+    "overround": 0.0367,
+    "pinnacle_parent_id": 1627278051,
+    "fetched_at_utc": "2026-06-08T23:05:13+00:00"
+  },
+  "88": {
+    "decimal_h": 8.05,
+    "decimal_d": 4.56,
+    "decimal_a": 1.439,
+    "p_market_home": 0.1196,
+    "p_market_draw": 0.2111,
+    "p_market_away": 0.6693,
+    "overround": 0.0386,
+    "pinnacle_parent_id": 1620858181,
+    "fetched_at_utc": "2026-06-08T23:05:14+00:00"
+  },
+  "93": {
+    "decimal_h": 1.326,
+    "decimal_d": 5.61,
+    "decimal_a": 9.47,
+    "p_market_home": 0.7266,
+    "p_market_draw": 0.1717,
+    "p_market_away": 0.1017,
+    "overround": 0.0381,
+    "pinnacle_parent_id": 1620849630,
+    "fetched_at_utc": "2026-06-08T23:05:15+00:00"
+  },
+  "85": {
+    "decimal_h": 1.926,
+    "decimal_d": 3.49,
+    "decimal_a": 4.36,
+    "p_market_home": 0.5016,
+    "p_market_draw": 0.2768,
+    "p_market_away": 0.2216,
+    "overround": 0.0351,
+    "pinnacle_parent_id": 1627278052,
+    "fetched_at_utc": "2026-06-08T23:05:15+00:00"
+  },
+  "76": {
+    "decimal_h": 1.82,
+    "decimal_d": 3.73,
+    "decimal_a": 4.59,
+    "p_market_home": 0.5307,
+    "p_market_draw": 0.2589,
+    "p_market_away": 0.2104,
+    "overround": 0.0355,
+    "pinnacle_parent_id": 1627278050,
+    "fetched_at_utc": "2026-06-08T23:05:15+00:00"
   },
   "86": {
     "decimal_h": 1.076,
-    "decimal_d": 11.8,
-    "decimal_a": 28.85,
-    "p_market_home": 0.8862,
-    "p_market_draw": 0.0808,
+    "decimal_d": 11.81,
+    "decimal_a": 28.89,
+    "p_market_home": 0.8863,
+    "p_market_draw": 0.0807,
     "p_market_away": 0.033,
     "overround": 0.0491,
     "pinnacle_parent_id": 1620849631,
-    "fetched_at_utc": "2026-06-08T14:53:25+00:00"
+    "fetched_at_utc": "2026-06-08T23:05:16+00:00"
+  },
+  "74": {
+    "decimal_h": 1.415,
+    "decimal_d": 4.61,
+    "decimal_a": 8.75,
+    "p_market_home": 0.6809,
+    "p_market_draw": 0.209,
+    "p_market_away": 0.1101,
+    "overround": 0.038,
+    "pinnacle_parent_id": 1620858185,
+    "fetched_at_utc": "2026-06-08T23:05:16+00:00"
+  },
+  "80": {
+    "decimal_h": 6.3,
+    "decimal_d": 4.35,
+    "decimal_a": 1.541,
+    "p_market_home": 0.153,
+    "p_market_draw": 0.2215,
+    "p_market_away": 0.6255,
+    "overround": 0.0377,
+    "pinnacle_parent_id": 1620865473,
+    "fetched_at_utc": "2026-06-08T23:05:17+00:00"
+  },
+  "94": {
+    "decimal_h": 1.293,
+    "decimal_d": 5.71,
+    "decimal_a": 11.2,
+    "p_market_home": 0.7452,
+    "p_market_draw": 0.1688,
+    "p_market_away": 0.086,
+    "overround": 0.0377,
+    "pinnacle_parent_id": 1627277932,
+    "fetched_at_utc": "2026-06-08T23:05:18+00:00"
+  },
+  "87": {
+    "decimal_h": 1.671,
+    "decimal_d": 3.94,
+    "decimal_a": 5.4,
+    "p_market_home": 0.5768,
+    "p_market_draw": 0.2447,
+    "p_market_away": 0.1785,
+    "overround": 0.0374,
+    "pinnacle_parent_id": 1620849623,
+    "fetched_at_utc": "2026-06-08T23:05:18+00:00"
+  },
+  "92": {
+    "decimal_h": 1.41,
+    "decimal_d": 4.57,
+    "decimal_a": 9.07,
+    "p_market_home": 0.6831,
+    "p_market_draw": 0.2107,
+    "p_market_away": 0.1062,
+    "overround": 0.0384,
+    "pinnacle_parent_id": 1620834896,
+    "fetched_at_utc": "2026-06-08T23:05:19+00:00"
+  },
+  "90": {
+    "decimal_h": 1.478,
+    "decimal_d": 4.46,
+    "decimal_a": 7.29,
+    "p_market_home": 0.6518,
+    "p_market_draw": 0.2161,
+    "p_market_away": 0.1322,
+    "overround": 0.0378,
+    "pinnacle_parent_id": 1620834894,
+    "fetched_at_utc": "2026-06-08T23:05:19+00:00"
+  },
+  "83": {
+    "decimal_h": 2.06,
+    "decimal_d": 3.59,
+    "decimal_a": 3.71,
+    "p_market_home": 0.4697,
+    "p_market_draw": 0.2695,
+    "p_market_away": 0.2608,
+    "overround": 0.0335,
+    "pinnacle_parent_id": 1620849619,
+    "fetched_at_utc": "2026-06-08T23:05:20+00:00"
+  },
+  "95": {
+    "decimal_h": 1.735,
+    "decimal_d": 3.9,
+    "decimal_a": 4.91,
+    "p_market_home": 0.5561,
+    "p_market_draw": 0.2474,
+    "p_market_away": 0.1965,
+    "overround": 0.0363,
+    "pinnacle_parent_id": 1620849625,
+    "fetched_at_utc": "2026-06-08T23:05:21+00:00"
+  },
+  "97": {
+    "decimal_h": 8.53,
+    "decimal_d": 4.55,
+    "decimal_a": 1.426,
+    "p_market_home": 0.1129,
+    "p_market_draw": 0.2116,
+    "p_market_away": 0.6755,
+    "overround": 0.0385,
+    "pinnacle_parent_id": 1620834897,
+    "fetched_at_utc": "2026-06-08T23:05:21+00:00"
+  },
+  "84": {
+    "decimal_h": 3.64,
+    "decimal_d": 2.82,
+    "decimal_a": 2.47,
+    "p_market_home": 0.2656,
+    "p_market_draw": 0.3429,
+    "p_market_away": 0.3915,
+    "overround": 0.0342,
+    "pinnacle_parent_id": 1620834898,
+    "fetched_at_utc": "2026-06-08T23:05:22+00:00"
   }
 }
