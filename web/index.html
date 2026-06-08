@@ -66,19 +66,19 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 @media(max-width:760px){
   /* Mobile: mantenemos el sidebar al costado (sticky) como en desktop,
      pero compacto. Las 3 cards apiladas en columna. */
-  .home-main{grid-template-columns:88px 1fr;padding:.4rem .7rem 0;gap:.6rem}
-  .stats-sidebar{gap:.7rem;padding:.3rem 0 0 0}
+  .home-main{grid-template-columns:64px minmax(0,1fr);padding:.4rem .45rem 0;gap:.42rem;width:100%;overflow:hidden}
+  .stats-sidebar{gap:.58rem;padding:.25rem 0 0 0;min-width:0}
   .stat-fl{text-align:center}
-  .stat-fl-num{font-size:1.35rem}
-  .stat-fl-lbl{font-size:.5rem;letter-spacing:1px;margin-top:2px;line-height:1.2}
-  .stat-fl-sub{font-size:.5rem;margin-top:2px}
-  .home-main .matches-grid{padding:.6rem 0 2rem}
+  .stat-fl-num{font-size:1rem}
+  .stat-fl-lbl{font-size:.42rem;letter-spacing:.45px;margin-top:2px;line-height:1.12}
+  .stat-fl-sub{font-size:.39rem;letter-spacing:.2px;margin-top:2px;line-height:1.1}
+  .home-main .matches-grid{padding:.55rem 0 2rem;min-width:0;gap:.85rem}
 }
 @media(max-width:540px){
-  .home-main{grid-template-columns:74px 1fr;padding:.4rem .55rem 0;gap:.5rem}
-  .stat-fl-num{font-size:1.15rem}
-  .stat-fl-lbl{font-size:.45rem;letter-spacing:.8px}
-  .stat-fl-sub{font-size:.45rem}
+  .home-main{grid-template-columns:54px minmax(0,1fr);padding:.35rem .35rem 0;gap:.35rem}
+  .stat-fl-num{font-size:.84rem}
+  .stat-fl-lbl{font-size:.34rem;letter-spacing:.25px}
+  .stat-fl-sub{font-size:.32rem;letter-spacing:0}
   .home-main .matches-grid{grid-template-columns:1fr;padding:.5rem 0 2rem}
 }
 /* Mobile: ocultar el WIN PROB grande del banner del detalle (la barra del
@@ -536,15 +536,17 @@ button,a{touch-action:manipulation}
   .filters{padding:.85rem .85rem .7rem;gap:.45rem}
   .filter-btn{min-height:34px;padding:7px 14px}
 
-  .matches-grid{grid-template-columns:1fr;padding:.65rem .85rem 2rem;gap:1.3rem}
+  .matches-grid{grid-template-columns:minmax(0,1fr);padding:.65rem .85rem 2rem;gap:1.3rem;min-width:0}
+  .home-main .matches-grid{padding:.55rem 0 2rem;gap:.85rem}
   .match-card{
     display:grid;
-    grid-template-columns:1fr;
+    grid-template-columns:minmax(0,1fr);
     align-items:stretch;
     text-align:left;
     gap:.7rem;
     padding:1rem;
     border-radius:16px;
+    min-width:0;
   }
   .league-badge{text-align:center;width:100%;font-size:.62rem;letter-spacing:1.2px}
   .teams-col{flex-direction:row;align-items:center;justify-content:space-between;gap:.4rem}
