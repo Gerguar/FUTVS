@@ -1018,8 +1018,8 @@ button,a{touch-action:manipulation}
     </div>
   </div>
   <div class="filters">
-    <button class="filter-btn active" onclick="filterMatches('all',this)">Todos</button>
-    <button class="filter-btn filter-btn-mundial" onclick="filterMatches('mundial',this)">🏆 Mundial 2026</button>
+    <button class="filter-btn" onclick="filterMatches('all',this)">Todos</button>
+    <button class="filter-btn filter-btn-mundial active" id="filter-btn-mundial-default" onclick="filterMatches('mundial',this)">🏆 Mundial 2026</button>
     <button class="filter-btn" onclick="filterMatches('champions',this)">Champions League</button>
     <button class="filter-btn" onclick="filterMatches('laliga',this)">La Liga</button>
     <button class="filter-btn" onclick="filterMatches('premier',this)">Premier League</button>
@@ -2355,8 +2355,14 @@ async function loadMatches() {
         factors: generateFactors(pron, p.equipo_local?.nombre, p.equipo_visitante?.nombre)
       }
     })
-    renderMatches('all')
-    document.querySelectorAll('.filter-btn').forEach((b,i)=>b.classList.toggle('active',i===0))
+    // Filtro inicial: Mundial 2026 (mientras dure). Reusa filterMatches que
+    // tambien activa la sub-fila de grupos. Post-Mundial cambiar a 'all'.
+    const mundialBtn = document.getElementById('filter-btn-mundial-default')
+    if (mundialBtn) {
+      filterMatches('mundial', mundialBtn)
+    } else {
+      renderMatches('all')
+    }
   } catch(e) {
     showError(e.message)
     console.error(e)
