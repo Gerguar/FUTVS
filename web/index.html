@@ -3914,7 +3914,13 @@ async function renderComparador() {
     ? `<img src="${htmlEsc(safeMediaUrl(eq.escudo_url))}" alt="${htmlEsc(eq.nombre)}" onerror="this.style.display='none'">`
     : `<div style="width:48px;height:48px;border-radius:6px;background:${safeColor(eq.color_prim,'#222')};display:flex;align-items:center;justify-content:center;font-weight:900;color:${safeColor(eq.color_sec,'#fff')};font-family:'JetBrains Mono',monospace;font-size:.85rem">${htmlEsc(eq.abreviacion||'?')}</div>`
 
-  let html = `<div class="comp-header">
+  // Degradado de fondo con colores de los equipos (muy tenue)
+  const colA = safeColor(eqA.color_prim, '#1a1a2e')
+  const colB = safeColor(eqB.color_prim, '#1a2e1a')
+  const bgGradient = `linear-gradient(to right, ${colA}22 0%, transparent 40%, transparent 60%, ${colB}22 100%)`
+
+  let html = `<div style="background:${bgGradient};border-radius:16px;padding:1.2rem;margin-bottom:.5rem;transition:background .4s ease">
+  <div class="comp-header">
     <div class="comp-team-header">${flagOrCrest(eqA)}<span>${htmlEsc(eqA.nombre)}</span></div>
     <div class="comp-vs">VS</div>
     <div class="comp-team-header">${flagOrCrest(eqB)}<span>${htmlEsc(eqB.nombre)}</span></div>
@@ -3951,7 +3957,7 @@ async function renderComparador() {
     </div>`
   }
 
-  document.getElementById('comp-result').innerHTML = html
+  document.getElementById('comp-result').innerHTML = html + '</div>'
 
   // Reflejar el par seleccionado en la URL (compartible: /comparador?a=barcelona&b=real-madrid)
   if (window.NavRouter && !NavRouter._suppress) {
