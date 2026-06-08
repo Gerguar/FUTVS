@@ -3530,28 +3530,31 @@ const COMP_LIGAS = {
 
 // Pesos POR UNIDAD (cada equipo suma segun lo que TIENE; el de mas puntos gana
 // cada fila y el total). Esto vs la logica "todo-o-nada" del ganador anterior.
+// Valores actualizados 7-jun-2026 segun pedido de Facu.
 const COMP_WEIGHTS = {
-  // CLUBES
-  liga:            1,       // por titulo de liga
+  // CLUBES — TÍTULOS
+  liga:            1.2,     // por titulo de liga
   copa_nac:        1,       // por copa nacional
-  champions:       5,       // por UEFA Champions League ganada
-  internacionales: 2,       // por UEL/Recopa/UEFA Cup ganada
-  supercopas:      1,       // por Supercopa de Europa + Supercopa nacional
+  champions:       6,       // por UEFA Champions League ganada
+  internacionales: 2.4,     // por Europa League / Recopa / UEFA Cup ganada
+  supercopas:      0.8,     // por Supercopa de Europa + Supercopa nacional
   mundial_clubes:  5,       // por mundial de clubes / intercontinental
-  descenso:       -2,       // por descenso (penaliza, suma negativo)
-  // SELECCIONES
+  descenso:       -2,       // por descenso (penaliza, suma negativo) - sin cambio
+  // SELECCIONES (sin cambio, se modifican después)
   mundial_sel:     5,       // por mundial ganado
   final_mundial:   3,       // por final de mundial jugada
   copa_continental: 3,      // por Copa America/Euro/etc
   aparicion_mundial: 0.5,   // cada aparicion en mundial
   // INSTITUCIONAL (comunes)
-  antiguedad_per_decada: 1, // 1 pt por cada 10 años de existencia
-  estadio_per_10k: 1,       // 1 pt por cada 10k capacidad
-  socios_per_10k:  1,       // 1 pt por cada 10k socios
+  // 0.05 por año => 0.5 por década (el código divide /10 para "por década")
+  antiguedad_per_decada: 0.5,
+  // 0.04 por cada 1000 => 0.4 por cada 10k (el código divide /10000 para "per_10k")
+  estadio_per_10k: 0.4,
+  socios_per_10k:  0.4,
   // HEAD TO HEAD (entre los 2)
-  h2h_victoria:    1,
-  h2h_goleada:     2,       // bonus por goleada (4+ gol dif)
-  h2h_final:       3,       // final ganada al rival
+  h2h_victoria:    0.8,
+  h2h_goleada:     2,       // bonus por goleada (4+ gol dif) - sin cambio
+  h2h_final:       3,       // final ganada al rival - sin cambio
 }
 
 async function openComparador() {
