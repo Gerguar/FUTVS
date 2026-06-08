@@ -66,8 +66,8 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 @media(max-width:760px){
   /* Mobile: mantenemos el sidebar al costado (sticky) como en desktop,
      pero compacto. Las 3 cards apiladas en columna. */
-  .home-main{grid-template-columns:64px minmax(0,1fr);padding:.4rem .45rem 0;gap:.42rem;width:100%;overflow:hidden}
-  .stats-sidebar{gap:.58rem;padding:.25rem 0 0 0;min-width:0}
+  .home-main{grid-template-columns:64px minmax(0,1fr);padding:.4rem .45rem 0;gap:.42rem;width:100%}
+  .stats-sidebar{position:sticky;top:88px;gap:.58rem;padding:.25rem 0 0 0;min-width:0}
   .stat-fl{text-align:center}
   .stat-fl-num{font-size:1rem}
   .stat-fl-lbl{font-size:.42rem;letter-spacing:.45px;margin-top:2px;line-height:1.12}
