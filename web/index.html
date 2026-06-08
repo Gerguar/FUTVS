@@ -3618,8 +3618,21 @@ function populateCompTeams() {
   const opts = lista.map(e => `<option value="${Number(e.id)}">${htmlEsc(e.nombre)}</option>`).join('')
   a.innerHTML = opts
   b.innerHTML = opts
-  // Default: primer y segundo equipo distintos
-  if (lista.length >= 2) {
+  // Default segun modo:
+  //  - Clubes LaLiga: Barcelona (id=2) vs Atletico de Madrid (id=3) [PRESET].
+  //  - Otras ligas / selecciones: primer y segundo equipo distintos.
+  // Si la URL tiene ?a=...&b=..., el router pisa estos defaults despues.
+  let setDefaults = false
+  if (_comp.mode === 'clubes' && parseInt(_comp.ligaSel) === 2) {
+    const hasBarca = lista.some(e => Number(e.id) === 2)
+    const hasAtleti = lista.some(e => Number(e.id) === 3)
+    if (hasBarca && hasAtleti) {
+      a.value = '2'
+      b.value = '3'
+      setDefaults = true
+    }
+  }
+  if (!setDefaults && lista.length >= 2) {
     a.selectedIndex = 0
     b.selectedIndex = 1
   }
