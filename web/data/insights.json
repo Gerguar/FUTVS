@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-09T12:16:37.507063+00:00",
-  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40% más goles esperados que Qatar 2022",
+  "generated_at_utc": "2026-06-09T20:22:53.351387+00:00",
+  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos, récord absoluto de goles esperado: 312+",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,22 +119,22 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina superó su xG por 2.3 goles en los últimos 2 amistosos pre-Mundial, máxima eficiencia ofensiva"
+      "texto": "Argentina supera su xG en amistosos previos, 5 goles con 3.2 esperados. Lautaro en racha."
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Francia convirtió 7 goles con xG de 4.2 en preparación, Mbappé en estado de gracia"
+      "texto": "Francia convierte el doble de su xG pre-Mundial. Mbappé con efectividad del 85%."
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Inglaterra generó xG de 3.8 pero solo marcó 1 gol en sus últimos amistosos, crisis de definición"
+      "texto": "Brasil por debajo: 2 goles generados de 4.1 xG en últimos amistosos. Preocupa definición."
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil bajo expectativas: xG 5.1 vs 2 goles reales en preparación, preocupa falta de punch"
+      "texto": "Inglaterra bajo expectativas: 1.8 xG vs 0.9 goles reales en preparación mundialista."
     }
   ],
   "alertas": [
@@ -175,22 +175,22 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo A (USA, México, Uruguay, Ghana) proyecta 2.9 goles/partido según estadísticas FIFA"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "Alemania invicta en 8 amistosos consecutivos, emerge como favorito estadístico del Grupo D"
+      "texto": "Grupo B proyecta más goles: España e Italia promedian 2.8 goles por partido en preparación."
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Selecciones sudamericanas promedian 3.2 goles por partido en fase de preparación"
+      "texto": "Portugal líder en corners a favor: 8.5 promedio en amistosos. Cristiano busca récord."
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Japón sorprende: 6 victorias seguidas y mejor racha asiática rumbo al Mundial"
+      "texto": "Alemania invicta en 7 amistosos pre-Mundial. Mejor defensa con solo 2 goles recibidos."
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Uruguay racha de 12 partidos sin perder. Bielsa consolida sistema defensivo efectivo."
     }
   ],
   "oportunidades": [
