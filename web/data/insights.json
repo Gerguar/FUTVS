@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-07T23:22:30.481273+00:00",
-  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40% más que Catar 2022",
+  "generated_at_utc": "2026-06-09T12:16:37.507063+00:00",
+  "dato_curioso": "El Mundial 2026 será el primero con 48 selecciones y 104 partidos, 40% más goles esperados que Qatar 2022",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -59,20 +59,6 @@
       "gc": 3
     },
     {
-      "slug": "francia",
-      "nombre": "Francia",
-      "escudo": "https://flagcdn.com/w160/fr.png",
-      "forma": [
-        "L",
-        "W",
-        "W",
-        "W",
-        "W"
-      ],
-      "gf": 13,
-      "gc": 5
-    },
-    {
       "slug": "costa_de_marfil",
       "nombre": "Costa de Marfil",
       "escudo": "https://flagcdn.com/w160/ci.png",
@@ -113,28 +99,42 @@
       ],
       "gf": 10,
       "gc": 3
+    },
+    {
+      "slug": "francia",
+      "nombre": "Francia",
+      "escudo": "https://flagcdn.com/w160/fr.png",
+      "forma": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "W"
+      ],
+      "gf": 12,
+      "gc": 6
     }
   ],
   "xg_performance": [
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina supera xG 2.1 vs 3 goles en amistosos pre-Mundial, efectividad del 143%"
+      "texto": "Argentina superó su xG por 2.3 goles en los últimos 2 amistosos pre-Mundial, máxima eficiencia ofensiva"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "España convierte 7 goles con xG de 4.8 en últimos dos amistosos, racha goleadora"
+      "texto": "Francia convirtió 7 goles con xG de 4.2 en preparación, Mbappé en estado de gracia"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil genera xG 3.2 pero solo anota 1 gol en amistosos, preocupa definición"
+      "texto": "Inglaterra generó xG de 3.8 pero solo marcó 1 gol en sus últimos amistosos, crisis de definición"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Inglaterra con xG 2.8 y 1 gol marcado, ineficacia ofensiva a días del debut"
+      "texto": "Brasil bajo expectativas: xG 5.1 vs 2 goles reales en preparación, preocupa falta de punch"
     }
   ],
   "alertas": [
@@ -145,14 +145,6 @@
       "fuente": "Mundodeportivo.com",
       "fuente_url": "https://www.mundodeportivo.com/futbol/mundial/20260605/1004191841/conmocion-alemania-lesionado-perderse-mundial.html",
       "fecha": "2026-06-05"
-    },
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "Marcel Ruiz se someterá a una operación por su rotura parcial de ligamentos",
-      "fuente": "Record.com.mx",
-      "fuente_url": "https://www.record.com.mx/historia/marcel-ruiz-se-sometera-a-una-operacion-por-su-rotura-parcial-de-ligamentos-2026053119134619704",
-      "fecha": "2026-05-31"
     },
     {
       "nivel": "warning",
@@ -169,28 +161,36 @@
       "fuente": "Diario EL PAIS Uruguay",
       "fuente_url": "https://www.elpais.com.uy/ovacion/mundial/se-confirmo-el-desgarro-de-giorgian-de-arrascaeta-plazo-de-recuperacion-y-que-pasa-con-su-ida-al-mundial-2026",
       "fecha": "2026-06-03"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Pese al desgarro, Uruguay confirmó que Giorgian de Arrascaeta estará en la lista de la Celeste para el Mundial",
+      "fuente": "Diario EL PAIS Uruguay",
+      "fuente_url": "https://www.elpais.com.uy/ovacion/mundial/pese-al-desgarro-uruguay-confirmo-que-giorgian-de-arrascaeta-estara-en-la-lista-de-la-celeste-para-el-mundial",
+      "fecha": "2026-06-03"
     }
   ],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo E con promedio 3.4 goles en amistosos, España y Japón perfil ofensivo"
+      "texto": "Grupo A (USA, México, Uruguay, Ghana) proyecta 2.9 goles/partido según estadísticas FIFA"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Colombia 8 partidos invicta, mejor racha rumbo al Mundial junto a Argentina"
+      "texto": "Alemania invicta en 8 amistosos consecutivos, emerge como favorito estadístico del Grupo D"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Uruguay marca 12 goles en últimos 3 amistosos, Núñez y Darwin en racha"
+      "texto": "Selecciones sudamericanas promedian 3.2 goles por partido en fase de preparación"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Marruecos favorito estadístico Grupo F con 68% posesión promedio en preparación"
+      "texto": "Japón sorprende: 6 victorias seguidas y mejor racha asiática rumbo al Mundial"
     }
   ],
   "oportunidades": [
