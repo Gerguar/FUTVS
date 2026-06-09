@@ -856,9 +856,24 @@ button,a{touch-action:manipulation}
 .pg-btn-arrow{width:36px;height:36px;font-size:1rem}
 .pg-info{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--faint);letter-spacing:1px;margin:0 .4rem}
 .matches-section-label{grid-column:1/-1;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:2px;color:var(--green);text-transform:uppercase;padding:.2rem .3rem .6rem;font-weight:700}
-.finalizados-cta{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--red);background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:8px;text-decoration:none;transition:all .18s}
+/* Fila inferior del home: paginacion centrada + CTA a finalizados a la derecha.
+   Uso grid 3 cols (1fr auto 1fr) con un spacer invisible a la izquierda del
+   mismo ancho del CTA, asi la paginacion queda REALMENTE centrada aunque
+   este el boton a un lado. */
+.footer-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.6rem;padding:1rem 0 2.5rem;position:relative;z-index:1}
+.footer-row .pagination{padding:0;margin:0;justify-content:center;display:flex}
+.footer-row-spacer{visibility:hidden;pointer-events:none}
+.footer-row-cta{justify-self:end}
+.finalizados-cta{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--red);background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:8px;text-decoration:none;transition:all .18s;white-space:nowrap}
 .finalizados-cta:hover{background:rgba(239,68,68,.15);border-color:var(--red);transform:translateY(-1px)}
 .finalizados-cta span{font-family:'JetBrains Mono',monospace;color:var(--faint);font-weight:700}
+@media(max-width:760px){
+  /* Mobile: stack vertical (paginacion arriba, cta abajo centrado) */
+  .footer-row{grid-template-columns:1fr;gap:.8rem;padding:.8rem 0 2rem}
+  .footer-row-spacer{display:none}
+  .footer-row-cta{justify-self:center}
+  .finalizados-cta{font-size:.65rem;padding:.5rem .85rem}
+}
 .matches-grid-inner{max-width:1100px;margin:0 auto;padding:.3rem 1.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;width:100%}
 @media(max-width:900px){.matches-grid-inner{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:540px){.matches-grid-inner{grid-template-columns:1fr;padding:.3rem .8rem}}
@@ -1070,12 +1085,15 @@ button,a{touch-action:manipulation}
       <div class="matches-grid" id="matches-container">
         <div class="loader"><div class="loader-spin"></div>CARGANDO PARTIDOS...</div>
       </div>
-      <div id="pagination-bar" class="pagination" style="display:none"></div>
-      <!-- Boton a la pagina de partidos finalizados (reemplaza la seccion in-home) -->
-      <div id="finalizados-cta-wrap" style="display:none;margin:1rem 0 2.5rem;text-align:right">
-        <a href="/finalizados" onclick="nav('/finalizados');return false" class="finalizados-cta">
-          Ver partidos finalizados <span id="finalizados-cta-count"></span> →
-        </a>
+      <!-- Fila inferior: paginacion centrada + CTA a finalizados a la derecha -->
+      <div id="footer-row" class="footer-row">
+        <div class="footer-row-spacer"></div>
+        <div id="pagination-bar" class="pagination" style="display:none"></div>
+        <div id="finalizados-cta-wrap" class="footer-row-cta" style="display:none">
+          <a href="/finalizados" onclick="nav('/finalizados');return false" class="finalizados-cta">
+            Ver partidos finalizados <span id="finalizados-cta-count"></span> →
+          </a>
+        </div>
       </div>
     </div>
   </div>
