@@ -14,7 +14,7 @@ const SB_URL = 'https://dyeouwqtebrvioesrbcf.supabase.co'
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5ZW91d3F0ZWJydmlvZXNyYmNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MTE4MzIsImV4cCI6MjA5NDE4NzgzMn0.t_9uVZLKl-khTfjnOvlebTUIYZ9C2fMVDM-6ZqMDMaA'
 const SITE   = 'https://futversus.com'
 const SITE_NAME = 'FutVS'
-const DEFAULT_IMG = `${SITE}/og-default.png`
+const DEFAULT_IMG = `${SITE}/og-default.svg`
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function slugify(s) {
