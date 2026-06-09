@@ -856,6 +856,9 @@ button,a{touch-action:manipulation}
 .pg-btn-arrow{width:36px;height:36px;font-size:1rem}
 .pg-info{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--faint);letter-spacing:1px;margin:0 .4rem}
 .matches-section-label{grid-column:1/-1;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:2px;color:var(--green);text-transform:uppercase;padding:.2rem .3rem .6rem;font-weight:700}
+.finalizados-cta{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--red);background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:8px;text-decoration:none;transition:all .18s}
+.finalizados-cta:hover{background:rgba(239,68,68,.15);border-color:var(--red);transform:translateY(-1px)}
+.finalizados-cta span{font-family:'JetBrains Mono',monospace;color:var(--faint);font-weight:700}
 .matches-grid-inner{max-width:1100px;margin:0 auto;padding:.3rem 1.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;width:100%}
 @media(max-width:900px){.matches-grid-inner{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:540px){.matches-grid-inner{grid-template-columns:1fr;padding:.3rem .8rem}}
@@ -1068,8 +1071,12 @@ button,a{touch-action:manipulation}
         <div class="loader"><div class="loader-spin"></div>CARGANDO PARTIDOS...</div>
       </div>
       <div id="pagination-bar" class="pagination" style="display:none"></div>
-      <div id="finished-section" style="display:none;position:relative;z-index:1"></div>
-      <div id="pagination-bar-fin" class="pagination" style="display:none"></div>
+      <!-- Boton a la pagina de partidos finalizados (reemplaza la seccion in-home) -->
+      <div id="finalizados-cta-wrap" style="display:none;margin:1rem 0 2.5rem;text-align:right">
+        <a href="/finalizados" onclick="nav('/finalizados');return false" class="finalizados-cta">
+          Ver partidos finalizados <span id="finalizados-cta-count"></span> →
+        </a>
+      </div>
     </div>
   </div>
   
@@ -1125,6 +1132,33 @@ button,a{touch-action:manipulation}
   </footer>
 </div>
 
+
+<!-- PARTIDOS FINALIZADOS (ruta /finalizados) -->
+<div id="finalizados" class="page" style="position:relative;z-index:1">
+  <div style="max-width:1380px;margin:0 auto;padding:1.5rem 1.5rem 3rem">
+    <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:1.2rem">
+      <button class="back-btn" onclick="nav('/')">← Inicio</button>
+    </div>
+    <div class="ins-hero" style="margin-bottom:1.5rem">
+      <div class="ins-hero-eyebrow">FutVS · Resultados</div>
+      <h1>🏁 Partidos finalizados</h1>
+      <p>Resultados de partidos con pronósticos del modelo.</p>
+    </div>
+    <!-- Filtros (mismos que el home) -->
+    <div class="filters" id="fin-filters">
+      <button class="filter-btn" onclick="filterFinalizados('all',this)">Todos</button>
+      <button class="filter-btn filter-btn-mundial active" id="fin-filter-mundial" onclick="filterFinalizados('mundial',this)">🏆 Mundial 2026</button>
+      <button class="filter-btn" onclick="filterFinalizados('champions',this)">Champions League</button>
+      <button class="filter-btn" onclick="filterFinalizados('laliga',this)">La Liga</button>
+      <button class="filter-btn" onclick="filterFinalizados('premier',this)">Premier League</button>
+      <button class="filter-btn" onclick="filterFinalizados('seriea',this)">Serie A</button>
+    </div>
+    <div class="matches-grid" id="fin-container">
+      <div class="loader"><div class="loader-spin"></div>CARGANDO PARTIDOS...</div>
+    </div>
+    <div id="fin-pagination" class="pagination" style="display:none;margin-top:1.5rem"></div>
+  </div>
+</div>
 
 <!-- INSIGHTS -->
 <div id="insights" class="page" style="position:relative;z-index:1">
@@ -2595,13 +2629,9 @@ function renderMatches(filter) {
   }
   const upcoming = list.filter(m => m.status !== 'finalizado')
   const finished = list.filter(m => m.status === 'finalizado')
-    .sort((a,b) => new Date(b.kickoffIso) - new Date(a.kickoffIso))
   const totalPagesUp = Math.max(1, Math.ceil(upcoming.length / PAGE_SIZE))
   if (currentPageUp > totalPagesUp) currentPageUp = totalPagesUp
   const pageUpcoming = upcoming.slice((currentPageUp-1)*PAGE_SIZE, currentPageUp*PAGE_SIZE)
-  const totalPagesFin = Math.max(1, Math.ceil(finished.length / PAGE_SIZE))
-  if (currentPageFin > totalPagesFin) currentPageFin = totalPagesFin
-  const pageFinished = finished.slice((currentPageFin-1)*PAGE_SIZE, currentPageFin*PAGE_SIZE)
   let html = ''
   if (upcoming.length) {
     html += `<div class="matches-section-label">PRÓXIMOS · ${upcoming.length}</div>`
@@ -2609,25 +2639,75 @@ function renderMatches(filter) {
   }
   c.innerHTML = html
   renderPagination('pagination-bar', totalPagesUp, currentPageUp, upcoming.length, 'Up')
-  const finSection = document.getElementById('finished-section')
-  if (finished.length) {
-    finSection.innerHTML = `<div class="matches-divider">FINALIZADOS · ${finished.length}</div><div class="matches-grid">${pageFinished.map(matchCardHtml).join('')}</div>`
-    finSection.style.display = 'block'
-    renderPagination('pagination-bar-fin', totalPagesFin, currentPageFin, finished.length, 'Fin')
-  } else {
-    finSection.style.display = 'none'
-    document.getElementById('pagination-bar-fin').style.display = 'none'
+
+  // En lugar de renderizar finalizados in-home, mostramos un boton/CTA a la
+  // pagina /finalizados (todos los del filtro actual, no solo "ultimos 7 dias").
+  const finCta = document.getElementById('finalizados-cta-wrap')
+  const finCount = document.getElementById('finalizados-cta-count')
+  if (finCta) {
+    if (finished.length) {
+      finCta.style.display = ''
+      if (finCount) finCount.textContent = `(${finished.length})`
+    } else {
+      finCta.style.display = 'none'
+    }
   }
 }
 
 function goToPage(p, section) {
   if (section === 'Up') currentPageUp = p
-  else currentPageFin = p
+  else if (section === 'Fin') currentPageFin = p
+  else if (section === 'FinPage') { _finFilters.page = p; renderFinalizados(); return }
   renderMatches()
   const scrollTarget = section === 'Up'
     ? document.getElementById('matches-container')
     : document.getElementById('finished-section')
   if (scrollTarget) scrollTarget.scrollIntoView({behavior:'smooth', block:'start'})
+}
+
+// ══════════════════════════════════════════════
+// PAGINA /finalizados — todos los partidos con resultado
+// ══════════════════════════════════════════════
+let _finFilters = { league: 'mundial', page: 1 }
+const FIN_PAGE_SIZE = 12
+
+function openFinalizados() {
+  showPage('finalizados')
+  renderFinalizados()
+}
+
+function filterFinalizados(key, btn) {
+  document.querySelectorAll('#fin-filters .filter-btn').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  _finFilters.league = key
+  _finFilters.page = 1
+  renderFinalizados()
+}
+
+function renderFinalizados() {
+  const c = document.getElementById('fin-container')
+  if (!matches || !matches.length) {
+    c.innerHTML = `<div class="loader" style="color:var(--faint);text-align:center;padding:2rem">Cargando partidos…</div>`
+    return
+  }
+  // Filtrar finalizados por liga
+  let list = matches.filter(m => m.status === 'finalizado')
+  if (_finFilters.league !== 'all') {
+    list = list.filter(m => m.leagueKey === _finFilters.league)
+  }
+  // Ordenar mas reciente primero
+  list.sort((a,b) => new Date(b.kickoffIso) - new Date(a.kickoffIso))
+  if (!list.length) {
+    c.innerHTML = `<div class="loader" style="color:var(--faint);text-align:center;padding:2rem">No hay partidos finalizados en esta categoría.</div>`
+    document.getElementById('fin-pagination').style.display = 'none'
+    return
+  }
+  const totalPages = Math.max(1, Math.ceil(list.length / FIN_PAGE_SIZE))
+  if (_finFilters.page > totalPages) _finFilters.page = totalPages
+  const page = list.slice((_finFilters.page-1)*FIN_PAGE_SIZE, _finFilters.page*FIN_PAGE_SIZE)
+  c.innerHTML = `<div class="matches-section-label" style="color:var(--red)">RESULTADOS · ${list.length}</div>` +
+                page.map(matchCardHtml).join('')
+  renderPagination('fin-pagination', totalPages, _finFilters.page, list.length, 'FinPage')
 }
 
 function renderPagination(barId, totalPages, currentPage, total, section) {
@@ -4365,6 +4445,10 @@ const NavRouter = {
     if (path === '/goat' || path === '/goat/') {
       showPage('goat')
       renderGoatTables()
+      return
+    }
+    if (path === '/finalizados' || path === '/finalizados/') {
+      openFinalizados()
       return
     }
     // Rutas de paginas estaticas del footer (12 botones dummy).
