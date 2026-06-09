@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>FutVersus</title>
+<!--
+  Analytics: Umami self-hosted (Vercel). Para activar, descomentar la linea
+  de abajo y reemplazar UMAMI_HOST + WEBSITE_ID con los valores reales del
+  panel de Umami. El helper window.trackEvent() ya esta cableado abajo y
+  funciona como no-op silencioso mientras el script no este cargado.
+-->
+<!-- <script defer src="https://UMAMI_HOST/script.js" data-website-id="WEBSITE_ID" data-domains="futversus.com"></script> -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -2843,6 +2850,7 @@ function filterFinalizados(key, btn) {
   btn.classList.add('active')
   _finFilters.league = key
   _finFilters.page = 1
+  trackEvent('finalizados_filtro', { liga: key })
   renderFinalizados()
 }
 
@@ -2943,6 +2951,13 @@ async function showDetail(id) {
   const m = matches.find(x=>x.id===id)
   if (!m) return
   currentMatch = m
+
+  trackEvent('click_partido', {
+    partido_id: String(m.id),
+    home: (m.home && m.home.name) || '',
+    away: (m.away && m.away.name) || '',
+    comp: (m.competition && m.competition.name) || '',
+  })
 
   // Sincronizar URL con el partido (a menos que ya estemos resolviendo
   // desde URL, en cuyo caso NavRouter._suppress=true para evitar loops).
@@ -4207,6 +4222,11 @@ async function renderComparador() {
     const sa = NavRouter.slugify(eqA.nombre), sb_ = NavRouter.slugify(eqB.nombre)
     NavRouter.push(`/comparador?a=${sa}&b=${sb_}`)
   }
+
+  trackEvent('comparador_uso', {
+    a: eqA.nombre, b: eqB.nombre,
+    mode: (_comp && _comp.mode) || 'clubes',
+  })
 }
 
 // ── Mini-router (rutas reales sin frameworks) ─────────────────────────────────
@@ -4418,6 +4438,7 @@ function rkSetTab(tab, btn) {
   rkTab = tab; rkPage = 1
   document.querySelectorAll('.rank-tab').forEach(b => b.classList.remove('active'))
   btn.classList.add('active')
+  trackEvent('ranking_filtro', { tab })
   document.getElementById('rk-filter-pos').style.display = tab === 'posicion' ? '' : 'none'
   document.getElementById('rk-filter-pais').style.display = tab === 'pais' ? '' : 'none'
   document.getElementById('rk-filter-pos').value = ''
@@ -4685,6 +4706,52 @@ const NavRouter = {
 // Wrapper para los enlaces del nav: pushea la URL y dispara la vista.
 function nav(path) { NavRouter.push(path); NavRouter.parse() }
 NavRouter.init()
+
+// ── Analytics: tracker centralizado para Umami ─────────────────────────────
+// Si Umami no esta cargado (adblock, dev local sin script), hace no-op
+// silencioso. Props opcional dict de strings/numeros (max ~6 keys).
+window.trackEvent = function(name, props) {
+  try {
+    if (window.umami && typeof window.umami.track === 'function') {
+      window.umami.track(name, props || undefined)
+    }
+  } catch (_) { /* silencioso */ }
+}
+
+// outbound_fuente: cualquier click en un <a> que apunte a otro origen
+// (links de noticias en insights, fuentes, etc).
+document.addEventListener('click', function(e) {
+  const a = e.target.closest && e.target.closest('a[href]')
+  if (!a) return
+  const href = a.getAttribute('href') || ''
+  if (!/^https?:\/\//i.test(href)) return
+  try {
+    const u = new URL(href)
+    if (u.hostname && u.hostname !== location.hostname) {
+      trackEvent('outbound_fuente', { url: href.slice(0, 200), host: u.hostname })
+    }
+  } catch (_) {}
+}, true)
+
+// insight_lectura: dispara UNA vez por sesion si el usuario scrollea >50%
+// dentro de /insights. Se resetea cuando cambia de ruta.
+;(function setupInsightReadTracker() {
+  let fired = false
+  function onScroll() {
+    if (fired) return
+    if (location.pathname !== '/insights') return
+    const doc = document.documentElement
+    const total = (doc.scrollHeight - window.innerHeight) || 1
+    if ((window.scrollY / total) > 0.5) {
+      fired = true
+      trackEvent('insight_lectura')
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true })
+  const _origPush = history.pushState
+  history.pushState = function() { fired = false; return _origPush.apply(this, arguments) }
+  window.addEventListener('popstate', function() { fired = false })
+})()
 
 // Copia el link del partido actual al portapapeles y muestra feedback breve.
 async function copyMatchLink(btn) {
