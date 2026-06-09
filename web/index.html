@@ -902,6 +902,32 @@ button,a{touch-action:manipulation}
 /* ── FIN HERO CARDS CSS ── */
 
 /* ── FACTS + NEWS SECTION ───────────────────── */
+/* ── HOME EXTRA: Comparador + Ranking debajo de los partidos ─────────── */
+.home-extra-section{position:relative;z-index:1;padding:1.5rem 1.5rem 1rem}
+.home-extra-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;align-items:stretch}
+.home-extra-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.6rem 1.8rem;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.home-extra-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.home-extra-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:2.5px;color:var(--green);text-transform:uppercase;font-weight:700;margin-bottom:.55rem}
+.home-extra-card h3{font-size:1.25rem;font-weight:800;color:#e8eaed;margin:0 0 .35rem;letter-spacing:-.3px}
+.home-extra-card > p{color:var(--muted);font-size:.85rem;margin:0 0 1.1rem;line-height:1.4}
+.home-extra-list{display:flex;flex-direction:column;gap:.55rem;flex:1;margin-bottom:1.1rem}
+.home-extra-item{display:flex;align-items:center;gap:.7rem;padding:.6rem .8rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text);transition:all .15s;cursor:pointer}
+.home-extra-item:hover{border-color:var(--green);transform:translateX(2px);background:rgba(34,197,94,.05)}
+.home-extra-item-rank{font-family:'JetBrains Mono',monospace;font-weight:900;font-size:.85rem;color:var(--faint);min-width:22px;text-align:right}
+.home-extra-item-img{width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--surface2)}
+.home-extra-item-flag{width:30px;height:22px;object-fit:cover;border-radius:3px;flex-shrink:0}
+.home-extra-item-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.home-extra-item-title{font-size:.88rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-extra-item-sub{font-size:.65rem;color:var(--faint);font-family:'JetBrains Mono',monospace;letter-spacing:.4px}
+.home-extra-item-right{font-family:'JetBrains Mono',monospace;font-weight:900;font-size:.95rem;color:var(--green);min-width:32px;text-align:right;flex-shrink:0}
+.home-extra-cta{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.65rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--green);background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:8px;text-decoration:none;transition:all .18s;margin-top:auto}
+.home-extra-cta:hover{background:rgba(34,197,94,.15);border-color:var(--green);transform:translateY(-1px)}
+.home-extra-loading{color:var(--faint);font-size:.8rem;text-align:center;padding:.8rem}
+@media(max-width:760px){
+  .home-extra-section{padding:1rem 1rem .5rem}
+  .home-extra-inner{grid-template-columns:1fr;gap:1rem}
+  .home-extra-card{padding:1.2rem 1.3rem}
+}
 .facts-section{position:relative;z-index:1;padding:2.5rem 1.5rem 4rem}
 .facts-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;align-items:start}
 /* columna izquierda: dato histórico */
@@ -1097,7 +1123,33 @@ button,a{touch-action:manipulation}
       </div>
     </div>
   </div>
-  
+
+<!-- HOME EXTRA: Comparador + Ranking (debajo de los partidos) -->
+<div class="home-extra-section">
+  <div class="home-extra-inner">
+    <!-- COMPARADOR (izquierda) -->
+    <div class="home-extra-card">
+      <div class="home-extra-eyebrow">⚖️ Comparador</div>
+      <h3>Versus clásicos</h3>
+      <p>Comparalos uno a uno por títulos, palmarés y H2H histórico.</p>
+      <div class="home-extra-list" id="home-comp-list">
+        <!-- llenado por JS con presets -->
+      </div>
+      <a href="/comparador" onclick="nav('/comparador');return false" class="home-extra-cta">Ir al comparador →</a>
+    </div>
+    <!-- RANKING (derecha) -->
+    <div class="home-extra-card">
+      <div class="home-extra-eyebrow">🏆 Ranking</div>
+      <h3>Top jugadores por rating</h3>
+      <p>Los mejores del mundo según rating actual.</p>
+      <div class="home-extra-list" id="home-ranking-list">
+        <div class="home-extra-loading">Cargando…</div>
+      </div>
+      <a href="/ranking" onclick="nav('/ranking');return false" class="home-extra-cta">Ver ranking completo →</a>
+    </div>
+  </div>
+</div>
+
 <!-- FACTS SECTION -->
 <div class="facts-section">
   <div class="facts-inner">
@@ -2684,6 +2736,68 @@ function goToPage(p, section) {
 }
 
 // ══════════════════════════════════════════════
+// HOME EXTRA: Comparador + Ranking (debajo de partidos)
+// ══════════════════════════════════════════════
+// Presets de versus clasicos. Cada item linkea a /comparador?a=slug-a&b=slug-b
+// El router del comparador resuelve los slugs a equipos reales.
+const COMP_PRESETS = [
+  { a: 'real-madrid', b: 'barcelona',        label: 'Real Madrid vs Barcelona',     sub: 'El Clásico — LaLiga' },
+  { a: 'argentina',   b: 'brasil',           label: 'Argentina vs Brasil',          sub: 'Superclásico sudamericano' },
+  { a: 'manchester-united', b: 'liverpool',  label: 'Man. United vs Liverpool',     sub: 'North West Derby' },
+  { a: 'bayern-munich', b: 'borussia-dortmund', label: 'Bayern vs Dortmund',        sub: 'Der Klassiker' },
+  { a: 'ac-milan',    b: 'inter-milan',      label: 'AC Milan vs Inter',            sub: 'Derby della Madonnina' },
+]
+
+function renderHomeComparadorList() {
+  const wrap = document.getElementById('home-comp-list')
+  if (!wrap) return
+  wrap.innerHTML = COMP_PRESETS.map(p => `
+    <a href="/comparador?a=${insEsc(p.a)}&b=${insEsc(p.b)}"
+       onclick="nav('/comparador?a=${insEsc(p.a)}&b=${insEsc(p.b)}');return false"
+       class="home-extra-item">
+      <span class="home-extra-item-rank">⚔️</span>
+      <div class="home-extra-item-main">
+        <div class="home-extra-item-title">${insEsc(p.label)}</div>
+        <div class="home-extra-item-sub">${insEsc(p.sub)}</div>
+      </div>
+      <span class="home-extra-item-right">VS</span>
+    </a>
+  `).join('')
+}
+
+async function loadHomeRankingTop() {
+  const wrap = document.getElementById('home-ranking-list')
+  if (!wrap) return
+  try {
+    const rows = await sb('jugadores?select=id,nombre,nacionalidad,posicion,rating,equipo_id&rating=not.is.null&order=rating.desc&limit=5')
+    if (!rows || !rows.length) {
+      wrap.innerHTML = '<div class="home-extra-loading">Sin datos de ranking.</div>'
+      return
+    }
+    // Nacionalidades vienen del codigo normalizado del ranking (Brasil/Brazil)
+    // Para mostrar bandera, reusamos los slugs ISO via flagcdn.com — necesitamos
+    // un mapa simple. Para simplificar: solo mostrar el rating y el nombre.
+    wrap.innerHTML = rows.map((p, i) => `
+      <a href="/ranking" onclick="nav('/ranking');return false" class="home-extra-item">
+        <span class="home-extra-item-rank">${i+1}.</span>
+        <div class="home-extra-item-main">
+          <div class="home-extra-item-title">${insEsc(p.nombre)}</div>
+          <div class="home-extra-item-sub">${insEsc(p.posicion || '')} · ${insEsc(p.nacionalidad || '')}</div>
+        </div>
+        <span class="home-extra-item-right">${p.rating}</span>
+      </a>
+    `).join('')
+  } catch (e) {
+    wrap.innerHTML = `<div class="home-extra-loading">Error al cargar ranking: ${insEsc(e.message || '')}</div>`
+  }
+}
+
+function loadHomeExtras() {
+  renderHomeComparadorList()
+  loadHomeRankingTop()
+}
+
+// ══════════════════════════════════════════════
 // PAGINA /finalizados — todos los partidos con resultado
 // ══════════════════════════════════════════════
 let _finFilters = { league: 'mundial', page: 1 }
@@ -3605,6 +3719,7 @@ try {
   } else {
     loadMatches()
     loadAccuracyStats()
+    loadHomeExtras()
   }
 } catch(e) {
   console.error('Error de inicio:', e)
