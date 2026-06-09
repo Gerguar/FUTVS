@@ -46,13 +46,22 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .group-btn:hover{border-color:#d4a017;color:#e6b94c}
 .group-btn.active{background:rgba(212,160,23,.15);border-color:#d4a017;color:#f0c44f}
 .matches-grid{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 3rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;position:relative;z-index:1;width:100%}
-/* Layout del home: max-width 1100px alineado con el resto de las secciones
-   (facts, home-extra, footer). El sidebar de stats se hizo mas angosto
-   (130px en vez de 160px) para que los partidos queden visualmente
-   centrados con el resto del sitio. */
+/* Layout del home: matches centrado a 1100px (mismo ancho que facts,
+   home-extra-section, footer). El sidebar de stats sobresale a la
+   IZQUIERDA del bloque central cuando hay viewport ancho (>=1400px).
+   En viewports mas chicos vuelve a grid normal con sidebar inline. */
 .home-main{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:130px 1fr;gap:1.2rem;padding:.5rem 1.5rem 0 1.5rem;position:relative;z-index:1}
 .home-main .matches-grid{max-width:none;padding:.5rem 0 3rem;margin:0;grid-template-columns:repeat(3,1fr)}
 .stats-sidebar{display:flex;flex-direction:column;gap:1.8rem;position:sticky;top:88px;align-self:start;padding:.4rem 0 0 0}
+
+/* >= 1400px: hay espacio a los costados. Sidebar sale hacia afuera
+   por la izquierda con float + margin negativo (mantiene sticky). */
+@media (min-width: 1400px) {
+  .home-main{display:block;padding:.5rem 1.5rem 0 1.5rem}
+  .home-main::after{content:'';display:block;clear:both}
+  .stats-sidebar{float:left;width:130px;margin-left:-148px;margin-right:0}
+  .home-right-col{margin:0;width:100%}
+}
 .home-right-col{display:flex;flex-direction:column;gap:0;min-width:0}
 .stat-fl{padding:0;text-align:left}
 .stat-fl-num{font-family:'JetBrains Mono',monospace;font-size:2.8rem;font-weight:900;line-height:1}
