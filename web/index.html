@@ -199,23 +199,23 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 /* Comparador de equipos */
 .comp-select{padding:.6rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.85rem;cursor:pointer;min-width:160px;text-align:center}
 .comp-select:focus{outline:none;border-color:var(--green)}
-.comp-header{display:grid;grid-template-columns:1fr 2fr 1fr;align-items:center;gap:.5rem;padding:.8rem .25rem;border-bottom:1px solid var(--border);margin-bottom:.4rem}
-.comp-team-header{display:flex;flex-direction:column;align-items:center;gap:.4rem;font-family:'JetBrains Mono',monospace}
-.comp-team-header img{width:48px;height:48px;object-fit:contain;border-radius:6px;background:#fff;padding:2px}
-.comp-team-header span{font-size:.78rem;font-weight:900;color:var(--text);letter-spacing:.4px}
-.comp-vs{text-align:center;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--faint);letter-spacing:1px}
-.comp-row{display:grid;grid-template-columns:1fr 2fr 1fr;align-items:center;gap:.5rem;padding:.5rem .25rem;border-bottom:1px solid rgba(255,255,255,.03)}
-.comp-val{justify-self:center;display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:32px;border-radius:18px;padding:0 14px;font-family:'JetBrains Mono',monospace;font-size:.92rem;font-weight:700;color:var(--text)}
-.comp-val.winner{background:rgba(86,184,124,.18);color:#7fc99a}
+.comp-header{display:grid;grid-template-columns:1fr 2fr 1fr;align-items:center;gap:.6rem;padding:1.1rem .35rem;border-bottom:1px solid var(--border);margin-bottom:.6rem}
+.comp-team-header{display:flex;flex-direction:column;align-items:center;gap:.6rem;font-family:'JetBrains Mono',monospace}
+.comp-team-header img{width:64px;height:64px;object-fit:contain;border-radius:8px;background:#fff;padding:3px}
+.comp-team-header span{font-size:1rem;font-weight:900;color:var(--text);letter-spacing:.4px}
+.comp-vs{text-align:center;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--faint);letter-spacing:1px;font-weight:700}
+.comp-row{display:grid;grid-template-columns:1fr 2fr 1fr;align-items:center;gap:.6rem;padding:.7rem .35rem;border-bottom:1px solid rgba(255,255,255,.04)}
+.comp-val{justify-self:center;display:inline-flex;align-items:center;justify-content:center;min-width:72px;height:40px;border-radius:22px;padding:0 18px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:800;color:var(--text)}
+.comp-val.winner{background:rgba(86,184,124,.20);color:#7fc99a}
 .comp-val.loser{color:var(--muted);opacity:.7}
-.comp-pts-mini{font-size:.58rem;color:var(--faint);margin-left:.4rem;font-weight:600}
+.comp-pts-mini{font-size:.68rem;color:var(--faint);margin-left:.5rem;font-weight:600}
 .comp-val.winner .comp-pts-mini{color:#56b87c}
-.comp-label{text-align:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:.4px}
-.comp-label-pts{font-size:.6rem;color:var(--faint);margin-left:.4rem}
-.comp-winner-banner{margin-top:1.6rem;padding:1.4rem;border-radius:14px;background:linear-gradient(135deg,rgba(212,160,23,.18),rgba(212,160,23,.06));border:2px solid #d4a017;text-align:center;font-family:'Inter',sans-serif}
-.comp-winner-banner .cwb-trophy{font-size:2.2rem}
-.comp-winner-banner .cwb-name{font-size:1.4rem;font-weight:900;color:#f0c44f;margin:.4rem 0;letter-spacing:.5px}
-.comp-winner-banner .cwb-score{font-size:.85rem;color:#d4a017;font-family:'JetBrains Mono',monospace}
+.comp-label{text-align:center;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--muted);letter-spacing:.4px;font-weight:600}
+.comp-label-pts{font-size:.7rem;color:var(--faint);margin-left:.4rem}
+.comp-winner-banner{margin-top:1.8rem;padding:1.8rem;border-radius:14px;background:linear-gradient(135deg,rgba(212,160,23,.18),rgba(212,160,23,.06));border:2px solid #d4a017;text-align:center;font-family:'Inter',sans-serif}
+.comp-winner-banner .cwb-trophy{font-size:2.6rem}
+.comp-winner-banner .cwb-name{font-size:1.6rem;font-weight:900;color:#f0c44f;margin:.5rem 0;letter-spacing:.5px}
+.comp-winner-banner .cwb-score{font-size:.95rem;color:#d4a017;font-family:'JetBrains Mono',monospace}
 .comp-winner-banner.tie{background:linear-gradient(135deg,rgba(150,150,150,.18),rgba(150,150,150,.06));border-color:#888}
 .comp-winner-banner.tie .cwb-name{color:#bbb}
 @media(max-width:540px){
@@ -1939,7 +1939,7 @@ button,a{touch-action:manipulation}
       <button class="back-btn" onclick="nav('/')">← Inicio</button>
     </div>
 
-    <div style="display:grid;grid-template-columns:150px 1fr;gap:1.2rem;align-items:start">
+    <div style="display:grid;grid-template-columns:180px 1fr;gap:1.5rem;align-items:start">
 
       <!-- Columna izquierda: clásicos sugeridos -->
       <div id="clasicos-col" style="background:rgba(13,16,20,.84);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1rem;position:sticky;top:80px">
