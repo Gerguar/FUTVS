@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-09T20:22:53.351387+00:00",
-  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos, récord absoluto de goles esperado: 312+",
+  "generated_at_utc": "2026-06-09T22:00:16.573761+00:00",
+  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos, el más grande de la historia FIFA",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,22 +119,22 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina supera su xG en amistosos previos, 5 goles con 3.2 esperados. Lautaro en racha."
+      "texto": "Argentina superó xG esperado en amistosos previos, convirtiendo con alta eficacia ante Ecuador e Indonesia"
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "Brasil generó 2.1 xG vs México pero solo anotó 1 gol, preocupa definición antes del debut mundialista"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Francia convierte el doble de su xG pre-Mundial. Mbappé con efectividad del 85%."
+      "texto": "España mostró +0.8 sobre xG en últimos dos amistosos, llegando afilada como vigente campeona de Europa"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil por debajo: 2 goles generados de 4.1 xG en últimos amistosos. Preocupa definición."
-    },
-    {
-      "tipo": "bajo",
-      "flag": "📉",
-      "texto": "Inglaterra bajo expectativas: 1.8 xG vs 0.9 goles reales en preparación mundialista."
+      "texto": "Inglaterra decepcionó con 0.9 xG vs Islandia en empate, bajo rendimiento ofensivo genera dudas"
     }
   ],
   "alertas": [
@@ -149,48 +149,48 @@
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "La primera duda para Bielsa: figura de la selección se sintió y se teme por un desgarro",
-      "fuente": "Montevideo.com.uy",
-      "fuente_url": "https://www.montevideo.com.uy/Deportes/La-primera-duda-para-Bielsa-figura-de-la-seleccion-se-sintio-y-se-teme-por-un-desgarro-uc963968",
-      "fecha": "2026-06-02"
+      "texto": "Abde se luce y luego cae lesionado en el último amistoso de Marruecos antes del Mundial",
+      "fuente": "Www.abc.es",
+      "fuente_url": "https://www.abc.es/deportes/alfinaldelapalmera/noticias-betis/abde-luce-cae-lesionado-ultimo-amistoso-marruecos-20260607224312-nts.html",
+      "fecha": "2026-06-07"
     },
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Se confirmó el desgarro de Giorgian de Arrascaeta: plazo de recuperación y qué pasa con su ida al Mundial 2026",
-      "fuente": "Diario EL PAIS Uruguay",
-      "fuente_url": "https://www.elpais.com.uy/ovacion/mundial/se-confirmo-el-desgarro-de-giorgian-de-arrascaeta-plazo-de-recuperacion-y-que-pasa-con-su-ida-al-mundial-2026",
-      "fecha": "2026-06-03"
+      "texto": "Lesión de último momento: Leonardo Balerdi sufrió un desgarro y se podría perder el Mundial con la Selección Argentina",
+      "fuente": "Perfil.com",
+      "fuente_url": "https://442.perfil.com/noticias/futbol/bombazo-de-ultimo-momento-leonardo-balerdi-sufrio-una-dura-lesion-y-se-podria-perder-el-mundial-con-la-seleccion-argentina.phtml",
+      "fecha": "2026-06-06"
     },
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Pese al desgarro, Uruguay confirmó que Giorgian de Arrascaeta estará en la lista de la Celeste para el Mundial",
-      "fuente": "Diario EL PAIS Uruguay",
-      "fuente_url": "https://www.elpais.com.uy/ovacion/mundial/pese-al-desgarro-uruguay-confirmo-que-giorgian-de-arrascaeta-estara-en-la-lista-de-la-celeste-para-el-mundial",
-      "fecha": "2026-06-03"
+      "texto": "El partido fue suspendido: Christian Eriksen se desploma durante amistoso entre Dinamarca y Ucrania",
+      "fuente": "Latercera.com",
+      "fuente_url": "https://www.latercera.com/el-deportivo/noticia/el-partido-fue-suspendido-christian-eriksen-se-desploma-durante-amistoso-entre-dinamarca-y-ucrania/",
+      "fecha": "2026-06-07"
     }
   ],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo B proyecta más goles: España e Italia promedian 2.8 goles por partido en preparación."
+      "texto": "Grupo B es el de la muerte: España, Alemania, Polonia y Senegal compiten por clasificación"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Canadá como local mostró mejora: 7 partidos invicto en casa previo a su debut mundialista"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Portugal líder en corners a favor: 8.5 promedio en amistosos. Cristiano busca récord."
+      "texto": "Portugal promedia 2.8 goles por partido en últimos 5 amistosos, Cristiano en gran momento a sus 41"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Alemania invicta en 7 amistosos pre-Mundial. Mejor defensa con solo 2 goles recibidos."
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "Uruguay racha de 12 partidos sin perder. Bielsa consolida sistema defensivo efectivo."
+      "texto": "México anunció lista final con 5 debutantes mundialistas, apuesta por renovación generacional"
     }
   ],
   "oportunidades": [
