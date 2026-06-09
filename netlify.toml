@@ -1,0 +1,12 @@
+[build]
+  publish = "web"
+
+[[edge_functions]]
+  function = "seo"
+  path = "/*"
+
+# SPA fallback: todas las rutas van al index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
