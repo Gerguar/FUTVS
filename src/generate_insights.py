@@ -537,7 +537,7 @@ def build_alertas_from_newsapi() -> list[dict]:
         return []
 
     now = datetime.now(timezone.utc)
-    from_date = (now - timedelta(days=7)).strftime("%Y-%m-%d")
+    from_date = (now - timedelta(days=4)).strftime("%Y-%m-%d")
     to_date = now.strftime("%Y-%m-%d")
     sources_csv = ",".join(fn.FOOTBALL_SOURCES)
 
