@@ -4,13 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>FutVersus</title>
-<!--
-  Analytics: Umami self-hosted (Vercel). Para activar, descomentar la linea
-  de abajo y reemplazar UMAMI_HOST + WEBSITE_ID con los valores reales del
-  panel de Umami. El helper window.trackEvent() ya esta cableado abajo y
-  funciona como no-op silencioso mientras el script no este cargado.
--->
-<!-- <script defer src="https://UMAMI_HOST/script.js" data-website-id="WEBSITE_ID" data-domains="futversus.com"></script> -->
+<!-- Analytics: Umami self-hosted en Vercel. data-domains restringe el trackeo solo a futversus.com (no localhost). --><!--
+     Panel: https://futversus-analytics.vercel.app · helper window.trackEvent() definido al final. -->
+<script defer src="https://futversus-analytics.vercel.app/script.js" data-website-id="79859926-c39f-49a4-b33d-7646c6982785" data-domains="futversus.com"></script>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
