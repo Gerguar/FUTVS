@@ -4272,10 +4272,16 @@ async function renderComparador() {
 }
 
 // ── COMPARACIONES POPULARES ───────────────────────────────────────────────────
+let _lastParRegistrado = null  // evita registrar el mismo par múltiples veces
+
 async function registrarComparacion(nombreA, nombreB) {
-  // Normalizar el par siempre en orden alfabético para agrupar A vs B = B vs A
   const [a, b] = [nombreA, nombreB].sort()
   const par = `${a}|||${b}`
+
+  // Solo registrar si el par cambió respecto al último registrado
+  if (par === _lastParRegistrado) return
+  _lastParRegistrado = par
+
   try {
     await fetch(`${SB_URL}/rest/v1/comparaciones_populares`, {
       method: 'POST',
