@@ -3,7 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>FutVersus</title>
+<title>FutVersus — Análisis estadístico del Mundial 2026</title>
+
+<!-- SEO basico -->
+<meta name="description" content="Probabilidades, factores y datos del Mundial 2026 partido por partido. Modelo propio Dixon-Coles + Elo + XGBoost. Sin humo.">
+<meta name="author" content="FutVersus">
+<meta name="theme-color" content="#080a0c">
+<meta name="robots" content="index, follow">
+<link rel="canonical" id="canonical-link" href="https://futversus.com/">
+
+<!-- Open Graph (Facebook, WhatsApp, LinkedIn, Telegram) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FutVersus">
+<meta property="og:locale" content="es_AR">
+<meta property="og:title" id="og-title" content="FutVersus — Análisis estadístico del Mundial 2026">
+<meta property="og:description" id="og-description" content="Probabilidades, factores y datos del Mundial 2026 partido por partido. Sin humo.">
+<meta property="og:url" id="og-url" content="https://futversus.com/">
+<meta property="og:image" content="https://futversus.com/og-default.svg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@FutVersus_">
+<meta name="twitter:title" id="twitter-title" content="FutVersus — Análisis estadístico del Mundial 2026">
+<meta name="twitter:description" id="twitter-description" content="Probabilidades, factores y datos del Mundial 2026 partido por partido.">
+<meta name="twitter:image" content="https://futversus.com/og-default.svg">
+
 <!-- Analytics: Umami self-hosted en Vercel. data-domains restringe el trackeo solo a futversus.com (no localhost). --><!--
      Panel: https://futversus-analytics.vercel.app · helper window.trackEvent() definido al final. -->
 <script defer src="https://futversus-analytics.vercel.app/script.js" data-website-id="79859926-c39f-49a4-b33d-7646c6982785" data-domains="futversus.com"></script>
@@ -4253,8 +4279,10 @@ async function renderComparador() {
   // Botones de compartir
   const shareUrl  = encodeURIComponent(`https://futversus.com/comparador?a=${NavRouter.slugify(eqA.nombre)}&b=${NavRouter.slugify(eqB.nombre)}`)
   const shareText = encodeURIComponent(`⚖️ ${eqA.nombre} vs ${eqB.nombre} — ¿Quién gana históricamente? Mirá el análisis estadístico en FutVS`)
+  const _shA = JSON.stringify(eqA.nombre), _shB = JSON.stringify(eqB.nombre)
   html += `<div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.2rem">
     <a href="https://wa.me/?text=${shareText}%20${shareUrl}" target="_blank" rel="noopener"
+      onclick="trackShare('whatsapp',${_shA},${_shB})"
       style="display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.1rem;border-radius:30px;
       background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.35);color:#25d366;
       text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;
@@ -4264,6 +4292,7 @@ async function renderComparador() {
       WhatsApp
     </a>
     <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener"
+      onclick="trackShare('x',${_shA},${_shB})"
       style="display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.1rem;border-radius:30px;
       background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.15);color:#e8eaed;
       text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;
@@ -4273,6 +4302,7 @@ async function renderComparador() {
       X (Twitter)
     </a>
     <a href="https://t.me/share/url?url=${shareUrl}&text=${shareText}" target="_blank" rel="noopener"
+      onclick="trackShare('telegram',${_shA},${_shB})"
       style="display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.1rem;border-radius:30px;
       background:rgba(0,136,204,.12);border:1px solid rgba(0,136,204,.35);color:#29b6f6;
       text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;
@@ -4281,7 +4311,7 @@ async function renderComparador() {
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
       Telegram
     </a>
-    <button onclick="navigator.clipboard.writeText('https://futversus.com/comparador?a=${NavRouter.slugify(eqA.nombre)}&b=${NavRouter.slugify(eqB.nombre)}').then(()=>{this.textContent='✓ Copiado!';setTimeout(()=>{this.innerHTML='<svg width=\\'14\\' height=\\'14\\' viewBox=\\'0 0 24 24\\' fill=\\'currentColor\\'><path d=\\'M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\\'/></svg> Copiar link'},2000)})"
+    <button onclick="trackShare('copy',${_shA},${_shB});navigator.clipboard.writeText('https://futversus.com/comparador?a=${NavRouter.slugify(eqA.nombre)}&b=${NavRouter.slugify(eqB.nombre)}').then(()=>{this.textContent='✓ Copiado!';setTimeout(()=>{this.innerHTML='<svg width=\\'14\\' height=\\'14\\' viewBox=\\'0 0 24 24\\' fill=\\'currentColor\\'><path d=\\'M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\\'/></svg> Copiar link'},2000)})"
       style="display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.1rem;border-radius:30px;
       background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#9ca3af;cursor:pointer;
       font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .15s"
@@ -5059,6 +5089,44 @@ const NavRouter = {
 }
 // Wrapper para los enlaces del nav: pushea la URL y dispara la vista.
 function nav(path) { NavRouter.push(path); NavRouter.parse() }
+
+// ── Meta tags dinamicos por ruta (SEO + previews sociales) ─────────────────
+// Para SPA: cuando el usuario navega entre vistas, actualiza title +
+// description + og + twitter + canonical. Google ejecuta JS asi que esto
+// SI ayuda en SEO. Bots sociales (WhatsApp, FB, X) NO ejecutan JS — para
+// previews sociales especificos por partido, ver item #3 (prerender).
+const ROUTE_META = {
+  '/':            { title:'FutVersus — Análisis estadístico del Mundial 2026', desc:'Probabilidades, factores y datos del Mundial 2026 partido por partido. Modelo propio Dixon-Coles + Elo + XGBoost. Sin humo.' },
+  '/comparador':  { title:'Comparador de equipos — FutVersus',                 desc:'Compará dos equipos por títulos, plantilla, historia y H2H. Modelo propio FutVersus.' },
+  '/ranking':     { title:'Ranking de jugadores del Mundial 2026 — FutVersus', desc:'Top jugadores del Mundial 2026 ordenados por rating. Filtrá por posición o país.' },
+  '/insights':    { title:'Insights del Mundial 2026 — FutVersus',             desc:'Alertas de lesiones, tendencias, oportunidades y dato curioso del Mundial 2026. Actualizado cada 6h.' },
+  '/finalizados': { title:'Partidos finalizados — FutVersus',                  desc:'Histórico de partidos finalizados del Mundial 2026 y ligas top. Resultado vs pronóstico del modelo.' },
+  '/goat':        { title:'Messi vs Cristiano — comparativa estadística | FutVersus', desc:'Datos crudos de Messi y Cristiano: títulos, goles, asistencias, partidos por temporada.' },
+  '/metodologia': { title:'Metodología del modelo — FutVersus',                desc:'Cómo combinamos Dixon-Coles, Elo, XGBoost y mercado para generar las probabilidades del Mundial 2026.' },
+  '/glosario':    { title:'Glosario — FutVersus',                              desc:'Diccionario de conceptos del modelo: xG, Elo, Dixon-Coles, p_modelo, edge.' },
+  '/blog':        { title:'Blog — FutVersus',                                  desc:'Análisis estadístico de partidos del Mundial 2026 y previa por jornada.' },
+  '/sobre-nosotros':{ title:'Sobre FutVersus',                                 desc:'Quiénes somos. Plataforma independiente de análisis estadístico del Mundial 2026.' },
+}
+function updateMeta(path) {
+  const m = ROUTE_META[path] || ROUTE_META['/']
+  const url = 'https://futversus.com' + (path === '/' ? '/' : path)
+  document.title = m.title
+  const set = (sel, attr, val) => { const el = document.querySelector(sel); if (el) el.setAttribute(attr, val) }
+  set('meta[name="description"]', 'content', m.desc)
+  set('#og-title', 'content', m.title)
+  set('#og-description', 'content', m.desc)
+  set('#og-url', 'content', url)
+  set('#twitter-title', 'content', m.title)
+  set('#twitter-description', 'content', m.desc)
+  set('#canonical-link', 'href', url)
+}
+// Wrap NavRouter.parse para que cada navegacion actualice los meta tags.
+const _origParse = NavRouter.parse.bind(NavRouter)
+NavRouter.parse = async function() {
+  try { updateMeta(location.pathname) } catch (_) {}
+  return _origParse()
+}
+
 NavRouter.init()
 
 // ── Analytics: tracker centralizado para Umami ─────────────────────────────
@@ -5070,6 +5138,13 @@ window.trackEvent = function(name, props) {
       window.umami.track(name, props || undefined)
     }
   } catch (_) { /* silencioso */ }
+}
+
+// compartir_partido: helper invocado desde botones de compartir (WhatsApp,
+// X, Telegram, copiar link). Mantiene la firma cualquiera sea el contexto
+// (comparador, /partido/:slug, etc).
+window.trackShare = function(tipo, a, b) {
+  trackEvent('compartir_partido', { tipo, a: a || '', b: b || '' })
 }
 
 // outbound_fuente: cualquier click en un <a> que apunte a otro origen

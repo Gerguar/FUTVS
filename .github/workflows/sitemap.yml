@@ -1,0 +1,43 @@
+name: sitemap (diario + manual)
+
+on:
+  schedule:
+    - cron: "15 5 * * *"   # 05:15 UTC diario (cuando ya pasaron los partidos de la jornada)
+  workflow_dispatch: {}
+
+concurrency:
+  group: git-push
+  cancel-in-progress: false
+
+jobs:
+  sitemap:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generar web/sitemap.xml
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m src.generate_sitemap
+
+      - name: Commit sitemap si cambio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/sitemap.xml || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh sitemap.xml $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          else
+            echo "no changes"
+          fi
