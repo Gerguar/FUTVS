@@ -1404,6 +1404,34 @@ button,a{touch-action:manipulation}
         <span style="color:#22c55e">Messi</span> lidera en Balones de Oro (8 vs 5), asistencias y el único trofeo que le faltaba: <strong>la Copa del Mundo 2022</strong>. <span style="color:#f59e0b">Cristiano</span> aventaja en goles oficiales totales (930+ vs 850+) y Champions ganadas (5 vs 4). El debate sigue abierto, pero los datos más recientes inclinan ligeramente la balanza hacia <span style="color:#22c55e;font-weight:900">Messi</span>.
       </div>
     </div>
+
+    <!-- VOTACIÓN COMUNITARIA -->
+    <div style="margin-top:2.5rem">
+      <div style="text-align:center;margin-bottom:1.8rem">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#22c55e;letter-spacing:3px;font-weight:800;margin-bottom:.6rem">🗳️ VOTACIÓN COMUNITARIA</div>
+        <h2 style="font-size:1.8rem;font-weight:900;margin:0 0 .4rem;color:#e8eaed">¿Quién es <span style="color:#22c55e">tu</span> GOAT?</h2>
+        <p style="color:#6b7280;font-size:.88rem;margin:0;font-family:'JetBrains Mono',monospace">Elegí tu candidato histórico — un voto por persona</p>
+      </div>
+
+      <!-- Grid de candidatos -->
+      <div id="goat-candidatos" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.8rem;margin-bottom:2rem"></div>
+
+      <!-- Estado del voto -->
+      <div id="goat-voto-estado" style="display:none;text-align:center;margin-bottom:1.5rem">
+        <div style="display:inline-flex;align-items:center;gap:.6rem;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:30px;padding:.6rem 1.4rem">
+          <span style="color:#22c55e;font-size:1rem">✓</span>
+          <span id="goat-voto-texto" style="color:#22c55e;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700"></span>
+        </div>
+      </div>
+
+      <!-- Ranking top 10 -->
+      <div style="background:rgba(13,16,20,.8);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:1.5rem">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#4b5563;letter-spacing:2px;margin-bottom:1.2rem">RANKING COMUNITARIO — TOP 10</div>
+        <div id="goat-ranking"></div>
+      </div>
+    </div>
+    <!-- /VOTACIÓN COMUNITARIA -->
+
   </div>
 </div>
 <!-- /GOAT -->
@@ -4324,6 +4352,168 @@ function renderGoatTables() {
   _goatRendered = true
 }
 
+// ══════════════════════════════════════════
+// GOAT VOTACIÓN COMUNITARIA
+// ══════════════════════════════════════════
+const GOAT_CANDIDATOS = [
+  { id: 'messi',    nombre: 'Messi',     pais: '🇦🇷', years: '2004–hoy',  color: '#22c55e' },
+  { id: 'cristiano',nombre: 'Cristiano', pais: '🇵🇹', years: '2002–hoy',  color: '#f59e0b' },
+  { id: 'pele',     nombre: 'Pelé',      pais: '🇧🇷', years: '1956–1977', color: '#f59e0b' },
+  { id: 'maradona', nombre: 'Maradona',  pais: '🇦🇷', years: '1976–1997', color: '#3b82f6' },
+  { id: 'ronaldo',  nombre: 'R9 Ronaldo',pais: '🇧🇷', years: '1993–2011', color: '#22d3ee' },
+  { id: 'zidane',   nombre: 'Zidane',    pais: '🇫🇷', years: '1988–2006', color: '#a78bfa' },
+  { id: 'ronaldinho',nombre:'Ronaldinho',pais: '🇧🇷', years: '1998–2015', color: '#f59e0b' },
+  { id: 'cruyff',   nombre: 'Cruyff',    pais: '🇳🇱', years: '1964–1984', color: '#f97316' },
+  { id: 'beckenbauer',nombre:'Beckenbauer',pais:'🇩🇪',years: '1964–1983', color: '#6b7280' },
+  { id: 'xavi',     nombre: 'Xavi',      pais: '🇪🇸', years: '1998–2019', color: '#ef4444' },
+  { id: 'iniesta',  nombre: 'Iniesta',   pais: '🇪🇸', years: '2002–2023', color: '#ef4444' },
+  { id: 'neymar',   nombre: 'Neymar',    pais: '🇧🇷', years: '2009–hoy',  color: '#facc15' },
+]
+
+const GOAT_STORAGE_KEY = 'futvs_goat_voto_v1'
+const GOAT_TABLE = 'goat_votos'
+
+let _goatVotos = {}  // { jugador_id: count }
+let _goatVotado = localStorage.getItem(GOAT_STORAGE_KEY) || null
+
+async function loadGoatVotos() {
+  try {
+    const rows = await sb(`${GOAT_TABLE}?select=jugador_id&order=jugador_id`)
+    _goatVotos = {}
+    for (const r of rows) {
+      _goatVotos[r.jugador_id] = (_goatVotos[r.jugador_id] || 0) + 1
+    }
+  } catch(e) {
+    console.warn('[goat] error cargando votos:', e)
+  }
+}
+
+async function votarGoat(jugadorId) {
+  if (_goatVotado) return  // ya votó
+
+  // Fingerprint simple: hash del user-agent + timezone
+  const fp = btoa([navigator.userAgent.length, Intl.DateTimeFormat().resolvedOptions().timeZone, screen.width].join('|')).slice(0, 32)
+
+  try {
+    await fetch(`${SB_URL}/rest/v1/${GOAT_TABLE}`, {
+      method: 'POST',
+      headers: {
+        apikey: SB_KEY,
+        Authorization: `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify({ jugador_id: jugadorId, fp }),
+    })
+  } catch(e) {
+    console.warn('[goat] error guardando voto:', e)
+  }
+
+  // Actualizar local
+  _goatVotos[jugadorId] = (_goatVotos[jugadorId] || 0) + 1
+  _goatVotado = jugadorId
+  localStorage.setItem(GOAT_STORAGE_KEY, jugadorId)
+
+  renderGoatCandidatos()
+  renderGoatRanking()
+
+  // Mostrar confirmación
+  const cand = GOAT_CANDIDATOS.find(c => c.id === jugadorId)
+  const estadoEl = document.getElementById('goat-voto-estado')
+  const textoEl  = document.getElementById('goat-voto-texto')
+  if (estadoEl && textoEl) {
+    textoEl.textContent = `Votaste por ${cand?.nombre || jugadorId}`
+    estadoEl.style.display = 'block'
+  }
+}
+
+function renderGoatCandidatos() {
+  const el = document.getElementById('goat-candidatos')
+  if (!el) return
+  el.innerHTML = GOAT_CANDIDATOS.map(c => {
+    const votado = _goatVotado === c.id
+    const yaVoto = !!_goatVotado
+    const border = votado
+      ? `2px solid ${c.color}`
+      : `1px solid rgba(255,255,255,.07)`
+    const bg = votado
+      ? `rgba(${hexToRgb(c.color)},.12)`
+      : `rgba(13,16,20,.8)`
+    const cursor = yaVoto ? 'default' : 'pointer'
+    const opacity = yaVoto && !votado ? '.45' : '1'
+    return `<div onclick="${yaVoto ? '' : `votarGoat('${c.id}')`}"
+      style="background:${bg};border:${border};border-radius:12px;padding:.9rem .6rem;
+      text-align:center;cursor:${cursor};opacity:${opacity};transition:all .2s;
+      ${!yaVoto ? 'transform:translateY(0)' : ''}"
+      ${!yaVoto ? `onmouseover="this.style.transform='translateY(-2px)';this.style.borderColor='${c.color}88'"
+      onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(255,255,255,.07)'"` : ''}>
+      <div style="font-size:1.6rem;margin-bottom:.3rem">${c.pais}</div>
+      <div style="font-family:'Inter',sans-serif;font-size:.82rem;font-weight:800;color:${votado ? c.color : '#e8eaed'};line-height:1.2">${c.nombre}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#4b5563;margin-top:.25rem">${c.years}</div>
+      ${votado ? `<div style="font-size:.65rem;color:${c.color};font-family:'JetBrains Mono',monospace;margin-top:.3rem;font-weight:700">✓ TU VOTO</div>` : ''}
+    </div>`
+  }).join('')
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16)
+  const g = parseInt(hex.slice(3,5),16)
+  const b = parseInt(hex.slice(5,7),16)
+  return `${r},${g},${b}`
+}
+
+function renderGoatRanking() {
+  const el = document.getElementById('goat-ranking')
+  if (!el) return
+
+  const total = Object.values(_goatVotos).reduce((a,b) => a+b, 0)
+
+  if (total === 0) {
+    el.innerHTML = `<div style="text-align:center;color:#4b5563;font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:1.5rem">Sé el primero en votar ⚽</div>`
+    return
+  }
+
+  // Ordenar por votos
+  const sorted = GOAT_CANDIDATOS
+    .map(c => ({ ...c, votos: _goatVotos[c.id] || 0 }))
+    .sort((a,b) => b.votos - a.votos)
+    .slice(0, 10)
+
+  const maxVotos = sorted[0]?.votos || 1
+
+  el.innerHTML = sorted.map((c, i) => {
+    const pct = total > 0 ? Math.round((c.votos / total) * 100) : 0
+    const barW = Math.round((c.votos / maxVotos) * 100)
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`
+    const esVotado = _goatVotado === c.id
+    return `<div style="display:grid;grid-template-columns:32px 110px 1fr 48px;gap:.6rem;align-items:center;margin-bottom:.8rem">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#4b5563;text-align:center">${medal}</span>
+      <span style="font-family:'Inter',sans-serif;font-size:.84rem;font-weight:${esVotado?'800':'600'};color:${esVotado ? c.color : '#e8eaed'}">${c.pais} ${c.nombre}</span>
+      <div style="background:rgba(255,255,255,.05);border-radius:4px;height:8px;overflow:hidden">
+        <div style="height:100%;width:${barW}%;background:${c.color};border-radius:4px;transition:width .6s ease"></div>
+      </div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#6b7280;text-align:right">${pct}%</span>
+    </div>`
+  }).join('') + `<div style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#374151;text-align:right;margin-top:.8rem">${total.toLocaleString()} votos totales</div>`
+}
+
+async function initGoatVotos() {
+  await loadGoatVotos()
+  renderGoatCandidatos()
+  renderGoatRanking()
+
+  // Mostrar estado si ya votó
+  if (_goatVotado) {
+    const estadoEl = document.getElementById('goat-voto-estado')
+    const textoEl  = document.getElementById('goat-voto-texto')
+    const cand = GOAT_CANDIDATOS.find(c => c.id === _goatVotado)
+    if (estadoEl && textoEl && cand) {
+      textoEl.textContent = `Ya votaste por ${cand.nombre}`
+      estadoEl.style.display = 'block'
+    }
+  }
+}
+
 
 // ══════════════════════════════════════════
 // RANKING — carga jugadores desde Supabase
@@ -4629,6 +4819,7 @@ const NavRouter = {
     if (path === '/goat' || path === '/goat/') {
       showPage('goat')
       renderGoatTables()
+      initGoatVotos()
       return
     }
     if (path === '/finalizados' || path === '/finalizados/') {
