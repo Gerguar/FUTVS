@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-09T22:00:16.573761+00:00",
-  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones y 104 partidos, el más grande de la historia FIFA",
+  "generated_at_utc": "2026-06-10T23:57:33.451289+00:00",
+  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones, expandiendo de 64 a 104 partidos totales en el torneo",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,33 +119,25 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina superó xG esperado en amistosos previos, convirtiendo con alta eficacia ante Ecuador e Indonesia"
-    },
-    {
-      "tipo": "bajo",
-      "flag": "📉",
-      "texto": "Brasil generó 2.1 xG vs México pero solo anotó 1 gol, preocupa definición antes del debut mundialista"
+      "texto": "Argentina superó xG esperado en últimos amistosos previo al debut mundialista"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "España mostró +0.8 sobre xG en últimos dos amistosos, llegando afilada como vigente campeona de Europa"
+      "texto": "España con efectividad superior a métricas en preparación para el Mundial"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Inglaterra decepcionó con 0.9 xG vs Islandia en empate, bajo rendimiento ofensivo genera dudas"
+      "texto": "Brasil por debajo de xG en amistosos recientes, preocupación ofensiva"
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "Inglaterra con bajo rendimiento vs xG en partidos de preparación"
     }
   ],
   "alertas": [
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "Conmoción en Alemania: un lesionado y puede perderse el Mundial",
-      "fuente": "Mundodeportivo.com",
-      "fuente_url": "https://www.mundodeportivo.com/futbol/mundial/20260605/1004191841/conmocion-alemania-lesionado-perderse-mundial.html",
-      "fecha": "2026-06-05"
-    },
     {
       "nivel": "warning",
       "flag": "⚠️",
@@ -153,6 +145,14 @@
       "fuente": "Www.abc.es",
       "fuente_url": "https://www.abc.es/deportes/alfinaldelapalmera/noticias-betis/abde-luce-cae-lesionado-ultimo-amistoso-marruecos-20260607224312-nts.html",
       "fecha": "2026-06-07"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Alarma roja en Brasil: un titular se retiró lesionado y entre lágrimas en la previa del Mundial 2026",
+      "fuente": "Perfil.com",
+      "fuente_url": "https://442.perfil.com/noticias/mundial-2026/alarma-roja-en-brasil-un-titular-se-retiro-lesionado-y-entre-lagrimas-en-la-previa-del-mundial-2026.phtml",
+      "fecha": "2026-06-06"
     },
     {
       "nivel": "warning",
@@ -175,22 +175,22 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo B es el de la muerte: España, Alemania, Polonia y Senegal compiten por clasificación"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "Canadá como local mostró mejora: 7 partidos invicto en casa previo a su debut mundialista"
+      "texto": "Grupos de la muerte muestran paridad histórica en apuestas pre-torneo"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Portugal promedia 2.8 goles por partido en últimos 5 amistosos, Cristiano en gran momento a sus 41"
+      "texto": "Selecciones anfitrionas con estadísticas positivas en preparación"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "México anunció lista final con 5 debutantes mundialistas, apuesta por renovación generacional"
+      "texto": "Récord de goles en fase de amistosos previos al Mundial 2026"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Favoritos mantienen invicto en últimos 4 días de preparación"
     }
   ],
   "oportunidades": [
@@ -198,23 +198,12 @@
       "partido": "Portugal vs RD del Congo",
       "competition": "Mundial 2026",
       "apuesta": "Empate",
-      "p_modelo": 29.6,
-      "p_mercado": 16.9,
+      "p_modelo": 29.7,
+      "p_mercado": 17.0,
       "edge": 12.7,
       "xg_home": 1.08,
       "xg_away": null,
       "kickoff": "2026-06-17T17:00:00"
-    },
-    {
-      "partido": "Ghana vs Panamá",
-      "competition": "Mundial 2026",
-      "apuesta": "Victoria Panamá",
-      "p_modelo": 38.5,
-      "p_mercado": 26.5,
-      "edge": 12.0,
-      "xg_home": 1.17,
-      "xg_away": null,
-      "kickoff": "2026-06-17T23:00:00"
     }
   ]
 }

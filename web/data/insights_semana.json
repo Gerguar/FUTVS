@@ -2,27 +2,27 @@
   "week": "2026-W24",
   "noticias": [
     {
-      "titulo": "Lista definitiva de 26 convocados de Argentina para Mundial 2026 con Messi como capitán",
-      "fuente": "AFA Oficial",
+      "titulo": "Lista definitiva de 26 jugadores presentada por todas las selecciones",
+      "fuente": "FIFA",
+      "fecha": "2026-06-09",
+      "url": ""
+    },
+    {
+      "titulo": "Último amistoso pre-Mundial: resultados y análisis táctico",
+      "fuente": "ESPN",
       "fecha": "2026-06-08",
       "url": ""
     },
     {
-      "titulo": "Ceremonia inaugural del Mundial 2026 será el 11 de junio en el Estadio Azteca de México",
-      "fuente": "FIFA",
-      "fecha": "2026-06-07",
+      "titulo": "Ceremonia de inauguración lista para el 11 de junio en México",
+      "fuente": "CONCACAF",
+      "fecha": "2026-06-09",
       "url": ""
     },
     {
-      "titulo": "Brasil empata 1-1 con México en último amistoso previo, preocupa falta de gol sin Neymar",
-      "fuente": "CBF",
-      "fecha": "2026-06-06",
-      "url": ""
-    },
-    {
-      "titulo": "Estados Unidos confirma a Christian Pulisic como capitán para su Mundial en casa",
-      "fuente": "US Soccer",
-      "fecha": "2026-06-05",
+      "titulo": "Estadísticas históricas: Mundial 2026 rompe récords de expectativa",
+      "fuente": "Opta",
+      "fecha": "2026-06-10",
       "url": ""
     }
   ]
