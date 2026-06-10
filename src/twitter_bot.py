@@ -67,6 +67,13 @@ PREMATCH_MIN_BEFORE_H = 0.5  # corte 30 min antes minimo
 # Throttle entre tweets pre-match (para no saturar cuando hay varios partidos simultaneos)
 PREMATCH_THROTTLE_MIN = 30
 
+# Pick of day: 1 tweet por dia, a las 10:00 ART = 13:00 UTC.
+# Ventana ±20 min para tolerar demoras del cron */15 de GitHub Actions.
+PICK_HOUR_UTC      = 13
+PICK_WINDOW_MIN    = 20
+# Ventana de busqueda de partidos del dia para elegir el "del dia"
+PICK_LOOKAHEAD_H   = 22
+
 # Liga 7 = Selecciones (Mundial). Mientras dura el Mundial, solo cubrimos esto.
 LIGA_MUNDIAL = 7
 
@@ -98,6 +105,9 @@ def load_state() -> dict:
         # first_seen_at Y siga apareciendo en wc2026_ajustes_lesiones.json.
         # Si dentro del cooldown se va del JSON, se cancela sin postear.
         "lesion_pending": {},
+        # Pick of day: fechas (ART, YYYY-MM-DD) en que ya posteamos.
+        # Mantiene solo las ultimas 30 entradas para no crecer indefinidamente.
+        "pick_of_day_posted_dates": [],
     }
 
 
@@ -441,12 +451,98 @@ def run_lesiones(state: dict, dry_run: bool, now: datetime) -> int:
 
 
 # ─────────────────────────────────────────────────────────────
+# Modo: PICK OF DAY (partido del dia)
+# ─────────────────────────────────────────────────────────────
+
+def run_pick_of_day(state: dict, dry_run: bool, now: datetime) -> int:
+    """Postea UN tweet por dia destacando el partido del dia mas interesante.
+
+    Reglas:
+      - Solo entre PICK_HOUR_UTC ± PICK_WINDOW_MIN (~10:00 ART ± 20 min).
+      - Una sola vez por fecha ART (no UTC, alineado con audiencia LATAM).
+      - Selecciona partido programado entre now y now+PICK_LOOKAHEAD_H con
+        mayor "interes_score" (mas cerrado = mayor score).
+      - Si no hay partidos elegibles, no postea (silencio limpio).
+    """
+    # 1) Estamos en ventana de hora?
+    target_dt = now.replace(hour=PICK_HOUR_UTC, minute=0, second=0, microsecond=0)
+    delta_min = abs((now - target_dt).total_seconds() / 60)
+    if delta_min > PICK_WINDOW_MIN:
+        print(f"[pick_of_day] fuera de ventana ({delta_min:.0f}min de {PICK_HOUR_UTC:02d}:00 UTC)")
+        return 0
+
+    # 2) Ya posteamos hoy?
+    today_ar = (now - timedelta(hours=3)).date().isoformat()  # ART = UTC-3
+    posted_dates = state.get("pick_of_day_posted_dates") or []
+    if today_ar in posted_dates:
+        print(f"[pick_of_day] ya posteado para {today_ar} ART")
+        return 0
+
+    # 3) Buscar partidos del dia (proximas 22h)
+    eq = equipos_index()
+    lo = urllib.parse.quote(now.isoformat())
+    hi = urllib.parse.quote((now + timedelta(hours=PICK_LOOKAHEAD_H)).isoformat())
+    rows = sb_get(
+        "partidos?select=id,fecha,equipo_local_id,equipo_visitante_id,"
+        "pronosticos(prob_local,prob_empate,prob_visitante)"
+        f"&estado=eq.programado&liga_id=eq.{LIGA_MUNDIAL}"
+        f"&fecha=gte.{lo}"
+        f"&fecha=lte.{hi}"
+        "&order=fecha"
+    )
+    if not rows:
+        print(f"[pick_of_day] no hay partidos en ventana [now, now+{PICK_LOOKAHEAD_H}h]")
+        return 0
+
+    # 4) Score: 100 - max(probs). Mas alto = mas cerrado = mas interesante.
+    best = None
+    best_score = -1.0
+    for r in rows:
+        pr = r.get("pronosticos")
+        if isinstance(pr, list):
+            pr = pr[0] if pr else None
+        if not pr:
+            continue
+        pH = float(pr.get("prob_local") or 0)
+        pD = float(pr.get("prob_empate") or 0)
+        pA = float(pr.get("prob_visitante") or 0)
+        if pH + pD + pA < 50:
+            continue
+        score = 100.0 - max(pH, pD, pA)
+        if score > best_score:
+            best_score = score
+            best = (r, pH, pD, pA)
+
+    if not best:
+        print("[pick_of_day] no hay partidos con pronostico valido")
+        return 0
+
+    r, pH, pD, pA = best
+    pid = int(r["id"])
+    h_name = eq.get(int(r["equipo_local_id"]), f"#{r['equipo_local_id']}")
+    a_name = eq.get(int(r["equipo_visitante_id"]), f"#{r['equipo_visitante_id']}")
+    text = tt.tweet_pick_of_day(
+        home_name=h_name, away_name=a_name,
+        prob_local=pH, prob_empate=pD, prob_visitante=pA,
+        kickoff_iso_utc=r["fecha"], partido_id=pid,
+    )
+    print(f"[pick_of_day] {h_name} vs {a_name} score={best_score:.1f} "
+          f"(de {len(rows)} partidos hoy)")
+    tweet_id = post_tweet(text, dry_run=dry_run)
+    if tweet_id:
+        posted_dates = list(posted_dates) + [today_ar]
+        state["pick_of_day_posted_dates"] = posted_dates[-30:]  # ultimo 30 dias
+        return 1
+    return 0
+
+
+# ─────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--mode", choices=["prematch", "postmortem", "lesiones", "all"],
+    p.add_argument("--mode", choices=["prematch", "postmortem", "lesiones", "pick_of_day", "all"],
                    default="all")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--reset-state", action="store_true",
@@ -473,6 +569,8 @@ def main() -> None:
         total += run_lesiones(state, args.dry_run, now)
     if args.mode in ("postmortem", "all"):
         total += run_postmortem(state, args.dry_run, now)
+    if args.mode in ("pick_of_day", "all"):
+        total += run_pick_of_day(state, args.dry_run, now)
     if args.mode in ("prematch", "all"):
         total += run_prematch(state, args.dry_run, now)
 

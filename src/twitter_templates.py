@@ -150,6 +150,39 @@ def tweet_prematch(home_name: str, away_name: str,
     )
 
 
+def tweet_pick_of_day(home_name: str, away_name: str,
+                      prob_local: float, prob_empate: float, prob_visitante: float,
+                      kickoff_iso_utc: str, partido_id: int,
+                      competicion: str = "MUNDIAL 2026") -> str:
+    """
+    Pick del dia. ~220 chars sin URL.
+
+    ⭐ PARTIDO DEL DIA · MUNDIAL 2026 · 16:00 ART
+    🇦🇷 Argentina vs 🇲🇦 Marruecos
+
+    🟢 Argentina       58.4%
+    🟡 Empate          24.1%
+    🔴 Marruecos       17.5%
+
+    🔎 Analisis completo y factores en nuestra web - ↗ bio
+    #FutVersus #Mundial2026
+    """
+    fh = flag_for(home_name)
+    fa = flag_for(away_name)
+    hour = _fmt_hour_ar(kickoff_iso_utc)
+    return (
+        f"⭐ PARTIDO DEL DÍA · {competicion} · {hour} ART\n"
+        f"{fh} {home_name} vs {fa} {away_name}\n"
+        f"\n"
+        f"🟢 {home_name:<14} {_round1(prob_local)}%\n"
+        f"🟡 Empate          {_round1(prob_empate)}%\n"
+        f"🔴 {away_name:<14} {_round1(prob_visitante)}%\n"
+        f"\n"
+        f"🔎 Análisis completo y factores en nuestra web - ↗ bio\n"
+        f"{HASHTAGS}"
+    )
+
+
 def tweet_postmortem(home_name: str, away_name: str,
                      prob_local: float, prob_empate: float, prob_visitante: float,
                      goles_local: int, goles_visitante: int,

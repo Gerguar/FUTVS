@@ -3,6 +3,8 @@ name: twitter
 # Bot de tweets automaticos. Cada 15 min:
 #   - lesiones nuevas (sin throttle)
 #   - 1 post-mortem si hay finalizado nuevo (gap natural = 15 min)
+#   - 1 pick_of_day a las 10:00 ART (13:00 UTC) ± 20 min: partido del dia
+#     mas cerrado segun el modelo. Una vez por dia.
 #   - 1 pre-match si pasaron >=30 min del ultimo y hay partido en ventana [now, now+4h]
 #
 # Requiere secrets:
