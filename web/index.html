@@ -934,7 +934,7 @@ button,a{touch-action:manipulation}
 .cmp-footer{margin-top:.55rem;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.05);font-size:.56rem;color:#4b5563;line-height:1.5}
 .cmp-footer strong{font-weight:700}
 @media(max-width:900px){.cmp-card{display:none !important}}
-@media(max-width:800px){#clasicos-col{display:none !important}#comparador>div>div:first-child+div{grid-column:1/-1}#comparador>div>div{grid-template-columns:1fr !important}}
+@media(max-width:800px){#clasicos-col{display:none !important}#populares-col{display:none !important}#comparador>div>div:first-child+div{grid-column:1/-1}#comparador>div>div{grid-template-columns:1fr !important}}
 @media(max-width:700px){.hero-inner{padding:2.5rem 1rem}}
 /* ── FIN HERO CARDS CSS ── */
 
@@ -1992,12 +1992,18 @@ button,a{touch-action:manipulation}
       <button class="back-btn" onclick="nav('/')">← Inicio</button>
     </div>
 
-    <div style="display:grid;grid-template-columns:180px 1fr;gap:1.5rem;align-items:start">
+    <div style="display:grid;grid-template-columns:180px 1fr 180px;gap:1.5rem;align-items:start">
 
-      <!-- Columna izquierda: clásicos sugeridos -->
+      <!-- Columna izquierda: clásicos sugeridos + populares -->
       <div id="clasicos-col" style="background:rgba(13,16,20,.84);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1rem;position:sticky;top:80px">
         <div style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--faint);text-transform:uppercase;margin-bottom:.9rem">⚡ Clásicos</div>
         <div id="clasicos-list" style="display:flex;flex-direction:column;gap:.4rem"></div>
+
+        <!-- Populares -->
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--faint);text-transform:uppercase;margin:1.1rem 0 .9rem">🔥 Populares</div>
+        <div id="populares-list" style="display:flex;flex-direction:column;gap:.4rem">
+          <div style="font-size:.7rem;color:var(--faint);font-family:'JetBrains Mono',monospace;text-align:center;padding:.5rem 0">Cargando...</div>
+        </div>
       </div>
 
       <!-- Columna derecha: comparador -->
@@ -2026,6 +2032,15 @@ button,a{touch-action:manipulation}
         <!-- Tabla comparativa -->
         <div id="comp-result"></div>
       </div>
+
+      <!-- Columna derecha: populares -->
+      <div id="populares-col" style="background:rgba(13,16,20,.84);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1rem;position:sticky;top:80px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--faint);text-transform:uppercase;margin-bottom:.9rem">🔥 Populares</div>
+        <div id="populares-list" style="display:flex;flex-direction:column;gap:.4rem">
+          <div style="font-size:.7rem;color:var(--faint);font-family:'JetBrains Mono',monospace;text-align:center;padding:.5rem 0">Cargando...</div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -3882,6 +3897,7 @@ async function openComparador() {
     populateCompLigas()
     populateCompTeams()
     renderClasicos()
+    loadPopulares()
     return
   }
   document.getElementById('comp-result').innerHTML = `<div class="loader" style="color:var(--faint);text-align:center">Cargando datos...</div>`
@@ -3905,6 +3921,7 @@ async function openComparador() {
     populateCompLigas()
     populateCompTeams()
     renderClasicos()
+    loadPopulares()
   } catch (e) {
     document.getElementById('comp-result').innerHTML = `<div style="color:var(--red)">Error cargando datos: ${htmlEsc(e.message)}</div>`
   }
@@ -4255,6 +4272,115 @@ async function renderComparador() {
     a: eqA.nombre, b: eqB.nombre,
     mode: (_comp && _comp.mode) || 'clubes',
   })
+
+  // Registrar comparación en Supabase (para populares)
+  registrarComparacion(eqA.nombre, eqB.nombre)
+}
+
+// ── COMPARACIONES POPULARES ───────────────────────────────────────────────────
+async function registrarComparacion(nombreA, nombreB) {
+  // Normalizar el par siempre en orden alfabético para agrupar A vs B = B vs A
+  const [a, b] = [nombreA, nombreB].sort()
+  const par = `${a}|||${b}`
+  try {
+    await fetch(`${SB_URL}/rest/v1/comparaciones_populares`, {
+      method: 'POST',
+      headers: {
+        apikey: SB_KEY,
+        Authorization: `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify({ equipo_a: a, equipo_b: b, par }),
+    })
+  } catch(e) {
+    // silencioso — no romper la UI si falla
+  }
+  // Refrescar el ranking de populares
+  loadPopulares()
+}
+
+let _popularesCache = []
+let _popularesLoaded = false
+
+async function loadPopulares() {
+  try {
+    const rows = await sb('comparaciones_populares?select=par,equipo_a,equipo_b&order=created_at.desc&limit=1000')
+    // Contar por par
+    const counts = {}
+    for (const r of rows) {
+      counts[r.par] = counts[r.par] || { equipo_a: r.equipo_a, equipo_b: r.equipo_b, n: 0 }
+      counts[r.par].n++
+    }
+    // Ordenar top 10
+    _popularesCache = Object.values(counts)
+      .sort((a, b) => b.n - a.n)
+      .slice(0, 10)
+    _popularesLoaded = true
+  } catch(e) {
+    _popularesCache = []
+  }
+  renderPopulares()
+}
+
+function renderPopulares() {
+  const el = document.getElementById('populares-list')
+  if (!el) return
+
+  if (!_popularesCache.length) {
+    el.innerHTML = `<div style="font-size:.7rem;color:var(--faint);font-family:'JetBrains Mono',monospace;text-align:center;padding:.5rem 0">Aún sin datos</div>`
+    return
+  }
+
+  el.innerHTML = _popularesCache.map((p, i) => {
+    const label = `${p.equipo_a} vs ${p.equipo_b}`
+    const labelShort = label.length > 22 ? label.slice(0, 20) + '…' : label
+    return `<button onclick="loadPopularPar('${p.equipo_a.replace(/'/g,"\\'")}','${p.equipo_b.replace(/'/g,"\\'")}',${i})"
+      style="width:100%;text-align:left;background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.07);border-radius:8px;
+      padding:.45rem .65rem;cursor:pointer;transition:all .15s;
+      font-family:'Inter',sans-serif;font-size:.76rem;color:var(--muted);
+      line-height:1.3;display:flex;justify-content:space-between;align-items:center;gap:.3rem"
+      onmouseover="this.style.background='rgba(239,68,68,.08)';this.style.borderColor='rgba(239,68,68,.3)';this.style.color='#e8eaed'"
+      onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(255,255,255,.07)';this.style.color='var(--muted)'">
+      <span>${labelShort}</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#4b5563">${p.n}</span>
+    </button>`
+  }).join('')
+}
+
+function loadPopularPar(nombreA, nombreB, idx) {
+  if (!_comp.equipos) return
+
+  // Buscar los equipos por nombre exacto
+  const findEq = (nombre) => _comp.equipos.find(e => e.nombre === nombre)
+  const eqA = findEq(nombreA)
+  const eqB = findEq(nombreB)
+  if (!eqA || !eqB) return
+
+  // Cambiar modo si son de la misma liga o selecciones
+  const isSel = eqA.liga_id === 7 && eqB.liga_id === 7
+  if (isSel && _comp.mode !== 'selecciones') setCompMode('selecciones')
+  else if (!isSel && _comp.mode !== 'clubes') {
+    setCompMode('clubes')
+    const ligaSel = document.getElementById('comp-liga')
+    if (ligaSel) { ligaSel.value = String(eqA.liga_id); _comp.ligaSel = String(eqA.liga_id) }
+    populateCompTeams()
+  }
+
+  const selA = document.getElementById('comp-team-a')
+  const selB = document.getElementById('comp-team-b')
+  if (selA) selA.value = String(eqA.id)
+  if (selB) selB.value = String(eqB.id)
+
+  // Resaltar botón activo en populares
+  document.querySelectorAll('#populares-list button').forEach((btn, i) => {
+    btn.style.background   = i === idx ? 'rgba(239,68,68,.12)' : 'rgba(255,255,255,.04)'
+    btn.style.borderColor  = i === idx ? 'rgba(239,68,68,.4)'  : 'rgba(255,255,255,.07)'
+    btn.style.color        = i === idx ? '#ef4444'              : 'var(--muted)'
+  })
+
+  renderComparador()
 }
 
 // ── Mini-router (rutas reales sin frameworks) ─────────────────────────────────
