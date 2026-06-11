@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-11T12:38:18.293478+00:00",
-  "dato_curioso": "Este Mundial 2026 será el primero con 48 selecciones, expandiendo de 64 a 104 partidos totales en el torneo",
+  "generated_at_utc": "2026-06-11T12:44:41.731848+00:00",
+  "dato_curioso": "El modelo FutVS procesa más de 12.500 partidos históricos para generar cada pronóstico.",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -115,28 +115,7 @@
       "gc": 6
     }
   ],
-  "xg_performance": [
-    {
-      "tipo": "sobre",
-      "flag": "🔥",
-      "texto": "España convirtió 8 goles con xG de 4.2 en amistosos previos, efectividad del 190%"
-    },
-    {
-      "tipo": "sobre",
-      "flag": "🔥",
-      "texto": "Colombia superó xG en 3 de 4 amistosos preparatorios con 11 goles generados"
-    },
-    {
-      "tipo": "bajo",
-      "flag": "📉",
-      "texto": "Brasil solo convirtió 3 goles con xG de 6.8 en preparación, preocupa definición"
-    },
-    {
-      "tipo": "bajo",
-      "flag": "📉",
-      "texto": "Inglaterra generó xG 5.4 pero marcó 2 goles en últimos amistosos pre-Mundial"
-    }
-  ],
+  "xg_performance": [],
   "alertas": [
     {
       "nivel": "warning",
@@ -155,28 +134,7 @@
       "fecha": "2026-06-07"
     }
   ],
-  "tendencias": [
-    {
-      "tipo": "over",
-      "flag": "🎯",
-      "texto": "Francia lidera apuestas como favorita tras 6 partidos invicta previo al debut"
-    },
-    {
-      "tipo": "over",
-      "flag": "🎯",
-      "texto": "Argentina viene con racha de 8 partidos sin perder desde marzo 2026"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "México promedia 2.3 goles por partido como anfitrión en preparación"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "Grupo E proyectado como el más competitivo según rankings FIFA actualizados"
-    }
-  ],
+  "tendencias": [],
   "oportunidades": [
     {
       "partido": "Portugal vs RD del Congo",
