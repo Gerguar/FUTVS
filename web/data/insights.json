@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-11T12:51:59.089396+00:00",
-  "dato_curioso": "Michael Olise (Bayern) marcó hat-trick vs Irlanda del Norte (8/6): a sus 24 años suma 7 goles en 17 partidos con Francia, en racha pre-Mundial",
+  "generated_at_utc": "2026-06-11T14:29:26.012733+00:00",
+  "dato_curioso": "Ninguna selección que llegó al Mundial en 1er lugar del ranking FIFA logró ganar la Copa (tendencia histórica que preocupa a Argentina, líder actual)",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -59,6 +59,20 @@
       "gc": 3
     },
     {
+      "slug": "portugal",
+      "nombre": "Portugal",
+      "escudo": "https://flagcdn.com/w160/pt.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "D",
+        "W"
+      ],
+      "gf": 15,
+      "gc": 3
+    },
+    {
       "slug": "costa_de_marfil",
       "nombre": "Costa de Marfil",
       "escudo": "https://flagcdn.com/w160/ci.png",
@@ -99,72 +113,36 @@
       ],
       "gf": 10,
       "gc": 3
-    },
-    {
-      "slug": "francia",
-      "nombre": "Francia",
-      "escudo": "https://flagcdn.com/w160/fr.png",
-      "forma": [
-        "W",
-        "L",
-        "W",
-        "W",
-        "W"
-      ],
-      "gf": 12,
-      "gc": 6
     }
   ],
   "xg_performance": [
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Francia desplegó ataque implacable vs Irlanda del Norte (3-1): 7 goles en 2 amistosos previos"
+      "texto": "Bélgica goleó 5-0 a Túnez mostrando efectividad ofensiva y control del juego antes del torneo"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "España vulnerada vs Irak (1-1) sin Yamal ni Williams: Roja se espera mayor productividad"
+      "texto": "España empató 1-1 con Irak en amistoso previo, rendimiento algo decepcionante vs expectativas"
     }
   ],
-  "alertas": [
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "Abde se luce y luego cae lesionado en el último amistoso de Marruecos antes del Mundial",
-      "fuente": "Www.abc.es",
-      "fuente_url": "https://www.abc.es/deportes/alfinaldelapalmera/noticias-betis/abde-luce-cae-lesionado-ultimo-amistoso-marruecos-20260607224312-nts.html",
-      "fecha": "2026-06-07"
-    },
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "El partido fue suspendido: Christian Eriksen se desploma durante amistoso entre Dinamarca y Ucrania",
-      "fuente": "Latercera.com",
-      "fuente_url": "https://www.latercera.com/el-deportivo/noticia/el-partido-fue-suspendido-christian-eriksen-se-desploma-durante-amistoso-entre-dinamarca-y-ucrania/",
-      "fecha": "2026-06-07"
-    }
-  ],
+  "alertas": [],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Brasil con 8 goles en 2 amistosos (6-2 vs Panamá, 2-1 vs Egipto): ataque fluido pese a bajas"
+      "texto": "Francia domina probabilidades con 16-18% según IA; Argentina 14-16%; España 12-14% de título"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "España (2.47 xG/90) y Francia (2.31 xG/90) lideran ranking ofensivo del ciclo 2024-2026"
+      "texto": "Noruega termina clasificación con mejor diferencia de goles ajustada (+3.0) de todos los equipos"
     },
     {
       "tipo": "other",
-      "flag": "📈",
-      "texto": "Marruecos permitió solo 0.28 xGA en clasificatorias africanas: solidez defensiva histórica"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "Noruega acumuló 37 goles en 8 partidos de clasificación (4.6 goles/partido): revelación ofensiva"
+      "flag": "⚡",
+      "texto": "Inglaterra sin goles en contra en 8 partidos clasificatorios; defensa más sólida de UEFA en fase previa"
     }
   ],
   "oportunidades": [
@@ -172,9 +150,9 @@
       "partido": "Portugal vs RD del Congo",
       "competition": "Mundial 2026",
       "apuesta": "Empate",
-      "p_modelo": 29.7,
+      "p_modelo": 29.5,
       "p_mercado": 17.0,
-      "edge": 12.7,
+      "edge": 12.5,
       "xg_home": 1.08,
       "xg_away": null,
       "kickoff": "2026-06-17T17:00:00"
