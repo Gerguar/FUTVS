@@ -19,14 +19,34 @@ from collections import defaultdict
 ROOT         = Path(__file__).resolve().parents[1]
 DATA_DIR     = ROOT / "data"
 WEB_DATA_DIR = ROOT / "web" / "data"
-PREDS_PATH   = DATA_DIR / "predictions.json"
-OUT_INSIGHTS = WEB_DATA_DIR / "insights.json"
-OUT_SEMANA   = WEB_DATA_DIR / "insights_semana.json"
+PREDS_PATH      = DATA_DIR / "predictions.json"
+LESIONES_VETOS  = DATA_DIR / "lesiones_overrides_manual.json"
+OUT_INSIGHTS    = WEB_DATA_DIR / "insights.json"
+OUT_SEMANA      = WEB_DATA_DIR / "insights_semana.json"
+DEBUG_PATH      = WEB_DATA_DIR / "claude_debug.json"
 
 # ── Credenciales ─────────────────────────────────────────────────────────────
 SB_URL        = os.environ.get("SUPABASE_URL", "").rstrip("/")
 SB_KEY        = os.environ.get("SUPABASE_SERVICE_KEY", "")
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+
+# ── Config Claude ────────────────────────────────────────────────────────────
+# Haiku 4.5: 5x mas barato que Sonnet 4.5 ($1/$5 vs $3/$15 por 1M tokens).
+# Con web_search_20260209 (dynamic filtering) las tendencias y xg_performance
+# se basan en data REAL del web, no inventada.
+CLAUDE_MODEL   = "claude-haiku-4-5"
+WEB_SEARCH_TOOL = {"type": "web_search_20260209", "name": "web_search"}
+
+
+# ── Debug helper ─────────────────────────────────────────────────────────────
+def _write_debug(info: dict) -> None:
+    """Escribe el ultimo error/diagnostico de Claude API en web/data/claude_debug.json
+    para que sea visible desde el sitio (NO commiteado - en .gitignore via patron)."""
+    try:
+        info["written_at_utc"] = datetime.now(timezone.utc).isoformat()
+        DEBUG_PATH.write_text(json.dumps(info, indent=2, ensure_ascii=False))
+    except Exception:
+        pass
 
 # ── Supabase ─────────────────────────────────────────────────────────────────
 def sb_get(path: str) -> list[dict]:
@@ -46,44 +66,68 @@ def sb_get(path: str) -> list[dict]:
         print(f"[insights] sb_get error: {e}")
         return []
 
-# ── Anthropic API con web search ─────────────────────────────────────────────
-def claude_with_search(prompt: str, max_tokens: int = 2000) -> str:
+# ── Anthropic API con web search habilitado ───────────────────────────────────
+def claude_with_search(prompt: str, max_tokens: int = 4000) -> str:
     """
-    Llama a Claude claude-sonnet-4-20250514 con web_search habilitado.
-    Devuelve el texto de la respuesta final.
+    Llama a Claude Haiku 4.5 con web_search_20260209 habilitado.
+    Devuelve el texto concatenado de la respuesta final.
+
+    Web search es server-side: Anthropic ejecuta las busquedas y devuelve los
+    resultados ya filtrados con dynamic filtering (Haiku 4.5 lo soporta).
+    Si la API falla, escribe el error en claude_debug.json y devuelve "".
     """
     if not ANTHROPIC_KEY:
-        print("[insights] sin ANTHROPIC_API_KEY, saltando búsqueda web")
+        print("[insights] sin ANTHROPIC_API_KEY, saltando búsqueda web", flush=True)
         return ""
 
     body = json.dumps({
-        "model": "claude-sonnet-4-5",
+        "model":    CLAUDE_MODEL,
         "max_tokens": max_tokens,
+        "tools":    [WEB_SEARCH_TOOL],
         "messages": [{"role": "user", "content": prompt}],
-    }).encode()
+    }).encode("utf-8")
 
     req = urllib.request.Request(
         "https://api.anthropic.com/v1/messages",
         data=body,
         headers={
-            "x-api-key": ANTHROPIC_KEY,
+            "x-api-key":         ANTHROPIC_KEY,
             "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
+            "content-type":      "application/json",
         },
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=60) as r:
+        with urllib.request.urlopen(req, timeout=120) as r:
             data = json.loads(r.read())
-        texts = [b["text"] for b in data.get("content", []) if b.get("type") == "text"]
-        return "\n".join(texts).strip()
     except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", errors="replace")
-        print(f"[insights] claude error HTTP {e.code}: {body[:600]}")
+        err_body = e.read().decode("utf-8", errors="replace")
+        print(f"[insights] claude HTTP {e.code}: {err_body[:600]}", flush=True)
+        _write_debug({
+            "kind": "http_error", "code": e.code, "model": CLAUDE_MODEL,
+            "body": err_body[:2000], "max_tokens": max_tokens,
+        })
         return ""
     except Exception as e:
-        print(f"[insights] claude error: {e}")
+        print(f"[insights] claude error: {e}", flush=True)
+        _write_debug({"kind": "exception", "model": CLAUDE_MODEL, "error": str(e)})
         return ""
+
+    # Diagnostico: log que tools y stop_reason vinieron.
+    stop = data.get("stop_reason")
+    tool_uses = sum(1 for b in data.get("content", []) if b.get("type") == "server_tool_use")
+    print(f"[insights] claude OK stop_reason={stop} web_searches={tool_uses}", flush=True)
+
+    # Recolectar solo bloques de texto final (despues de tool calls).
+    texts = [b["text"] for b in data.get("content", []) if b.get("type") == "text"]
+    out = "\n".join(texts).strip()
+    if not out:
+        _write_debug({
+            "kind": "empty_response", "model": CLAUDE_MODEL,
+            "stop_reason": stop, "web_searches": tool_uses,
+            "content_types": [b.get("type") for b in data.get("content", [])],
+        })
+    return out
 
 # ── Generar secciones con Claude + web search ─────────────────────────────────
 def build_ai_insights() -> dict:
@@ -93,9 +137,26 @@ def build_ai_insights() -> dict:
     """
     today = datetime.now(timezone.utc).strftime("%d de %B de %Y")
 
+    # Lista de jugadores ya vetados (lesiones confirmadas via override manual).
+    # Pasamos los nombres a Claude para que NO los proponga como "duda" o
+    # "alerta" — ya estan descartados, todo el mundo lo sabe.
+    vetos_str = ""
+    if LESIONES_VETOS.exists():
+        try:
+            vetos = json.loads(LESIONES_VETOS.read_text(encoding="utf-8"))
+            nombres = sorted({v.get("jugador", "") for v in vetos if v.get("jugador")})
+            if nombres:
+                vetos_str = (
+                    "\n\nJUGADORES YA DESCARTADOS DEL MUNDIAL (no los menciones como "
+                    "alerta ni duda, ya estan oficialmente afuera): "
+                    + ", ".join(nombres) + "."
+                )
+        except Exception:
+            pass
+
     prompt = f"""Hoy es {today}. Sos el analista de FutVS, una plataforma de análisis estadístico de fútbol.
 
-Buscá en la web las últimas noticias de fútbol de los últimos 4 días y generá un análisis estructurado.
+Buscá en la web las últimas noticias de fútbol de los últimos 4 días y generá un análisis estructurado.{vetos_str}
 PRIORIDAD MÁXIMA: Mundial 2026 (empieza el 11 de junio de 2026 en USA, México y Canadá). Enfocate principalmente en selecciones nacionales — lesiones, convocatorias, amistosos de preparación, favoritos por grupo. Las ligas de clubes son secundarias.
 
 Buscá información sobre:
@@ -119,7 +180,12 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin texto 
 
 Máximo 4 items por sección. Textos cortos (máximo 120 caracteres). Todo en español. Solo JSON.
 
-IMPORTANTE: NO incluyas un campo 'noticias_semana' ni 'alertas'. Esas las generamos desde NewsAPI con fuentes reales, no las inventes."""
+REGLAS ESTRICTAS:
+- 'tendencias' DEBE tener al menos 3 items con datos concretos (porcentajes, conteos, comparativas).
+- 'xg_performance' usá datos REALES de los últimos amistosos / partidos del Mundial.
+- 'dato_curioso' tiene que ser estadístico, verificable, sobre el Mundial 2026 o sus protagonistas.
+- NO incluyas un campo 'noticias_semana' ni 'alertas'. Esas las generamos desde NewsAPI con fuentes reales.
+- Usá la herramienta web_search para verificar datos, NO inventes nada."""
 
     print("[insights] llamando a Claude con web search...", flush=True)
     raw = claude_with_search(prompt, max_tokens=2000)
