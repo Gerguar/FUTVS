@@ -110,22 +110,16 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin texto 
     {{"tipo": "sobre", "flag": "🔥", "texto": "descripción corta en español"}},
     {{"tipo": "bajo", "flag": "📉", "texto": "descripción corta en español"}}
   ],
-  "alertas": [
-    {{"nivel": "warning", "flag": "⚠️", "texto": "descripción corta en español"}},
-    {{"nivel": "info", "flag": "🔍", "texto": "descripción corta en español"}}
-  ],
   "tendencias": [
     {{"tipo": "over", "flag": "🎯", "texto": "descripción corta en español"}},
     {{"tipo": "other", "flag": "📈", "texto": "descripción corta en español"}}
   ],
-  "noticias_semana": [
-    {{"titulo": "título de la noticia en español", "fuente": "nombre de la fuente", "fecha": "YYYY-MM-DD", "url": "url o cadena vacía"}},
-    {{"titulo": "título de la noticia en español", "fuente": "nombre de la fuente", "fecha": "YYYY-MM-DD", "url": ""}}
-  ],
   "dato_curioso": "Un dato estadístico curioso y real del fútbol actual"
 }}
 
-Máximo 4 items por sección. Textos cortos (máximo 120 caracteres). Todo en español. Solo JSON."""
+Máximo 4 items por sección. Textos cortos (máximo 120 caracteres). Todo en español. Solo JSON.
+
+IMPORTANTE: NO incluyas un campo 'noticias_semana' ni 'alertas'. Esas las generamos desde NewsAPI con fuentes reales, no las inventes."""
 
     print("[insights] llamando a Claude con web search...", flush=True)
     raw = claude_with_search(prompt, max_tokens=2000)
@@ -527,6 +521,88 @@ def _normalizar_titulo(titulo: str, max_len: int = 140) -> str:
         titulo = titulo[:max_len].rsplit(" ", 1)[0] + "…"
     return titulo
 
+# ── Noticias de la semana desde NewsAPI (no desde Claude) ────────────────────
+# Decision del 11-jun-2026 despues de detectar 4 noticias inventadas por
+# Claude en el insights_semana.json (Mexico-Camerun inaugural, Messi vs
+# Marruecos el 12, Canada-Croacia inaugural, etc — todas falsas porque
+# Claude no tenia web_search habilitado). Reemplazado por NewsAPI real
+# con el mismo enfoque que las alertas: queries qInTitle + filtro de
+# is_football_news + dedup + top 4 por fecha.
+
+NOTICIAS_QUERIES = [
+    "Mundial 2026",
+    "selección argentina",
+    "selección brasil",
+    "selección méxico",
+    "selección española",
+    "convocatoria mundial",
+    "amistoso mundial",
+]
+
+
+def build_noticias_semana_from_newsapi() -> list[dict]:
+    """Genera noticias_semana desde NewsAPI con queries amplias del Mundial.
+
+    Filtra con is_football_news para descartar otros deportes, deduplica
+    por URL, normaliza titulos y devuelve top 4 por fecha desc.
+    Devuelve [] si NEWS_API_KEY ausente o si no hay artículos.
+    """
+    from . import fetch_news as fn
+    if not fn.NEWS_API_KEY:
+        print("[noticias] NEWS_API_KEY ausente — no se generan noticias", flush=True)
+        return []
+
+    now = datetime.now(timezone.utc)
+    from_date = (now - timedelta(days=7)).strftime("%Y-%m-%d")
+    to_date = now.strftime("%Y-%m-%d")
+    sources_csv = ",".join(fn.FOOTBALL_SOURCES)
+
+    seen_urls: set[str] = set()
+    candidatos: list[dict] = []
+
+    for q in NOTICIAS_QUERIES:
+        try:
+            arts = fn.fetch_articles(q, from_date, to_date, page_size=6, sources=sources_csv)
+            arts += fn.fetch_articles(q, from_date, to_date, page_size=4, sources=None)
+        except Exception as e:
+            print(f"[noticias] error fetch '{q}': {e}", flush=True)
+            continue
+
+        for a in arts:
+            url = a.get("url") or ""
+            if not url or url in seen_urls:
+                continue
+            ok, _ = fn.is_football_news(a)
+            if not ok:
+                continue
+            titulo = (a.get("title") or "").strip()
+            if not titulo:
+                continue
+            seen_urls.add(url)
+            candidatos.append({
+                "titulo": _normalizar_titulo(titulo, max_len=120),
+                "fuente": (a.get("source") or {}).get("name") or "",
+                "fecha":  (a.get("publishedAt") or "")[:10],
+                "url":    url,
+            })
+
+    # Ordenar por fecha desc; deduplicar por primeras 6 palabras (mismo evento)
+    candidatos.sort(key=lambda x: x.get("fecha", ""), reverse=True)
+    seen_keys: set[str] = set()
+    unique: list[dict] = []
+    for c in candidatos:
+        key = " ".join(c["titulo"].lower().split()[:6])
+        if key in seen_keys:
+            continue
+        seen_keys.add(key)
+        unique.append(c)
+        if len(unique) >= 4:
+            break
+
+    print(f"[noticias] NewsAPI: {len(unique)} noticias (de {len(candidatos)} candidatos)", flush=True)
+    return unique
+
+
 def build_alertas_from_newsapi() -> list[dict]:
     """Genera alertas desde NewsAPI usando queries especificas de lesiones,
     bajas, sanciones. Filtra titulos no-futbol y deduplica por jugador.
@@ -644,13 +720,18 @@ def main() -> None:
 
     xg_perf    = ai.get("xg_performance", [])
     tendencias = ai.get("tendencias", [])
-    noticias   = ai.get("noticias_semana", [])
     dato       = ai.get("dato_curioso") or pick_dato_curioso()
 
     # 3.b. ALERTAS desde NewsAPI (NO desde Claude — evita alucinaciones).
     # Decision del 7-jun-2026 despues de detectar 3 alertas falsas inventadas
     # por Claude (Neymar lesion rodilla, De Bruyne sancion, Mbappe 4 dias).
     alertas = build_alertas_from_newsapi()
+
+    # 3.c. NOTICIAS de la semana desde NewsAPI (NO desde Claude).
+    # Decision del 11-jun-2026 despues de detectar 4 noticias falsas
+    # inventadas por Claude en insights_semana.json. Si NewsAPI no
+    # devuelve nada, fallback a oportunidades+tendencias (codigo abajo).
+    noticias = build_noticias_semana_from_newsapi()
 
     print(f"[insights] AI: {len(xg_perf)} xG, {len(alertas)} alertas, "
           f"{len(tendencias)} tendencias, {len(noticias)} noticias", flush=True)
