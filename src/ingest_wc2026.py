@@ -218,6 +218,13 @@ def main() -> None:
         gl = score.get("home")
         gv = score.get("away")
 
+        # Bug fix 11-jun-2026 (Mexico-Sudafrica 0-0 falso): football-data.org
+        # puede marcar status=FINISHED antes de propagar los scores reales,
+        # devolviendo home/away en null. Si esto pasa, NO marcamos finalizado
+        # (esperamos al proximo cron, max 30 min) y NO inventamos un 0-0.
+        if estado == "finalizado" and (gl is None or gv is None):
+            estado = "en_curso"
+
         # group viene como "GROUP_A".."GROUP_L"; lo guardamos como letra A..L.
         grupo_raw = m.get("group") or ""
         grupo = grupo_raw.replace("GROUP_", "") if grupo_raw.startswith("GROUP_") else None
@@ -229,8 +236,8 @@ def main() -> None:
             "equipo_local_id": home_id,
             "equipo_visitante_id": away_id,
             "estado": estado,
-            "goles_local": gl if gl is not None else 0,
-            "goles_visitante": gv if gv is not None else 0,
+            "goles_local":     gl,   # None real si la API no propago aun
+            "goles_visitante": gv,
             "grupo": grupo,
         }
 
@@ -285,15 +292,20 @@ def main() -> None:
     print(f"[wc2026] insertados {inserted} partidos")
 
     # Patch existentes: conserva partido_id y corrige horario, score, estado y grupo.
+    # IMPORTANTE: si goles_local/visitante vienen None, NO los incluimos en el
+    # patch — sino sobreescribimos un score real (ya cargado por otro sync o
+    # correccion manual) con null.
     patched = 0
     for pid, payload in a_actualizar:
         patch_data = {
-            "fecha": payload["fecha"],
+            "fecha":  payload["fecha"],
             "estado": payload["estado"],
-            "goles_local": payload["goles_local"],
-            "goles_visitante": payload["goles_visitante"],
-            "grupo": payload.get("grupo"),
+            "grupo":  payload.get("grupo"),
         }
+        if payload["goles_local"] is not None:
+            patch_data["goles_local"] = payload["goles_local"]
+        if payload["goles_visitante"] is not None:
+            patch_data["goles_visitante"] = payload["goles_visitante"]
         sb_patch(f"partidos?id=eq.{pid}", patch_data)
         patched += 1
     print(f"[wc2026] actualizados {patched} partidos existentes")
