@@ -5,7 +5,12 @@
     "75": "2065049196517081571",
     "76": "2065184978657308856"
   },
-  "postmortem_posted": {},
+  "postmortem_posted": {
+    "74": {
+      "tweet_id": "2065191902828441955",
+      "klass": "acertado"
+    }
+  },
   "postmortem_miss_counter": 0,
   "lesion_snapshot": [],
   "lesion_posted_keys": [
