@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-11T03:10:31.655421+00:00",
-  "dato_curioso": "Mundial 2026 es el primero con 48 equipos en 16 grupos de 3, jugándose en 16 ciudades de 3 países simultáneamente",
+  "generated_at_utc": "2026-06-11T12:38:18.293478+00:00",
+  "dato_curioso": "Este Mundial 2026 será el primero con 48 selecciones, expandiendo de 64 a 104 partidos totales en el torneo",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,22 +119,22 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina superó xG esperado en amistosos previos, convirtiendo con 23% más eficiencia que lo proyectado"
+      "texto": "España convirtió 8 goles con xG de 4.2 en amistosos previos, efectividad del 190%"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Francia mostró ataque letal con 2.8 goles por partido vs 2.1 xG en preparación para el Mundial"
+      "texto": "Colombia superó xG en 3 de 4 amistosos preparatorios con 11 goles generados"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil generó 2.4 xG por partido pero solo convirtió 1.3 goles en amistosos de preparación"
+      "texto": "Brasil solo convirtió 3 goles con xG de 6.8 en preparación, preocupa definición"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Inglaterra quedó 18% por debajo de su xG defensivo esperado en últimos amistosos previos"
+      "texto": "Inglaterra generó xG 5.4 pero marcó 2 goles en últimos amistosos pre-Mundial"
     }
   ],
   "alertas": [
@@ -159,22 +159,22 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupo A proyecta promedio de 3.2 goles por partido según análisis de selecciones participantes"
+      "texto": "Francia lidera apuestas como favorita tras 6 partidos invicta previo al debut"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "España llega invicta con 8 victorias consecutivas, mejor racha de preparación entre europeos"
+      "texto": "Argentina viene con racha de 8 partidos sin perder desde marzo 2026"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Portugal superó 2.5 goles en 6 de sus últimos 7 amistosos, tendencia ofensiva confirmada"
+      "texto": "México promedia 2.3 goles por partido como anfitrión en preparación"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Estados Unidos como local registra 75% posesión promedio en estadios sede del Mundial"
+      "texto": "Grupo E proyectado como el más competitivo según rankings FIFA actualizados"
     }
   ],
   "oportunidades": [
