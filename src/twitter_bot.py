@@ -56,12 +56,11 @@ INSIGHTS_PATH = Path("web/data/insights.json")
 # 6h = una segunda confirmacion del modelo + tiempo para veto manual.
 LESION_COOLDOWN_HOURS = 6.0
 
-# Ventana de pre-match: postea entre 0.5h y 8h antes del kickoff.
-# Originalmente apuntabamos a "4h antes ideal", pero GitHub Actions throttle los
-# crons de */15 (a veces demoran 1-4h). Con ventana de 8h tenemos margen para
-# que aunque el cron se demore, el tweet salga antes del kickoff.
+# Ventana de pre-match: postea entre 0.5h y 24h antes del kickoff.
+# El 11-jun-2026 subimos de 8h a 24h para que durante el Mundial los anuncios
+# salgan con dia de anticipacion (crea expectativa y captura la conversacion).
 # Regla original de Facu: "mejor antes que despues, nunca despues del kickoff".
-PREMATCH_TARGET_H = 8.0     # ventana superior: hasta 8h antes
+PREMATCH_TARGET_H = 24.0    # ventana superior: hasta 24h antes
 PREMATCH_MIN_BEFORE_H = 0.5  # corte 30 min antes minimo
 
 # Throttle entre tweets pre-match (para no saturar cuando hay varios partidos simultaneos)
