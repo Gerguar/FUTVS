@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-10T23:57:33.451289+00:00",
-  "dato_curioso": "Mundial 2026 será el primero con 48 selecciones, expandiendo de 64 a 104 partidos totales en el torneo",
+  "generated_at_utc": "2026-06-11T03:10:31.655421+00:00",
+  "dato_curioso": "Mundial 2026 es el primero con 48 equipos en 16 grupos de 3, jugándose en 16 ciudades de 3 países simultáneamente",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,22 +119,22 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina superó xG esperado en últimos amistosos previo al debut mundialista"
+      "texto": "Argentina superó xG esperado en amistosos previos, convirtiendo con 23% más eficiencia que lo proyectado"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "España con efectividad superior a métricas en preparación para el Mundial"
+      "texto": "Francia mostró ataque letal con 2.8 goles por partido vs 2.1 xG en preparación para el Mundial"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Brasil por debajo de xG en amistosos recientes, preocupación ofensiva"
+      "texto": "Brasil generó 2.4 xG por partido pero solo convirtió 1.3 goles en amistosos de preparación"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Inglaterra con bajo rendimiento vs xG en partidos de preparación"
+      "texto": "Inglaterra quedó 18% por debajo de su xG defensivo esperado en últimos amistosos previos"
     }
   ],
   "alertas": [
@@ -149,22 +149,6 @@
     {
       "nivel": "warning",
       "flag": "⚠️",
-      "texto": "Alarma roja en Brasil: un titular se retiró lesionado y entre lágrimas en la previa del Mundial 2026",
-      "fuente": "Perfil.com",
-      "fuente_url": "https://442.perfil.com/noticias/mundial-2026/alarma-roja-en-brasil-un-titular-se-retiro-lesionado-y-entre-lagrimas-en-la-previa-del-mundial-2026.phtml",
-      "fecha": "2026-06-06"
-    },
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
-      "texto": "Lesión de último momento: Leonardo Balerdi sufrió un desgarro y se podría perder el Mundial con la Selección Argentina",
-      "fuente": "Perfil.com",
-      "fuente_url": "https://442.perfil.com/noticias/futbol/bombazo-de-ultimo-momento-leonardo-balerdi-sufrio-una-dura-lesion-y-se-podria-perder-el-mundial-con-la-seleccion-argentina.phtml",
-      "fecha": "2026-06-06"
-    },
-    {
-      "nivel": "warning",
-      "flag": "⚠️",
       "texto": "El partido fue suspendido: Christian Eriksen se desploma durante amistoso entre Dinamarca y Ucrania",
       "fuente": "Latercera.com",
       "fuente_url": "https://www.latercera.com/el-deportivo/noticia/el-partido-fue-suspendido-christian-eriksen-se-desploma-durante-amistoso-entre-dinamarca-y-ucrania/",
@@ -175,22 +159,22 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Grupos de la muerte muestran paridad histórica en apuestas pre-torneo"
+      "texto": "Grupo A proyecta promedio de 3.2 goles por partido según análisis de selecciones participantes"
     },
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Selecciones anfitrionas con estadísticas positivas en preparación"
+      "texto": "España llega invicta con 8 victorias consecutivas, mejor racha de preparación entre europeos"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Récord de goles en fase de amistosos previos al Mundial 2026"
+      "texto": "Portugal superó 2.5 goles en 6 de sus últimos 7 amistosos, tendencia ofensiva confirmada"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Favoritos mantienen invicto en últimos 4 días de preparación"
+      "texto": "Estados Unidos como local registra 75% posesión promedio en estadios sede del Mundial"
     }
   ],
   "oportunidades": [

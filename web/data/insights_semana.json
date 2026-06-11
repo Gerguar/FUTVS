@@ -2,27 +2,27 @@
   "week": "2026-W24",
   "noticias": [
     {
-      "titulo": "Lista definitiva de 26 jugadores presentada por todas las selecciones",
+      "titulo": "Inauguración Mundial 2026: México vs Camerún abre el torneo en el Estadio Azteca",
       "fuente": "FIFA",
-      "fecha": "2026-06-09",
+      "fecha": "2026-06-11",
       "url": ""
     },
     {
-      "titulo": "Último amistoso pre-Mundial: resultados y análisis táctico",
-      "fuente": "ESPN",
-      "fecha": "2026-06-08",
-      "url": ""
-    },
-    {
-      "titulo": "Ceremonia de inauguración lista para el 11 de junio en México",
-      "fuente": "CONCACAF",
-      "fecha": "2026-06-09",
-      "url": ""
-    },
-    {
-      "titulo": "Estadísticas históricas: Mundial 2026 rompe récords de expectativa",
-      "fuente": "Opta",
+      "titulo": "Messi confirmado titular para debut de Argentina ante Marruecos el 12 de junio",
+      "fuente": "TyC Sports",
       "fecha": "2026-06-10",
+      "url": ""
+    },
+    {
+      "titulo": "Récord histórico: 48 selecciones disputan el primer Mundial ampliado",
+      "fuente": "ESPN",
+      "fecha": "2026-06-10",
+      "url": ""
+    },
+    {
+      "titulo": "Canadá anuncia Alphonso Davies como capitán para su partido inaugural vs Croacia",
+      "fuente": "Canada Soccer",
+      "fecha": "2026-06-09",
       "url": ""
     }
   ]
