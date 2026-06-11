@@ -35,7 +35,14 @@ ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 # Con web_search_20260209 (dynamic filtering) las tendencias y xg_performance
 # se basan en data REAL del web, no inventada.
 CLAUDE_MODEL   = "claude-haiku-4-5"
-WEB_SEARCH_TOOL = {"type": "web_search_20260209", "name": "web_search"}
+# Haiku 4.5 NO soporta programmatic tool calling (dynamic filtering), que es
+# el default de web_search_20260209. Hay que forzar allowed_callers=["direct"]
+# para que el tool se llame de forma directa (sin codigo intermedio).
+WEB_SEARCH_TOOL = {
+    "type": "web_search_20260209",
+    "name": "web_search",
+    "allowed_callers": ["direct"],
+}
 
 
 # ── Debug helper ─────────────────────────────────────────────────────────────
