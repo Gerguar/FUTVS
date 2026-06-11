@@ -195,27 +195,61 @@ REGLAS ESTRICTAS:
 - Usá la herramienta web_search para verificar datos, NO inventes nada."""
 
     print("[insights] llamando a Claude con web search...", flush=True)
-    raw = claude_with_search(prompt, max_tokens=2000)
+    raw = claude_with_search(prompt, max_tokens=4000)
 
     if not raw:
         return {}
 
-    # Limpiar posibles backticks de markdown
-    raw = raw.strip()
-    if raw.startswith("```"):
-        raw = raw.split("```")[1]
-        if raw.startswith("json"):
-            raw = raw[4:]
-    raw = raw.strip().rstrip("```").strip()
-
-    try:
-        data = json.loads(raw)
-        print("[insights] respuesta de Claude parseada correctamente", flush=True)
-        return data
-    except json.JSONDecodeError as e:
-        print(f"[insights] error parseando JSON de Claude: {e}")
-        print(f"[insights] raw (primeros 500): {raw[:500]}")
+    # Extraccion robusta: Haiku con web_search escribe prosa narrativa
+    # ("Voy a buscar...") antes y/o despues del JSON. Buscamos el primer
+    # '{' y el ultimo '}' balanceados y parseamos ese substring.
+    data = _extract_json_object(raw)
+    if data is None:
+        print(f"[insights] error parseando JSON de Claude (raw primeros 500): {raw[:500]}", flush=True)
+        _write_debug({
+            "kind": "json_parse_error", "model": CLAUDE_MODEL,
+            "raw_first_2000": raw[:2000],
+        })
         return {}
+    print("[insights] respuesta de Claude parseada correctamente", flush=True)
+    return data
+
+
+def _extract_json_object(text: str) -> dict | None:
+    """Encuentra y parsea el primer objeto JSON balanceado en `text`.
+
+    Tolera prosa antes/despues, bloques markdown ```json...```, y devuelve
+    None si no encuentra JSON parseable.
+    """
+    if not text:
+        return None
+    # Caso 1: bloque markdown ```json ... ```
+    import re
+    m = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
+    if m:
+        try: return json.loads(m.group(1))
+        except json.JSONDecodeError: pass
+    # Caso 2: buscar el primer '{' y matchear con su '}' balanceado
+    start = text.find("{")
+    while start != -1:
+        depth = 0
+        in_str = False
+        esc = False
+        for i in range(start, len(text)):
+            c = text[i]
+            if esc: esc = False; continue
+            if c == "\\": esc = True; continue
+            if c == '"' and not esc: in_str = not in_str
+            if in_str: continue
+            if c == "{": depth += 1
+            elif c == "}":
+                depth -= 1
+                if depth == 0:
+                    candidate = text[start:i+1]
+                    try: return json.loads(candidate)
+                    except json.JSONDecodeError: break
+        start = text.find("{", start + 1)
+    return None
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 def load_predictions() -> dict:
