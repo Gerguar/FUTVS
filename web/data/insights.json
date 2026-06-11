@@ -127,7 +127,24 @@
       "texto": "España vulnerada vs Irak (1-1) sin Yamal ni Williams: Roja se espera mayor productividad"
     }
   ],
-  "alertas": [],
+  "alertas": [
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Abde se luce y luego cae lesionado en el último amistoso de Marruecos antes del Mundial",
+      "fuente": "Www.abc.es",
+      "fuente_url": "https://www.abc.es/deportes/alfinaldelapalmera/noticias-betis/abde-luce-cae-lesionado-ultimo-amistoso-marruecos-20260607224312-nts.html",
+      "fecha": "2026-06-07"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "El partido fue suspendido: Christian Eriksen se desploma durante amistoso entre Dinamarca y Ucrania",
+      "fuente": "Latercera.com",
+      "fuente_url": "https://www.latercera.com/el-deportivo/noticia/el-partido-fue-suspendido-christian-eriksen-se-desploma-durante-amistoso-entre-dinamarca-y-ucrania/",
+      "fecha": "2026-06-07"
+    }
+  ],
   "tendencias": [
     {
       "tipo": "over",
