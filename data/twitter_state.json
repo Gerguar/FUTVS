@@ -10,6 +10,10 @@
     "74": {
       "tweet_id": "2065191902828441955",
       "klass": "acertado"
+    },
+    "75": {
+      "tweet_id": "2065409534454124648",
+      "klass": "ajustado"
     }
   },
   "postmortem_miss_counter": 0,
