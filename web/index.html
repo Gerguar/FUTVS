@@ -1236,6 +1236,21 @@ button,a{touch-action:manipulation}
   </div>
 </div>
 <!-- /FACTS SECTION -->
+<!-- SELECCIONES MUNDIAL -->
+<div style="position:relative;z-index:1;padding:3rem 1.5rem;border-top:1px solid rgba(255,255,255,.06)">
+  <div style="max-width:1100px;margin:0 auto">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--green);text-transform:uppercase;font-weight:700;margin-bottom:.5rem">🌍 Mundial 2026</div>
+    <h2 style="font-size:1.5rem;font-weight:900;letter-spacing:-.5px;color:#fff;margin-bottom:.4rem">Selecciones clasificadas</h2>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:1.8rem">Análisis estadístico, Elo rating y plantilla de cada selección</p>
+    <div id="selecciones-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem">
+      <div style="color:var(--faint);font-size:.8rem;padding:1rem">Cargando...</div>
+    </div>
+    <div style="margin-top:1.2rem">
+      <a href="/selecciones" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--green);font-weight:700">Ver todas →</a>
+    </div>
+  </div>
+</div>
+<!-- /SELECCIONES MUNDIAL -->
   <!-- CTA -->
   <!-- FOOTER -->
   <footer style="position:relative;z-index:1;background:#050709;border-top:1px solid var(--border);padding:3rem 3rem 2rem">
@@ -5179,6 +5194,33 @@ window.copiarLinkComparador = function(btn, a, b, slugA, slugB) {
     }, 2000)
   })
 }
+
+// ── Selecciones Mundial home ──────────────────────────────────────────────
+async function loadSeleccionesHome() {
+  const grid = document.getElementById('selecciones-grid')
+  if (!grid) return
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/selecciones_elo?select=code,nombre,elo,ranking&order=ranking.asc&limit=32`, {
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
+    })
+    const data = await r.json()
+    if (!data || !data.length) { grid.innerHTML = '<div style="color:var(--faint);font-size:.8rem">Sin datos</div>'; return }
+    grid.innerHTML = data.map(s => {
+      const slug = s.nombre.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+      const elo = s.elo || ''
+      return `<a href="/seleccion/${slug}" style="display:flex;flex-direction:column;gap:.35rem;padding:.75rem 1rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;text-decoration:none;transition:all .15s;cursor:pointer"
+        onmouseover="this.style.background='rgba(34,197,94,.07)';this.style.borderColor='rgba(34,197,94,.25)'"
+        onmouseout="this.style.background='rgba(255,255,255,.03)';this.style.borderColor='rgba(255,255,255,.07)'">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--faint)">#${s.ranking}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--green)">${elo}</span>
+        </div>
+        <div style="font-weight:700;font-size:.85rem;color:#e8eaed;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.nombre}</div>
+      </a>`
+    }).join('')
+  } catch(e) { grid.innerHTML = '<div style="color:var(--faint);font-size:.8rem">Error al cargar</div>' }
+}
+loadSeleccionesHome()
 window.trackShare = function(tipo, a, b) {
   trackEvent('compartir_partido', { tipo, a: a || '', b: b || '' })
 }
