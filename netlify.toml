@@ -1,0 +1,25 @@
+[build]
+  publish = "web"
+  command = ""
+
+[[headers]]
+  for = "/predictions.json"
+  [headers.values]
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Páginas estáticas de selecciones — servir directo desde web/selecciones/
+[[redirects]]
+  from = "/seleccion/:slug"
+  to   = "/selecciones/:slug.html"
+  status = 200
+
+[[redirects]]
+  from = "/selecciones"
+  to   = "/selecciones/index.html"
+  status = 200

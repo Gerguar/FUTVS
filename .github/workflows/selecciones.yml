@@ -1,0 +1,35 @@
+name: Selecciones Mundial 2026
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * 1'   # lunes 04:00 UTC (datos estables)
+  push:
+    paths:
+      - 'src/generate_selecciones.py'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generar páginas de selecciones
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python src/generate_selecciones.py
+
+      - name: Commit páginas generadas
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/selecciones/
+          git diff --cached --quiet && echo "Sin cambios" || \
+            git commit -m "chore: regenerar páginas selecciones Mundial 2026 [skip ci]"
+          git push
