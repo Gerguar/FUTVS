@@ -20,3 +20,8 @@ compare_3_models.py
 data/toss_ups_analysis.csv
 # Backups locales de modelos previos al re-train (safety net, no van al repo)
 data/models_backup_*/
+
+# Docs operativos (solo local, no en repo publico)
+HANDOFF.md
+SUPABASE_SETUP.md
+HOSTINGER_DEPLOY.md
