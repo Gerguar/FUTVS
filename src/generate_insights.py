@@ -496,17 +496,34 @@ ALERTA_QUERIES = [
 # Mapeo keyword -> nivel + flag (orden importa: las criticas primero)
 ALERTA_KEYWORDS = [
     # (keyword en titulo lowercase, nivel, flag emoji)
+    # ── Pre-torneo: lesion antes del Mundial (vocabulario "se pierde X") ──
     ("se pierde el mundial",  "critical", "🚨"),
     ("descartado del mundial","critical", "🚨"),
     ("fuera del mundial",     "critical", "🚨"),
     ("rotura de ligament",    "critical", "🚨"),
-    ("operad",                "critical", "🚨"),  # operado/operada/operada
+    ("operad",                "critical", "🚨"),  # operado/operada
     ("baja confirmada",       "critical", "🚨"),
     ("baja para el mundial",  "critical", "🚨"),
     ("queda fuera",           "critical", "🚨"),
     ("se perdera el mundial", "critical", "🚨"),
     ("no jugara el mundial",  "critical", "🚨"),
     ("lesion grave",          "critical", "🚨"),
+    # ── Durante el torneo: lesion en partido (agregado 12-jun-2026) ──
+    ("desgarro durante",      "critical", "🚨"),
+    ("fractura",              "critical", "🚨"),
+    ("cirugia",               "critical", "🚨"),
+    ("se retiro lesionado",   "warning",  "⚠️"),
+    ("salio lesionado",       "warning",  "⚠️"),
+    ("sustituido por lesion", "warning",  "⚠️"),
+    ("cambio por lesion",     "warning",  "⚠️"),
+    ("abandono el campo",     "warning",  "⚠️"),
+    ("se lesiono",            "warning",  "⚠️"),
+    ("pinchazo",              "warning",  "⚠️"),
+    ("molestia muscular",     "info",     "🔍"),
+    ("en duda para",          "info",     "🔍"),
+    ("trabaja al margen",     "info",     "🔍"),
+    ("entrenamiento diferenciado", "info","🔍"),
+    # ── Generales (pueden disparar pre o durante torneo) ──
     ("rotura",                "warning",  "⚠️"),
     ("desgarro",              "warning",  "⚠️"),
     ("lesionado",             "warning",  "⚠️"),
@@ -515,6 +532,7 @@ ALERTA_KEYWORDS = [
     ("sancion",               "warning",  "⚠️"),
     ("suspendido",            "warning",  "⚠️"),
     ("amarillas",             "warning",  "⚠️"),
+    ("expulsado",             "warning",  "⚠️"),
     ("convocatoria",          "info",     "🔍"),
     ("convocados",            "info",     "🔍"),
     ("lista de",              "info",     "🔍"),
@@ -592,6 +610,12 @@ def _clasificar_alerta(titulo: str, descripcion: str = "") -> tuple[str, str] | 
         # Roles deportivos clave
         "seleccion", "selección", "convocatoria", "convocado", "convocados",
         "amistoso", "amistosos", "eliminatorias", "eliminatoria",
+        # Mundial en curso (agregado 12-jun-2026, kickoff fue 11-jun)
+        "grupo a", "grupo b", "grupo c", "grupo d", "grupo e", "grupo f",
+        "grupo g", "grupo h", "grupo i", "grupo j", "grupo k", "grupo l",
+        "octavos", "cuartos", "semifinal", "tercer puesto",
+        "primer partido", "segundo partido", "tercer partido",
+        "debut mundial", "debutó", "debuto",
         # Nombres jugadores top
         "cristiano ronaldo", "messi", "mbappe", "mbappé", "haaland",
         "vinicius", "vinícius", "lamine yamal", "bellingham", "pedri",
