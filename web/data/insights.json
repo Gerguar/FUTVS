@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-11T14:29:26.012733+00:00",
-  "dato_curioso": "Ninguna selección que llegó al Mundial en 1er lugar del ranking FIFA logró ganar la Copa (tendencia histórica que preocupa a Argentina, líder actual)",
+  "generated_at_utc": "2026-06-12T00:09:23.413805+00:00",
+  "dato_curioso": "Bélgica liderada por Doku (Manchester City) goleó 5-0 a Túnez con 65.8% posesión en preparación",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -117,14 +117,14 @@
   ],
   "xg_performance": [
     {
-      "tipo": "sobre",
-      "flag": "🔥",
-      "texto": "Bélgica goleó 5-0 a Túnez mostrando efectividad ofensiva y control del juego antes del torneo"
-    },
-    {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "España empató 1-1 con Irak en amistoso previo, rendimiento algo decepcionante vs expectativas"
+      "texto": "Francia dominó 80% posesión vs Costa Marfil pero xG 0.88 vs 1.31 rival"
+    },
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Bélgica 27 disparos vs Túnez con 12 a portería, efectividad máxima"
     }
   ],
   "alertas": [],
@@ -132,17 +132,22 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Francia domina probabilidades con 16-18% según IA; Argentina 14-16%; España 12-14% de título"
+      "texto": "Alemania 9 victorias consecutivas, domina amistosos con 100% efectividad"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Noruega termina clasificación con mejor diferencia de goles ajustada (+3.0) de todos los equipos"
+      "texto": "España favorita 16.3% vs Francia 12.4% según Opta, lideran predicciones"
     },
     {
       "tipo": "other",
-      "flag": "⚡",
-      "texto": "Inglaterra sin goles en contra en 8 partidos clasificatorios; defensa más sólida de UEFA en fase previa"
+      "flag": "⚠️",
+      "texto": "8 selecciones sufren bajas críticas: Brasil, Argentina, Alemania, Países Bajos"
+    },
+    {
+      "tipo": "other",
+      "flag": "🏆",
+      "texto": "Argentina invicta 2-0, 3-0 amistosos. Messi recuperado, equipo en forma"
     }
   ],
   "oportunidades": [
@@ -150,9 +155,9 @@
       "partido": "Portugal vs RD del Congo",
       "competition": "Mundial 2026",
       "apuesta": "Empate",
-      "p_modelo": 29.5,
-      "p_mercado": 17.0,
-      "edge": 12.5,
+      "p_modelo": 29.4,
+      "p_mercado": 16.6,
+      "edge": 12.8,
       "xg_home": 1.08,
       "xg_away": null,
       "kickoff": "2026-06-17T17:00:00"
