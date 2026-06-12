@@ -4242,9 +4242,9 @@ async function renderComparador() {
 
   let html = `<div style="background:${bgGradient};border-radius:16px;padding:1.2rem;margin-bottom:.5rem;transition:background .4s ease">
   <div class="comp-header">
-    <div class="comp-team-header">${flagOrCrest(eqA)}<span>${htmlEsc(eqA.nombre)}</span></div>
+    <a href="/seleccion/${NavRouter.slugify(eqA.nombre)}" onclick="event.preventDefault();nav('/seleccion/'+NavRouter.slugify(eqA.nombre))" class="comp-team-header" style="text-decoration:none;cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">${flagOrCrest(eqA)}<span>${htmlEsc(eqA.nombre)}</span></a>
     <div class="comp-vs">VS</div>
-    <div class="comp-team-header">${flagOrCrest(eqB)}<span>${htmlEsc(eqB.nombre)}</span></div>
+    <a href="/seleccion/${NavRouter.slugify(eqB.nombre)}" onclick="event.preventDefault();nav('/seleccion/'+NavRouter.slugify(eqB.nombre))" class="comp-team-header" style="text-decoration:none;cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">${flagOrCrest(eqB)}<span>${htmlEsc(eqB.nombre)}</span></a>
   </div>`
 
   for (const r of rows) {
@@ -5090,7 +5090,7 @@ const NavRouter = {
   }
 }
 // Wrapper para los enlaces del nav: pushea la URL y dispara la vista.
-function nav(path) { NavRouter.push(path); NavRouter.parse() }
+function nav(path) { if (path.startsWith('/seleccion/')) { window.location.href = path; return; } NavRouter.push(path); NavRouter.parse() }
 
 // ── Meta tags dinamicos por ruta (SEO + previews sociales) ─────────────────
 // Para SPA: cuando el usuario navega entre vistas, actualiza title +
