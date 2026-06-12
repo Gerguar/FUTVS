@@ -16,7 +16,7 @@ de `web/` en una rama separada llamada `hostinger`.
 En hPanel, si usas "App web de Node.js" / "Importar desde Git":
 
 1. Conectar GitHub con Hostinger.
-2. Elegir el repo `Gerguar/FUTVS`.
+2. Elegir el repo `Gerguar/ProyectoGerguar1`.
 3. Seleccionar la rama `hostinger`.
 4. Comando de inicio: `npm start` o `node server.js`.
 5. Directorio/app root: raiz del repo (`/`) si Hostinger lo pregunta.

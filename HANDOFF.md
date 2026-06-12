@@ -12,7 +12,7 @@
 
 - **Usuario**: Facu (proyectos.gerguar@gmail.com). Habla español rioplatense, prefiere respuestas honestas y técnicas sin sobreingeniería. Valora "auto mode" — avanzar sin pedir confirmación constante salvo decisiones estratégicas.
 - **Sitio**: pronósticos H/D/A para partidos del Mundial + 5 grandes ligas, comparador de equipos, insights con Claude + NewsAPI, ranking de jugadores, perfiles individuales.
-- **Repo**: `Gerguar/FUTVS` (GitHub) — **PRIVADO** desde 6-jun-2026.
+- **Repo**: `Gerguar/ProyectoGerguar1` (GitHub) — renombrado 12-jun-2026 (antes `FUTVS`).
 - **Hosting**: Hostinger Business via FTP (auto-deploy en push a `web/**`).
 - **Branch principal**: `main`.
 
@@ -371,7 +371,7 @@ Cuando tengas el contexto cargado decime "OK, listo" y arranco con
 
 ## 19. DATOS DE CONTACTO
 
-- GitHub: `Gerguar/FUTVS` (privado)
+- GitHub: `Gerguar/ProyectoGerguar1` (renombrado desde `FUTVS`)
 - Supabase project: en `.env` (no compartir)
 - Hostinger: FTP en GitHub secrets, plan Business
 - Anthropic API: `console.anthropic.com/settings/billing`
