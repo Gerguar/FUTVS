@@ -23,3 +23,9 @@
   from = "/selecciones"
   to   = "/selecciones/index.html"
   status = 200
+
+# SPA catch-all — debe ir ÚLTIMO
+[[redirects]]
+  from = "/*"
+  to   = "/index.html"
+  status = 200
