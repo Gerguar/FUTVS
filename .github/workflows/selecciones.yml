@@ -3,7 +3,7 @@ name: Selecciones Mundial 2026
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 4 * * 1'   # lunes 04:00 UTC (datos estables)
+    - cron: '0 4 * * 1'
   push:
     paths:
       - 'src/generate_selecciones.py'
@@ -11,6 +11,8 @@ on:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
