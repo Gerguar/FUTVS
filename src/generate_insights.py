@@ -523,6 +523,12 @@ ALERTA_KEYWORDS = [
     ("en duda para",          "info",     "🔍"),
     ("trabaja al margen",     "info",     "🔍"),
     ("entrenamiento diferenciado", "info","🔍"),
+    # ── Especificas de fútbol con frases compuestas (saltan filtro ANCLAS) ──
+    ("se baja del mundial",   "critical", "🚨"),
+    ("baja del mundial",      "critical", "🚨"),
+    ("lesion de rodilla",     "warning",  "⚠️"),
+    ("lesion muscular",       "warning",  "⚠️"),
+    ("lesion en el",          "warning",  "⚠️"),  # "lesion en el ligamento/muslo/etc"
     # ── Generales (pueden disparar pre o durante torneo) ──
     ("rotura",                "warning",  "⚠️"),
     ("desgarro",              "warning",  "⚠️"),
@@ -538,6 +544,20 @@ ALERTA_KEYWORDS = [
     ("lista de",              "info",     "🔍"),
     ("en duda",               "info",     "🔍"),
 ]
+
+# Keywords que YA garantizan contexto futbol — no requieren el filtro ANCLAS.
+# Ej: "operado en Madrid" no tiene anclas explicitas pero es claramente futbol.
+KEYWORDS_AUTO_FUTBOL = {
+    "se pierde el mundial", "descartado del mundial", "fuera del mundial",
+    "rotura de ligament", "operad", "baja confirmada", "baja para el mundial",
+    "queda fuera", "se perdera el mundial", "no jugara el mundial",
+    "lesion grave", "desgarro durante", "fractura", "cirugia",
+    "se retiro lesionado", "salio lesionado", "sustituido por lesion",
+    "cambio por lesion", "abandono el campo", "se lesiono",
+    "se baja del mundial", "baja del mundial",
+    "lesion de rodilla", "lesion muscular", "lesion en el",
+    "rotura", "desgarro",
+}
 
 # Anti-falso-positivo: si el titulo o descripcion menciona DEPORTES NO-FUTBOL,
 # se descarta aunque tenga "lesion" o "baja".
@@ -588,12 +608,21 @@ def _clasificar_alerta(titulo: str, descripcion: str = "") -> tuple[str, str] | 
 
     # 3. Buscar keyword de alerta.
     matched = None
+    matched_kw = None
     for kw, nivel, flag in ALERTA_KEYWORDS:
         if kw in t:
             matched = (nivel, flag)
+            matched_kw = kw
             break
     if matched is None:
         return None
+
+    # 3.5. Si la keyword matched ya implica contexto de futbol/lesion
+    # (ej: "operad", "rotura de ligament", "se baja del mundial"), saltar
+    # el filtro ANCLAS que es demasiado restrictivo y rechaza casos
+    # validos como "Diego Lopez operado en Madrid".
+    if matched_kw in KEYWORDS_AUTO_FUTBOL:
+        return matched
 
     # 4. Filtro de relevancia FUERTE: solo terminos que aseguran contexto futbol.
     # Los nombres de paises solos (España, Francia) NO sirven porque aparecen
@@ -779,9 +808,6 @@ def build_alertas_from_newsapi() -> list[dict]:
             clas = _clasificar_alerta(titulo, desc)
             if not clas:
                 total_sin_keyword += 1
-                # Debug temporal (12-jun-2026): loguear titulares descartados
-                # por sin_keyword para diagnosticar que vocabulario usan.
-                print(f"[debug-sin-kw] {titulo[:120]}", flush=True)
                 continue
             nivel, flag = clas
             seen_urls.add(url)
