@@ -1106,14 +1106,14 @@ button,a{touch-action:manipulation}
     <div class="hero-bg"></div><div class="hero-overlay"></div>
     <div class="hero-inner">
       <div class="cmp-card" style="text-align:center;width:231px;margin-left:-30px">
-        <div style="font-family:'Inter',sans-serif;font-size:1.08rem;font-weight:800;color:#e8eaed;line-height:1.25;margin:.15rem 0 1rem">Tu pron&#243;stico,<br><span style="color:#22c55e">tu Mundial.</span></div>
+        <div style="font-family:'Inter',sans-serif;font-size:1.08rem;font-weight:800;color:#e8eaed;line-height:1.25;margin:.15rem 0 1rem">Final del<br><span style="color:#f59e0b">Mundial 2026</span></div>
         <div id="wc-countdown" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;text-align:center">
           <div><div class="wc-num" style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:900;color:#22c55e;line-height:1">--</div><div style="font-size:.52rem;color:#6b7280;font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-top:.2rem">D&#205;AS</div></div>
           <div><div class="wc-num" style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:900;color:#22c55e;line-height:1">--</div><div style="font-size:.52rem;color:#6b7280;font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-top:.2rem">HS</div></div>
           <div><div class="wc-num" style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:900;color:#22c55e;line-height:1">--</div><div style="font-size:.52rem;color:#6b7280;font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-top:.2rem">MIN</div></div>
           <div><div class="wc-num" style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:900;color:#22c55e;line-height:1">--</div><div style="font-size:.52rem;color:#6b7280;font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-top:.2rem">SEG</div></div>
         </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;color:#4b5563;text-align:center;margin-top:.85rem;letter-spacing:.5px">11 JUN 2026 &middot; M&#201;XICO &#127474;&#127485; vs SUD&#193;FRICA &#127487;&#127462;</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;color:#4b5563;text-align:center;margin-top:.85rem;letter-spacing:.5px">19 JUL 2026 &middot; FINAL &middot; METLIFE STADIUM &#127942;</div>
       </div>
       <div class="hero-center">
         <div class="hero-eyebrow">Análisis estadístico de fútbol</div>
@@ -1245,7 +1245,8 @@ button,a{touch-action:manipulation}
     <div id="selecciones-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem">
       <div style="color:var(--faint);font-size:.8rem;padding:1rem">Cargando...</div>
     </div>
-    <div style="margin-top:1.2rem">
+    <div style="margin-top:1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+      <div id="sel-pagination" style="display:flex;gap:.5rem;align-items:center"></div>
       <a href="/selecciones" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--green);font-weight:700">Ver todas →</a>
     </div>
   </div>
@@ -2195,7 +2196,7 @@ function currentSeasonShort() {
 // Contador hasta el Mundial 2026: arranca el 11/jun a las 19:00 UTC
 // (Mexico vs Sudafrica, partido inaugural).
 ;(function wcCountdown(){
-  const target = new Date('2026-06-11T19:00:00Z').getTime()
+  const target = new Date('2026-07-19T23:00:00Z').getTime()
   function update(){
     const wrap = document.getElementById('wc-countdown')
     if (!wrap) return
@@ -5196,31 +5197,60 @@ window.copiarLinkComparador = function(btn, a, b, slugA, slugB) {
 }
 
 // ── Selecciones Mundial home ──────────────────────────────────────────────
-async function loadSeleccionesHome() {
-  const grid = document.getElementById('selecciones-grid')
-  if (!grid) return
-  try {
-    const r = await fetch(`${SB_URL}/rest/v1/selecciones_elo?select=code,nombre,elo,ranking&order=ranking.asc&limit=32`, {
-      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
-    })
-    const data = await r.json()
-    if (!data || !data.length) { grid.innerHTML = '<div style="color:var(--faint);font-size:.8rem">Sin datos</div>'; return }
-    grid.innerHTML = data.map(s => {
-      const slug = s.nombre.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
-      const elo = s.elo || ''
+;(function() {
+  const PER_PAGE = 10
+  let _selData = [], _selPage = 0
+
+  function slugSel(nombre) {
+    return nombre.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+  }
+
+  function renderSelPage(page) {
+    _selPage = page
+    const grid = document.getElementById('selecciones-grid')
+    const pag  = document.getElementById('sel-pagination')
+    if (!grid) return
+    const slice = _selData.slice(page * PER_PAGE, (page + 1) * PER_PAGE)
+    grid.innerHTML = slice.map(s => {
+      const slug = slugSel(s.nombre)
       return `<a href="/seleccion/${slug}" style="display:flex;flex-direction:column;gap:.35rem;padding:.75rem 1rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;text-decoration:none;transition:all .15s;cursor:pointer"
         onmouseover="this.style.background='rgba(34,197,94,.07)';this.style.borderColor='rgba(34,197,94,.25)'"
         onmouseout="this.style.background='rgba(255,255,255,.03)';this.style.borderColor='rgba(255,255,255,.07)'">
         <div style="display:flex;align-items:center;justify-content:space-between">
           <span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--faint)">#${s.ranking}</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--green)">${elo}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--green)">${s.elo||''}</span>
         </div>
         <div style="font-weight:700;font-size:.85rem;color:#e8eaed;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.nombre}</div>
       </a>`
     }).join('')
-  } catch(e) { grid.innerHTML = '<div style="color:var(--faint);font-size:.8rem">Error al cargar</div>' }
-}
-loadSeleccionesHome()
+    const totalPages = Math.ceil(_selData.length / PER_PAGE)
+    if (pag) {
+      let btns = ''
+      for (let i = 0; i < totalPages; i++) {
+        const active = i === page
+        btns += `<button onclick="window._selGoPage(${i})" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:.3rem .65rem;border-radius:6px;border:1px solid ${active?'rgba(34,197,94,.5)':'rgba(255,255,255,.1)'};background:${active?'rgba(34,197,94,.12)':'transparent'};color:${active?'#22c55e':'#6b7280'};cursor:pointer;transition:all .15s">${i+1}</button>`
+      }
+      pag.innerHTML = btns
+    }
+  }
+
+  window._selGoPage = function(page) { renderSelPage(page) }
+
+  window.loadSeleccionesHome = async function() {
+    const grid = document.getElementById('selecciones-grid')
+    if (!grid) return
+    try {
+      const r = await fetch(`${SB_URL}/rest/v1/selecciones_elo?select=code,nombre,elo,ranking&order=ranking.asc&limit=100`, {
+        headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
+      })
+      _selData = await r.json()
+      if (!_selData || !_selData.length) { grid.innerHTML = '<div style="color:var(--faint);font-size:.8rem">Sin datos</div>'; return }
+      renderSelPage(0)
+    } catch(e) { grid.innerHTML = '<div style="color:var(--faint);font-size:.8rem">Error al cargar</div>' }
+  }
+
+  loadSeleccionesHome()
+})()
 window.trackShare = function(tipo, a, b) {
   trackEvent('compartir_partido', { tipo, a: a || '', b: b || '' })
 }
