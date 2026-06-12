@@ -4312,7 +4312,7 @@ async function renderComparador() {
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
       Telegram
     </a>
-    <button onclick="trackShare('copy',${_shA},${_shB});navigator.clipboard.writeText('https://futversus.com/comparador?a=${NavRouter.slugify(eqA.nombre)}&b=${NavRouter.slugify(eqB.nombre)}').then(()=>{this.textContent='✓ Copiado!';setTimeout(()=>{this.innerHTML='<svg width=\\'14\\' height=\\'14\\' viewBox=\\'0 0 24 24\\' fill=\\'currentColor\\'><path d=\\'M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\\'/></svg> Copiar link'},2000)})"
+    <button onclick="copiarLinkComparador(this,${_shA},${_shB},'${NavRouter.slugify(eqA.nombre)}','${NavRouter.slugify(eqB.nombre)}')"
       style="display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.1rem;border-radius:30px;
       background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#9ca3af;cursor:pointer;
       font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;transition:all .15s"
@@ -5144,6 +5144,17 @@ window.trackEvent = function(name, props) {
 // compartir_partido: helper invocado desde botones de compartir (WhatsApp,
 // X, Telegram, copiar link). Mantiene la firma cualquiera sea el contexto
 // (comparador, /partido/:slug, etc).
+
+window.copiarLinkComparador = function(btn, a, b, slugA, slugB) {
+  trackShare('copy', a, b)
+  const url = 'https://futversus.com/comparador?a=' + slugA + '&b=' + slugB
+  navigator.clipboard.writeText(url).then(function() {
+    btn.textContent = '✓ Copiado!'
+    setTimeout(function() {
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Copiar link'
+    }, 2000)
+  })
+}
 window.trackShare = function(tipo, a, b) {
   trackEvent('compartir_partido', { tipo, a: a || '', b: b || '' })
 }
