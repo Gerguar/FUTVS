@@ -779,6 +779,9 @@ def build_alertas_from_newsapi() -> list[dict]:
             clas = _clasificar_alerta(titulo, desc)
             if not clas:
                 total_sin_keyword += 1
+                # Debug temporal (12-jun-2026): loguear titulares descartados
+                # por sin_keyword para diagnosticar que vocabulario usan.
+                print(f"[debug-sin-kw] {titulo[:120]}", flush=True)
                 continue
             nivel, flag = clas
             seen_urls.add(url)
