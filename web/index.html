@@ -5239,20 +5239,23 @@ window.copiarLinkComparador = function(btn, a, b, slugA, slugB) {
   let _selShowAll = false
   window._selToggleAll = function() {
     _selShowAll = !_selShowAll
-    const grid = document.getElementById('selecciones-grid')
-    const pag  = document.getElementById('sel-pagination')
-    const btn  = document.getElementById('sel-toggle-all')
+    var grid = document.getElementById('selecciones-grid')
+    var pag  = document.getElementById('sel-pagination')
+    var btn  = document.getElementById('sel-toggle-all')
+    function mkCard(s) {
+      var slug = s.nombre.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+      return '<a href="/seleccion/'+slug+'" style="display:flex;flex-direction:column;gap:.35rem;padding:.75rem 1rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;text-decoration:none;transition:all .15s;cursor:pointer"'
+        +' onmouseover="this.style.background=\'rgba(34,197,94,.07)\';this.style.borderColor=\'rgba(34,197,94,.25)\'"'
+        +' onmouseout="this.style.background=\'rgba(255,255,255,.03)\';this.style.borderColor=\'rgba(255,255,255,.07)\'">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between">'
+        +'<span style="font-family:\'JetBrains Mono\',monospace;font-size:.6rem;color:var(--faint)">#'+s.ranking+'</span>'
+        +'<span style="font-family:\'JetBrains Mono\',monospace;font-size:.6rem;color:var(--green)">'+(s.elo||'')+'</span>'
+        +'</div>'
+        +'<div style="font-weight:700;font-size:.85rem;color:#e8eaed;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+s.nombre+'</div>'
+        +'</a>'
+    }
     if (_selShowAll) {
-      const slug = (nombre) => nombre.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
-      grid.innerHTML = _selData.map(s => `<a href="/seleccion/${slug(s.nombre)}" style="display:flex;flex-direction:column;gap:.35rem;padding:.75rem 1rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;text-decoration:none;transition:all .15s;cursor:pointer"
-        onmouseover="this.style.background='rgba(34,197,94,.07)';this.style.borderColor='rgba(34,197,94,.25)'"
-        onmouseout="this.style.background='rgba(255,255,255,.03)';this.style.borderColor='rgba(255,255,255,.07)'">
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--faint)">#\${s.ranking}</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--green)">\${s.elo||''}</span>
-        </div>
-        <div style="font-weight:700;font-size:.85rem;color:#e8eaed;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">\${s.nombre}</div>
-      </a>`).join('')
+      grid.innerHTML = _selData.map(mkCard).join('')
       if (pag) pag.innerHTML = ''
       if (btn) btn.textContent = 'Mostrar menos ↑'
     } else {
@@ -5261,6 +5264,7 @@ window.copiarLinkComparador = function(btn, a, b, slugA, slugB) {
       if (btn) btn.textContent = 'Ver todas →'
     }
   }
+
 
   window.loadSeleccionesHome = async function() {
     const grid = document.getElementById('selecciones-grid')
