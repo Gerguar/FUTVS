@@ -2,22 +2,28 @@
   "week": "2026-W24",
   "noticias": [
     {
-      "titulo": "⚡ Empate en Portugal vs RD del Congo — edge de +13pp vs mercado",
-      "fuente": "FutVS Modelo",
-      "fecha": "2026-06-12",
-      "url": ""
+      "titulo": "La dataguía MARCA de las 48 selecciones del Mundial 2026",
+      "fuente": "Marca",
+      "fecha": "2026-06-11",
+      "url": "https://www.marca.com/futbol/mundial/2026/06/11/dataguia-marca-48-selecciones-mundial-2026.html"
     },
     {
-      "titulo": "🎯 Alemania 9 victorias consecutivas, domina amistosos con 100% efectividad",
-      "fuente": "FutVS Análisis",
-      "fecha": "2026-06-12",
-      "url": ""
+      "titulo": "El premio de FIFA por ir al Mundial 2026: 300 millones para los clubes y 43 millones para el campeón",
+      "fuente": "Marca",
+      "fecha": "2026-06-11",
+      "url": "https://www.marca.com/sport-business/2playbook/2026/06/11/premio-fifa-mundial-2026-300-millones-clubes-43-millones-campeon.html"
     },
     {
-      "titulo": "📈 España favorita 16.3% vs Francia 12.4% según Opta, lideran predicciones",
-      "fuente": "FutVS Análisis",
-      "fecha": "2026-06-12",
-      "url": ""
+      "titulo": "El Mundial 2026 empieza hoy y trae algo más que fútbol: el mayor aparato de vigilancia en un evento deportivo",
+      "fuente": "Xataka.com",
+      "fecha": "2026-06-11",
+      "url": "https://www.xataka.com/seguridad/mundial-2026-empieza-hoy-trae-algo-que-futbol-mayor-aparato-vigilancia-evento-deportivo"
+    },
+    {
+      "titulo": "VIDEO: El emotivo agradecimiento de iraní a México por hospedar a su selección que nos puso la piel chinita",
+      "fuente": "Culturacolectiva.com",
+      "fecha": "2026-06-11",
+      "url": "https://culturacolectiva.com/entretenimiento/video-iran-mexico-ciudadano/"
     }
   ]
 }
