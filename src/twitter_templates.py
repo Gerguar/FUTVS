@@ -209,18 +209,28 @@ def tweet_postmortem(home_name: str, away_name: str,
     fh = flag_for(home_name)
     fa = flag_for(away_name)
 
-    # Cual fue el top-1?
-    probs = [(prob_local, f"{home_name} ({_round1(prob_local)}%)"),
-             (prob_empate, f"empate ({_round1(prob_empate)}%)"),
-             (prob_visitante, f"{away_name} ({_round1(prob_visitante)}%)")]
-    probs_sorted = sorted(probs, key=lambda x: -x[0])
-    top_str = probs_sorted[0][1]
+    # Detalle del pronostico segun la clasificacion:
+    # - ajustado  -> el modelo no marcaba un favorito claro.
+    # - resto     -> nombrar el top-1 (equipo o empate) y su probabilidad.
+    if klass == "ajustado":
+        detalle = "Nuestro pronóstico era un partido ajustado, probabilidades muy similares."
+    else:
+        # top-1: el outcome de mayor probabilidad (equipo o empate).
+        probs = [(prob_local, home_name),
+                 (prob_empate, None),  # None = empate
+                 (prob_visitante, away_name)]
+        probs_sorted = sorted(probs, key=lambda x: -x[0])
+        top_val, top_team = probs_sorted[0]
+        if top_team is None:
+            detalle = f"Dábamos como más probable el empate con el {_round1(top_val)}% de probabilidad."
+        else:
+            detalle = f"Dábamos como probable ganador a {top_team} con el {_round1(top_val)}% de probabilidad."
 
     return (
         f"{header} · {competicion}\n"
         f"{fh} {home_name} {goles_local}-{goles_visitante} {away_name} {fa}\n"
         f"\n"
-        f"Habíamos dado top-1: {top_str}\n"
+        f"{detalle}\n"
         f"\n"
         f"📊 Análisis detallado del partido en nuestra web - ↗ bio\n"
         f"{HASHTAGS}"
