@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-12T18:02:53.236657+00:00",
-  "dato_curioso": "Grupo A es el único con debut oficial: México vs Sudáfrica reedita final histórica 2010 (1-1 con bailes sudafricanos)",
+  "generated_at_utc": "2026-06-12T18:29:23.094888+00:00",
+  "dato_curioso": "Desde Qatar 2022 (16.5% jugadores lesionados) a 2026, las bajas confirmadas se DUPLICARON: calendario sobrecargado genera máximo histórico de lesiones pre-Mundial",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,12 +119,12 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "México goleó 5-0 a Serbia en preparación; Alemania ganó 9 consecutivos"
+      "texto": "México goleó 5-1 a Serbia: 4 asistencias directas + 2 autogoles, máximo rendimiento ofensivo"
     },
     {
-      "tipo": "bajo",
-      "flag": "📉",
-      "texto": "Países Bajos cayó 0-1 vs Argelia en casa; Francia perdió 2-1 con Costa de Marfil"
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Paraguay demolió Nicaragua 4-0. Colombia venció Jordania 2-0 con Jhon Arias estrella"
     }
   ],
   "alertas": [],
@@ -132,17 +132,22 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "España favorita 26% vs Brasil 8%: ratio 3.25x según Goldman Sachs"
+      "texto": "Ecuador: 19 partidos invictos (8V-11E), 17 goles + 6 en contra. 3ª mejor racha mundial"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "66 amistosos disputados (22 mayo-10 junio): 48 equipos se preparan intensamente"
+      "texto": "Alemania: 9 victorias consecutivas. Lidera forma pre-Mundial junto a España (30 invictos)"
     },
     {
       "tipo": "other",
-      "flag": "⚠️",
-      "texto": "8 selecciones con bajas: Argentina (11 jugadores lesionados), Brasil, Alemania y otros"
+      "flag": "📈",
+      "texto": "España favorita: 16.3% de probabilidades Opta. Francia 14.5%, Argentina 10.7%, Inglaterra 11.3%"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Argentina con 96.5% probabilidad de clasificar. Grupo J favorable vs Argelia, Austria, Jordania"
     }
   ],
   "oportunidades": [
