@@ -31,6 +31,13 @@ from .supabase_writer import sb_get, sb_post
 LIGA_SELECCIONES = 7      # 48 selecciones del Mundial 2026
 LIGA_OTRAS = 8            # rivales historicos no-Mundial (Zambia, Mauritania, ...)
 SINCE_DATE = "2025-01-01"
+# Excluir partidos del Mundial 2026 y posteriores: esos los maneja
+# ingest_wc2026.py con kickoff exacto desde football-data. Si dejamos que
+# este script los procese, mete duplicados por desfasaje de timezone:
+# martj42 da la fecha local (2026-06-11) y football-data da UTC
+# (2026-06-12T02:00:00Z), entonces el dedup por YYYY-MM-DD no matchea y
+# crea registros duplicados (bug detectado 13-jun-2026, ids 990/991).
+UNTIL_DATE = "2026-06-11"
 
 
 def build_name_to_id() -> dict[str, int]:
@@ -67,7 +74,11 @@ def main() -> None:
     df = df[df["date"] >= pd.to_datetime(args.since)]
     today = pd.Timestamp.now(tz="UTC").tz_localize(None)
     df = df[df["date"] <= today]
-    print(f"[partidos-sel] martj42 {args.since} → hoy: {len(df):,} partidos")
+    # Cortar antes del Mundial: esos los maneja ingest_wc2026.py. Si dejamos
+    # que martj42 los procese, mete duplicados por timezone (ver UNTIL_DATE
+    # arriba para detalles).
+    df = df[df["date"] < pd.to_datetime(UNTIL_DATE)]
+    print(f"[partidos-sel] martj42 {args.since} → {UNTIL_DATE} (excl): {len(df):,} partidos")
 
     en2id = build_name_to_id()
 
