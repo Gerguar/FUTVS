@@ -21,6 +21,10 @@
     "76": {
       "tweet_id": "2065543747220193462",
       "klass": "no_acertado"
+    },
+    "77": {
+      "tweet_id": "2065638205433524725",
+      "klass": "acertado"
     }
   },
   "postmortem_miss_counter": 1,
