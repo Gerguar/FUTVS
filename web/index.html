@@ -5249,7 +5249,7 @@ window.copiarLinkComparador = function(btn, a, b, slugA, slugB) {
       let btns = ''
       for (let i = 0; i < totalPages; i++) {
         const active = i === page
-        btns += `<button onclick="window._selGoPage(${i})" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;padding:.3rem .65rem;border-radius:6px;border:1px solid ${active?'rgba(34,197,94,.5)':'rgba(255,255,255,.1)'};background:${active?'rgba(34,197,94,.12)':'transparent'};color:${active?'#22c55e':'#6b7280'};cursor:pointer;transition:all .15s">${i+1}</button>`
+        btns += `<button onclick="window._selGoPage(${i})" style="font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;padding:.5rem .9rem;min-width:38px;border-radius:8px;border:1px solid ${active?'rgba(34,197,94,.5)':'rgba(255,255,255,.12)'};background:${active?'rgba(34,197,94,.12)':'rgba(255,255,255,.02)'};color:${active?'#22c55e':'#9ca3af'};cursor:pointer;transition:all .15s">${i+1}</button>`
       }
       pag.innerHTML = btns
     }
