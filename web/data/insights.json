@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-13T08:13:02.371054+00:00",
-  "dato_curioso": "Noruega sorprendió al superar a Italia en eliminatorias con 24 puntos y 8 victorias consecutivas, llevando a Haaland al primer Mundial",
+  "generated_at_utc": "2026-06-13T10:19:14.405476+00:00",
+  "dato_curioso": "Memo Ochoa disputará su sexta Copa del Mundo a los 39 años, último torneo antes de retirarse",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,17 +119,17 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "EE.UU. arrasó 4-1 a Paraguay: dominio total con efectividad letal en transiciones"
+      "texto": "México 1.41 xG vs 0.07 Sudáfrica: anfitrión dominó ampliamente en debut"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Colombia goleó 4-0 México: ocho goles en dos amistosos últimos con 100% efectividad"
+      "texto": "Brasil 2-1 Egipto: Endrick efectivo tras bajas ofensivas por lesión"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "España empató 1-1 Irak: rendimiento por debajo expectativas en último amistoso"
+      "texto": "Argentina lesionada: 11 de 26 jugadores con inconvenientes físicos en Honduras"
     }
   ],
   "alertas": [],
@@ -137,22 +137,22 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "España es favorita 26% (Goldman Sachs): 9 victorias seguidas + Eurocopa 2024 campeona"
+      "texto": "España favorita con 18% probabilidades (xG 2.47 por 90 min en últimos ciclos)"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Francia 19% probabilidades pero pierde Ekitike: goleador clave con rotura Aquiles confirmada"
+      "texto": "Grupo I (Francia-Senegal-Noruega-Irak): conflictivo con top-4 ranking promedio"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Argentina 96.5% pase grupos (Goldman Sachs): grupo J favorable pero campeones con menos datos"
+      "texto": "Brasil sin Neymar: ataque reconfigurado en torno a Vinícius Jr. para Mundial"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Alemania encadena 9 victorias: venció 2-1 EE.UU., perfil ofensivo en racha de invicto"
+      "texto": "8 selecciones afectadas por lesiones: Brasil, Alemania, Argentina, Escocia, Austria, Irak"
     }
   ],
   "oportunidades": [
