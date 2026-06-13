@@ -40,16 +40,24 @@ jobs:
           FTP_HOST: ${{ secrets.FTP_HOST }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        # Hard ceiling: si pasa 6 min total, abortar y dejar que el siguiente
+        # push reintente. Mejor que quedarse 30 min colgado (default 6h).
+        timeout-minutes: 6
         shell: bash
         run: |
-          for attempt in 1 2 3; do
-            echo "Intento FTP ${attempt}/3"
-            if lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" -p 21 "${FTP_HOST}" -e "
+          # 5 intentos con timeouts cortos. Si Hostinger no responde, falla
+          # rapido y reintentamos. Mejor que quedarse esperando 120s × reintentos
+          # internos × attempts (que hacia colgadas de 30+ min).
+          for attempt in 1 2 3 4 5; do
+            echo "Intento FTP ${attempt}/5"
+            # timeout 90s wrap externo: si lftp se cuelga, lo matamos.
+            if timeout 90 lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" -p 21 "${FTP_HOST}" -e "
               set ftp:ssl-allow no;
               set ftp:list-options -a;
-              set net:timeout 120;
-              set net:max-retries 5;
-              set net:reconnect-interval-base 5;
+              set net:timeout 25;
+              set net:max-retries 2;
+              set net:reconnect-interval-base 3;
+              set cmd:fail-exit yes;
               mirror --reverse --only-newer --verbose --parallel=1 \
                 --exclude-glob .git* \
                 --exclude-glob node_modules/ \
@@ -61,12 +69,13 @@ jobs:
               exit 0
             fi
 
-            if [[ "${attempt}" -lt 3 ]]; then
-              sleep $((attempt * 15))
+            echo "Intento ${attempt} fallo. Esperando antes de reintentar..."
+            if [[ "${attempt}" -lt 5 ]]; then
+              sleep $((attempt * 10))
             fi
           done
 
-          echo "La sincronizacion FTP fallo despues de tres intentos."
+          echo "La sincronizacion FTP fallo despues de cinco intentos."
           exit 1
 
       - name: Resumen
