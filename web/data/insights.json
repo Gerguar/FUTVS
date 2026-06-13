@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-13T16:13:11.804433+00:00",
-  "dato_curioso": "USA marcó 4 goles vs Paraguay el 12/6: máximo histórico en una partida mundialista (vs 3 anterior en 1930)",
+  "generated_at_utc": "2026-06-13T17:05:43.277133+00:00",
+  "dato_curioso": "Messi, Cristiano Ronaldo y Ochoa harán historia: serán los primeros en jugar 6 Mundiales",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,17 +119,17 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Corea del Sur (1.84 xG vs 2 goles): Superó expectativas ofensivas en su debut vs Chequia 2-1"
-    },
-    {
-      "tipo": "sobre",
-      "flag": "🔥",
-      "texto": "México (1.41 xG vs 2 goles): Máxima eficiencia defensiva vs Sudáfrica con 0.07 xGA permitido"
+      "texto": "Alemania domina con 9 victorias consecutivas, promedia 3.2 goles/partido"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "USA (0.98 xG amistoso) vs Alemania: Perdió 1-2 generando menos xG en prep del Mundial"
+      "texto": "Francia perdió vs Costa Marfil: actuó por debajo en 2da mitad"
+    },
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Colombia goleó 2-0 a Jordania con Jhon Arias en racha ofensiva"
     }
   ],
   "alertas": [
@@ -168,24 +168,19 @@
   ],
   "tendencias": [
     {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "EU pierde 9 partidos consecutivos vs europeos desde 2022: patrón preocupante"
+    },
+    {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "España, Francia, Inglaterra lideran con 15-18% probabilidades de ganar el torneo según modelos Opta"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "Alemania 2-1 a USA en amistoso: completó 9 victorias consecutivas rumbo al Mundial 2026"
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "35.9% de chances de que un campeón inédito gane; Brasil (6.1%) y Portugal (6.9%) resisten"
+      "texto": "289 jugadores (23%) representan selecciones ajenas a su país de nacimiento"
     },
     {
       "tipo": "other",
       "flag": "📊",
-      "texto": "Grupo A competitivo: México y Corea igualados 3pts diferencia goles; Sudáfrica debuta junio 18"
+      "texto": "Brechas generacionales extremas: 26 años entre mayor (43) y menor (17) jugador"
     }
   ],
   "oportunidades": [
