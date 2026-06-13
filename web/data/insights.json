@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-13T00:13:51.714708+00:00",
-  "dato_curioso": "México acumula brecha xG de 1.34 en inaugural vs Sudáfrica: una de las más amplias registradas en un primer partido mundialista.",
+  "generated_at_utc": "2026-06-13T08:13:02.371054+00:00",
+  "dato_curioso": "Noruega sorprendió al superar a Italia en eliminatorias con 24 puntos y 8 victorias consecutivas, llevando a Haaland al primer Mundial",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,17 +119,17 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Corea del Sur: 1.84 xG + 2 goles. Excelente eficiencia en jornada inaugural."
+      "texto": "EE.UU. arrasó 4-1 a Paraguay: dominio total con efectividad letal en transiciones"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "México: 1.41 xG + 2 goles vs Sudáfrica (0.07 xG). Dominio estadístico histórico."
+      "texto": "Colombia goleó 4-0 México: ocho goles en dos amistosos últimos con 100% efectividad"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Estados Unidos: 1 gol en amistoso vs Alemania. Solo 11 goles en 4 amistosos previos."
+      "texto": "España empató 1-1 Irak: rendimiento por debajo expectativas en último amistoso"
     }
   ],
   "alertas": [],
@@ -137,22 +137,22 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "España lidera odds (18.8%), seguida Francia (16.66%). 59% probabilidad en top 3."
+      "texto": "España es favorita 26% (Goldman Sachs): 9 victorias seguidas + Eurocopa 2024 campeona"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Alemania en racha: 9 victorias consecutivas antes del Mundial. Grupo E como favorita."
+      "texto": "Francia 19% probabilidades pero pierde Ekitike: goleador clave con rotura Aquiles confirmada"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Argentina con 8 lesionados (incluidos descartes). Messi ausente en amistosos de junio."
+      "texto": "Argentina 96.5% pase grupos (Goldman Sachs): grupo J favorable pero campeones con menos datos"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "48 selecciones compiten. 357 jugadores con experiencia vs 891 debutantes en el torneo."
+      "texto": "Alemania encadena 9 victorias: venció 2-1 EE.UU., perfil ofensivo en racha de invicto"
     }
   ],
   "oportunidades": [
