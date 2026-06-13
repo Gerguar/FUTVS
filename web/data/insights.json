@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-13T17:05:43.277133+00:00",
-  "dato_curioso": "Messi, Cristiano Ronaldo y Ochoa harán historia: serán los primeros en jugar 6 Mundiales",
+  "generated_at_utc": "2026-06-13T22:39:26.879470+00:00",
+  "dato_curioso": "España es favorita según IA (18% probabilidades), superando Argentina campeona mundial con +1.12% en predicciones 2026",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,17 +119,12 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Alemania domina con 9 victorias consecutivas, promedia 3.2 goles/partido"
+      "texto": "Brasil goleó 6-2 a Panamá (31 may): 6 goles en aprovechamiento letal vs rival débil"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Francia perdió vs Costa Marfil: actuó por debajo en 2da mitad"
-    },
-    {
-      "tipo": "sobre",
-      "flag": "🔥",
-      "texto": "Colombia goleó 2-0 a Jordania con Jhon Arias en racha ofensiva"
+      "texto": "España empató 1-1 vs Irak pero ganó 3-1 vs Perú: rendimiento irregular pre-torneo"
     }
   ],
   "alertas": [
@@ -168,19 +163,19 @@
   ],
   "tendencias": [
     {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "EU pierde 9 partidos consecutivos vs europeos desde 2022: patrón preocupante"
-    },
-    {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "289 jugadores (23%) representan selecciones ajenas a su país de nacimiento"
+      "texto": "Portugal 1.72 xG/partido (mejor ofensiva en amistosos), vence 2-1 a Nigeria"
     },
     {
       "tipo": "other",
-      "flag": "📊",
-      "texto": "Brechas generacionales extremas: 26 años entre mayor (43) y menor (17) jugador"
+      "flag": "📈",
+      "texto": "Colombia cerró preparación ganando 2-0 vs Jordania: equipo en racha defensiva sólida"
+    },
+    {
+      "tipo": "other",
+      "flag": "⚠️",
+      "texto": "Argentina con 75% victorias en últimos 20 partidos; balance +1.14 xG por encuentro"
     }
   ],
   "oportunidades": [
