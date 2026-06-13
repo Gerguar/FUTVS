@@ -30,69 +30,44 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Sync web/ a Hostinger via FTP
-        id: ftp_primary
-        continue-on-error: true
-        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./web/
-          # Ruta activa de la app Node.js dentro de la cuenta FTP.
-          server-dir: ./domains/futversus.com/nodejs/
-          protocol: ftp
-          port: 21
-          log-level: verbose
-          timeout: 120000
-          # Cambio el state-name para forzar resync. El default era
-          # .ftp-deploy-sync-state.json y se quedo con la version vieja del
-          # .htaccess (creia que estaba sincronizado cuando no). Con un nombre
-          # nuevo, la action re-evalua todos los archivos desde cero.
-          state-name: .ftp-deploy-sync-state-v2.json
-          # No borra archivos extra en el servidor, solo sube los nuestros.
-          dangerous-clean-slate: false
-          # Excluye basura que no debe ir al hosting.
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/.DS_Store
-
-      - name: Esperar antes del reintento
-        if: steps.ftp_primary.outcome == 'failure'
-        run: sleep 15
-
-      - name: Reintentar sync web/ a Hostinger via FTP
-        id: ftp_retry
-        if: steps.ftp_primary.outcome == 'failure'
-        continue-on-error: true
-        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./web/
-          server-dir: ./domains/futversus.com/nodejs/
-          protocol: ftp
-          port: 21
-          log-level: verbose
-          timeout: 120000
-          state-name: .ftp-deploy-sync-state-v2.json
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/.DS_Store
-
-      - name: Verificar resultado del FTP
-        if: always()
+      - name: Instalar lftp
         run: |
-          if [[ "${{ steps.ftp_primary.outcome }}" != "success" && "${{ steps.ftp_retry.outcome }}" != "success" ]]; then
-            echo "Los dos intentos de despliegue FTP fallaron."
-            exit 1
-          fi
+          sudo apt-get update
+          sudo apt-get install --yes lftp
+
+      - name: Sincronizar web/ con la app activa de Hostinger
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            echo "Intento FTP ${attempt}/3"
+            if lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" -p 21 "${FTP_HOST}" -e "
+              set ftp:ssl-allow no;
+              set ftp:list-options -a;
+              set net:timeout 120;
+              set net:max-retries 5;
+              set net:reconnect-interval-base 5;
+              mirror --reverse --only-newer --verbose --parallel=1 \
+                --exclude-glob .git* \
+                --exclude-glob node_modules/ \
+                --exclude-glob .DS_Store \
+                ./web/ /domains/futversus.com/nodejs/;
+              bye
+            "; then
+              echo "Sincronizacion FTP completada."
+              exit 0
+            fi
+
+            if [[ "${attempt}" -lt 3 ]]; then
+              sleep $((attempt * 15))
+            fi
+          done
+
+          echo "La sincronizacion FTP fallo despues de tres intentos."
+          exit 1
 
       - name: Resumen
         run: |
