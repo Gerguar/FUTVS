@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-13T10:19:14.405476+00:00",
-  "dato_curioso": "Memo Ochoa disputará su sexta Copa del Mundo a los 39 años, último torneo antes de retirarse",
+  "generated_at_utc": "2026-06-13T16:13:11.804433+00:00",
+  "dato_curioso": "USA marcó 4 goles vs Paraguay el 12/6: máximo histórico en una partida mundialista (vs 3 anterior en 1930)",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,40 +119,73 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "México 1.41 xG vs 0.07 Sudáfrica: anfitrión dominó ampliamente en debut"
+      "texto": "Corea del Sur (1.84 xG vs 2 goles): Superó expectativas ofensivas en su debut vs Chequia 2-1"
     },
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Brasil 2-1 Egipto: Endrick efectivo tras bajas ofensivas por lesión"
+      "texto": "México (1.41 xG vs 2 goles): Máxima eficiencia defensiva vs Sudáfrica con 0.07 xGA permitido"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Argentina lesionada: 11 de 26 jugadores con inconvenientes físicos en Honduras"
+      "texto": "USA (0.98 xG amistoso) vs Alemania: Perdió 1-2 generando menos xG en prep del Mundial"
     }
   ],
-  "alertas": [],
+  "alertas": [
+    {
+      "nivel": "critical",
+      "flag": "🚨",
+      "texto": "Diego López, operado en Madrid",
+      "fuente": "Marca",
+      "fuente_url": "https://www.marca.com/futbol/valencia/2026/06/10/diego-lopez-operado-madrid.html",
+      "fecha": "2026-06-10"
+    },
+    {
+      "nivel": "critical",
+      "flag": "🚨",
+      "texto": "Marcel Ruiz fue operado por su lesión en la rodilla e inicia su rehabilitación",
+      "fuente": "Record.com.mx",
+      "fuente_url": "https://www.record.com.mx/historia/marcel-ruiz-fue-operado-por-su-lesion-en-la-rodilla-e-inicia-su-rehabilitacion-2026061001434524041",
+      "fecha": "2026-06-10"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Selección: el lesionado que llegaría al debut, los que no y cómo es el vínculo con Bielsa",
+      "fuente": "Montevideo.com.uy",
+      "fuente_url": "https://www.montevideo.com.uy/Deportes/Seleccion-el-lesionado-que-llegaria-al-debut-los-que-no-y-como-es-el-vinculo-con-Bielsa-uc964990",
+      "fecha": "2026-06-12"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Senesi sustituye al lesionado Balerdi en la selección argentina para el Mundial",
+      "fuente": "Europapress.es",
+      "fuente_url": "https://www.europapress.es/deportes/futbol/mundial-00639/noticia-senesi-sustituye-lesionado-balerdi-seleccion-argentina-mundial-20260611214550.html",
+      "fecha": "2026-06-11"
+    }
+  ],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "España favorita con 18% probabilidades (xG 2.47 por 90 min en últimos ciclos)"
+      "texto": "España, Francia, Inglaterra lideran con 15-18% probabilidades de ganar el torneo según modelos Opta"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Grupo I (Francia-Senegal-Noruega-Irak): conflictivo con top-4 ranking promedio"
+      "texto": "Alemania 2-1 a USA en amistoso: completó 9 victorias consecutivas rumbo al Mundial 2026"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Brasil sin Neymar: ataque reconfigurado en torno a Vinícius Jr. para Mundial"
+      "texto": "35.9% de chances de que un campeón inédito gane; Brasil (6.1%) y Portugal (6.9%) resisten"
     },
     {
       "tipo": "other",
-      "flag": "📈",
-      "texto": "8 selecciones afectadas por lesiones: Brasil, Alemania, Argentina, Escocia, Austria, Irak"
+      "flag": "📊",
+      "texto": "Grupo A competitivo: México y Corea igualados 3pts diferencia goles; Sudáfrica debuta junio 18"
     }
   ],
   "oportunidades": [
