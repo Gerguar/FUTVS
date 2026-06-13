@@ -1,0 +1,44 @@
+name: diagnose-hostinger-ftp
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/diagnose-hostinger-ftp.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspectar rutas FTP visibles
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        shell: bash
+        run: |
+          inspect_path() {
+            local path="$1"
+            local label="${path:-/}"
+            local output
+            local status
+
+            set +e
+            output=$(curl --silent --show-error --max-time 120 \
+              --user "${FTP_USERNAME}:${FTP_PASSWORD}" \
+              --list-only "ftp://${FTP_HOST}/${path}" 2>&1)
+            status=$?
+            set -e
+
+            output=$(printf '%s' "$output" | tr '\r\n' ' ' | cut -c1-1500)
+            echo "::notice title=FTP ${label} (exit ${status})::${output}"
+          }
+
+          inspect_path ""
+          inspect_path "nodejs/"
+          inspect_path "domains/"
+          inspect_path "domains/futversus.com/"
+          inspect_path "domains/futversus.com/nodejs/"
