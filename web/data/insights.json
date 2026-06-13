@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-12T18:36:52.985038+00:00",
-  "dato_curioso": "En 2002-Qatar, 8.6% de jugadores llegaban con condiciones físicas deficientes; en 2026 las bajas confirmadas ya duplican Qatar 2022 y el torneo aún no comienza.",
+  "generated_at_utc": "2026-06-13T00:13:51.714708+00:00",
+  "dato_curioso": "México acumula brecha xG de 1.34 en inaugural vs Sudáfrica: una de las más amplias registradas en un primer partido mundialista.",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,12 +119,17 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Argentina supera xG en 18% — rendimiento ofensivo excepcional mantiene proyecciones de favorita"
+      "texto": "Corea del Sur: 1.84 xG + 2 goles. Excelente eficiencia en jornada inaugural."
+    },
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "México: 1.41 xG + 2 goles vs Sudáfrica (0.07 xG). Dominio estadístico histórico."
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Alemania bajo xG en 7% — margen de mejora en eficacia goleadora con esquema tácticamente sólido"
+      "texto": "Estados Unidos: 1 gol en amistoso vs Alemania. Solo 11 goles en 4 amistosos previos."
     }
   ],
   "alertas": [],
@@ -132,22 +137,22 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "España lidera xG 2.47 por 90min en ciclo 2024-26 — mayor generación de ocasiones del torneo"
+      "texto": "España lidera odds (18.8%), seguida Francia (16.66%). 59% probabilidad en top 3."
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Bajas confirmadas duplican Qatar 2022 — ligamentos cruzados 12.2% de casos vs 16.5% en Qatar"
+      "texto": "Alemania en racha: 9 victorias consecutivas antes del Mundial. Grupo E como favorita."
     },
     {
       "tipo": "other",
-      "flag": "⚡",
-      "texto": "Colombia derrotó Jordania 2-0 — ritmo competitivo alto, Jhon Arias determinante en preparación"
+      "flag": "📈",
+      "texto": "Argentina con 8 lesionados (incluidos descartes). Messi ausente en amistosos de junio."
     },
     {
       "tipo": "other",
-      "flag": "💎",
-      "texto": "Mbappé xG 0.68 por 90min en selección — proyección 3.8 goles si Francia llega a semifinales (38%)"
+      "flag": "📈",
+      "texto": "48 selecciones compiten. 357 jugadores con experiencia vs 891 debutantes en el torneo."
     }
   ],
   "oportunidades": [
@@ -155,9 +160,9 @@
       "partido": "Portugal vs RD del Congo",
       "competition": "Mundial 2026",
       "apuesta": "Empate",
-      "p_modelo": 29.4,
-      "p_mercado": 16.3,
-      "edge": 13.1,
+      "p_modelo": 29.5,
+      "p_mercado": 16.8,
+      "edge": 12.7,
       "xg_home": 1.08,
       "xg_away": null,
       "kickoff": "2026-06-17T17:00:00"
