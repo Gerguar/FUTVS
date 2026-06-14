@@ -31,20 +31,6 @@
       "gc": 1
     },
     {
-      "slug": "japón",
-      "nombre": "Japón",
-      "escudo": "https://flagcdn.com/w160/jp.png",
-      "forma": [
-        "W",
-        "W",
-        "W",
-        "W",
-        "W"
-      ],
-      "gf": 8,
-      "gc": 0
-    },
-    {
       "slug": "bélgica",
       "nombre": "Bélgica",
       "escudo": "https://flagcdn.com/w160/be.png",
@@ -112,6 +98,20 @@
         "W"
       ],
       "gf": 10,
+      "gc": 2
+    },
+    {
+      "slug": "japón",
+      "nombre": "Japón",
+      "escudo": "https://flagcdn.com/w160/jp.png",
+      "forma": [
+        "D",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "gf": 8,
       "gc": 2
     }
   ],
