@@ -217,12 +217,14 @@ def tweet_postmortem(home_name: str, away_name: str,
     fa = flag_for(away_name)
 
     if breve:
-        # Formato breve: omite la frase del pronostico, manda al sitio.
+        # Formato breve: header NEUTRO (no decimos "NO ACERTAMOS" suelto sin
+        # contexto del pronostico). Solo resultado + CTA a la web. Pensado
+        # para alternar con el completo en los no_acertados.
         return (
-            f"{header} · {competicion}\n"
+            f"📊 RESULTADO · {competicion}\n"
             f"{fh} {home_name} {goles_local}-{goles_visitante} {away_name} {fa}\n"
             f"\n"
-            f"📊 Más detalles del partido y nuestro pronóstico en la web - ↗ bio\n"
+            f"Más detalles del partido y nuestro pronóstico en la web - ↗ bio\n"
             f"{HASHTAGS}"
         )
 
