@@ -51,6 +51,11 @@
       "tweet_id": "2066045943775129790",
       "klass": "no_acertado",
       "breve": false
+    },
+    "82": {
+      "tweet_id": "2066249791286255860",
+      "klass": "acertado",
+      "breve": false
     }
   },
   "postmortem_miss_counter": 3,
