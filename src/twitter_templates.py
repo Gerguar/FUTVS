@@ -187,9 +187,16 @@ def tweet_postmortem(home_name: str, away_name: str,
                      prob_local: float, prob_empate: float, prob_visitante: float,
                      goles_local: int, goles_visitante: int,
                      partido_id: int,
-                     competicion: str = "MUNDIAL 2026") -> str:
+                     competicion: str = "MUNDIAL 2026",
+                     breve: bool = False) -> str:
     """
     Post-mortem. Texto solo lo justo (sin floreos).
+
+    Si breve=False (default): incluye el detalle del pronostico
+       (ej: "Dábamos como probable ganador a Suiza con el 79.7%").
+    Si breve=True: omite el detalle. Solo resultado + CTA a la web.
+       Usado para alternar fails (no_acertado) y no saturar de analisis
+       — un fail completo, el siguiente breve.
 
     ✅ ACERTAMOS · MUNDIAL 2026
     🇲🇽 México 2-0 🇿🇦 Sudáfrica
@@ -208,6 +215,16 @@ def tweet_postmortem(home_name: str, away_name: str,
 
     fh = flag_for(home_name)
     fa = flag_for(away_name)
+
+    if breve:
+        # Formato breve: omite la frase del pronostico, manda al sitio.
+        return (
+            f"{header} · {competicion}\n"
+            f"{fh} {home_name} {goles_local}-{goles_visitante} {away_name} {fa}\n"
+            f"\n"
+            f"📊 Más detalles del partido y nuestro pronóstico en la web - ↗ bio\n"
+            f"{HASHTAGS}"
+        )
 
     # Detalle del pronostico segun la clasificacion:
     # - ajustado  -> el modelo no marcaba un favorito claro.

@@ -296,16 +296,15 @@ def run_postmortem(state: dict, dry_run: bool, now: datetime) -> int:
         gV = int(r["goles_visitante"])
         klass = tt.classify_result(pH, pD, pA, gL, gV)
 
-        # Filtro "1 de cada 2 no_acertados"
+        # Alternancia "completo/breve" para no_acertados (cambio 13-jun-2026).
+        # Antes saltabamos 1 de cada 2 (no transparente). Ahora posteamos
+        # TODOS, alternando formato: counter par -> completo (con detalle del
+        # pronostico), counter impar -> breve (solo resultado + CTA web).
+        breve = False
         if klass == "no_acertado":
             cnt = int(state.get("postmortem_miss_counter", 0))
+            breve = (cnt % 2 == 1)
             state["postmortem_miss_counter"] = cnt + 1
-            # cnt % 2 == 0 -> primero, postear; cnt % 2 == 1 -> saltear
-            if cnt % 2 == 1:
-                # Lo marcamos posteado igual (no queremos verlo de nuevo en futuros runs)
-                posted[str(pid)] = {"tweet_id": None, "klass": klass, "skipped": True}
-                print(f"[postmortem] skip no_acertado partido_id={pid} (contador={cnt})")
-                continue
 
         h_name = eq.get(int(r["equipo_local_id"]), f"#{r['equipo_local_id']}")
         a_name = eq.get(int(r["equipo_visitante_id"]), f"#{r['equipo_visitante_id']}")
@@ -313,10 +312,12 @@ def run_postmortem(state: dict, dry_run: bool, now: datetime) -> int:
             home_name=h_name, away_name=a_name,
             prob_local=pH, prob_empate=pD, prob_visitante=pA,
             goles_local=gL, goles_visitante=gV, partido_id=pid,
+            breve=breve,
         )
-        print(f"[postmortem] partido_id={pid} {h_name} {gL}-{gV} {a_name} [{klass}]")
+        fmt = "breve" if breve else "completo"
+        print(f"[postmortem] partido_id={pid} {h_name} {gL}-{gV} {a_name} [{klass}/{fmt}]")
         tweet_id = post_tweet(text, dry_run=dry_run)
-        posted[str(pid)] = {"tweet_id": tweet_id, "klass": klass}
+        posted[str(pid)] = {"tweet_id": tweet_id, "klass": klass, "breve": breve}
         return 1  # solo 1 por run
 
     print("[postmortem] nada nuevo para postear")
