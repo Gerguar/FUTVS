@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-14T11:13:03.924171+00:00",
-  "dato_curioso": "Curazao es el país más pequeño en población (185.000 hab.) en jugar un Mundial, superando el récord anterior",
+  "generated_at_utc": "2026-06-14T16:13:04.638225+00:00",
+  "dato_curioso": "<cite index=\"70-3,70-5\">Brasil y Marruecos empataron 1-1 en debut del Mundial 2026, con Marruecos adelantándose primero</cite>. Resultado histórico para los Leones del Atlas en su segunda jornada de competencia.",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -117,32 +117,70 @@
   ],
   "xg_performance": [
     {
-      "tipo": "bajo",
-      "flag": "📉",
-      "texto": "Brasil empata vs Marruecos tras crear pocas chances netas en debut"
-    },
-    {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Corea del Sur sobrepasa xG: 1.69 xG, 2 goles. Rendimiento +0.3 vs expectativas"
+      "texto": "<cite index=\"38-1\">Bélgica goleó 5-0 a Túnez en su última preparación</cite>. Ofensiva contundente rumbo al torneo."
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "<cite index=\"48-1\">Francia perdió 2-1 ante Costa de Marfil en amistoso</cite>. Derrota sorpresiva previo al Mundial."
     }
   ],
-  "alertas": [],
+  "alertas": [
+    {
+      "nivel": "critical",
+      "flag": "🚨",
+      "texto": "Diego López, operado en Madrid",
+      "fuente": "Marca",
+      "fuente_url": "https://www.marca.com/futbol/valencia/2026/06/10/diego-lopez-operado-madrid.html",
+      "fecha": "2026-06-10"
+    },
+    {
+      "nivel": "critical",
+      "flag": "🚨",
+      "texto": "Marcel Ruiz fue operado por su lesión en la rodilla e inicia su rehabilitación",
+      "fuente": "Record.com.mx",
+      "fuente_url": "https://www.record.com.mx/historia/marcel-ruiz-fue-operado-por-su-lesion-en-la-rodilla-e-inicia-su-rehabilitacion-2026061001434524041",
+      "fecha": "2026-06-10"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Selección: el lesionado que llegaría al debut, los que no y cómo es el vínculo con Bielsa",
+      "fuente": "Montevideo.com.uy",
+      "fuente_url": "https://www.montevideo.com.uy/Deportes/Seleccion-el-lesionado-que-llegaria-al-debut-los-que-no-y-como-es-el-vinculo-con-Bielsa-uc964990",
+      "fecha": "2026-06-12"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Senesi sustituye al lesionado Balerdi en la selección argentina para el Mundial",
+      "fuente": "Europapress.es",
+      "fuente_url": "https://www.europapress.es/deportes/futbol/mundial-00639/noticia-senesi-sustituye-lesionado-balerdi-seleccion-argentina-mundial-20260611214550.html",
+      "fecha": "2026-06-11"
+    }
+  ],
   "tendencias": [
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Alemania: 9 victorias consecutivas. 4 triunfos en 2026 con 12 goles a favor"
-    },
-    {
-      "tipo": "over",
-      "flag": "📈",
-      "texto": "Colombia arranca con racha: 2-0 vs Jordania, Jhon Arias con doblete. Confianza máxima"
+      "texto": "<cite index=\"31-1\">Alemania atraviesa racha de 9 victorias consecutivas</cite>. Favorita en Grupo E."
     },
     {
       "tipo": "other",
-      "flag": "⚠️",
-      "texto": "Favoritos están mermados: Argentina con 11 de 26 con molestias, Brasil sin Rodrygo ni Estevao"
+      "flag": "📈",
+      "texto": "<cite index=\"63-1,63-2\">España favorita con 15.8% probabilidad vs Francia 15.6% y Argentina 15.3%</cite>. Ranking modelo estadístico actualizado."
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "<cite index=\"28-1,28-2\">Brasil 28.4% probabilidad campeón, Francia 22.1%, Argentina 19.8%</cite>. Modelos alternativos de pronósticos."
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "<cite index=\"2-4\">Colombia venció 2-0 a Jordania con Jhon Arias figura del partido</cite>. Llega en racha positiva."
     }
   ],
   "oportunidades": [

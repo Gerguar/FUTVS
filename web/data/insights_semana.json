@@ -2,22 +2,28 @@
   "week": "2026-W24",
   "noticias": [
     {
-      "titulo": "⚡ Empate en Portugal vs RD del Congo — edge de +13pp vs mercado",
-      "fuente": "FutVS Modelo",
-      "fecha": "2026-06-14",
-      "url": ""
+      "titulo": "Balogun: primer doblete (y Pichichi) en el Mundial 2026",
+      "fuente": "Marca",
+      "fecha": "2026-06-13",
+      "url": "https://www.marca.com/futbol/mundial/2026/06/13/balogun-primer-doblete-pichichi-mundial-2026-video.html"
     },
     {
-      "titulo": "🎯 Alemania: 9 victorias consecutivas. 4 triunfos en 2026 con 12 goles a favor",
-      "fuente": "FutVS Análisis",
-      "fecha": "2026-06-14",
-      "url": ""
+      "titulo": "Estados Unidos 4-1 Paraguay",
+      "fuente": "Marca",
+      "fecha": "2026-06-13",
+      "url": "https://www.marca.com/futbol/mundial/2026/06/13/estados-unidos-4-1-paraguay-resumen-mundial-2026-video.html"
     },
     {
-      "titulo": "📈 Colombia arranca con racha: 2-0 vs Jordania, Jhon Arias con doblete. Confianza máxima",
-      "fuente": "FutVS Análisis",
-      "fecha": "2026-06-14",
-      "url": ""
+      "titulo": "Oriana Sabatini opinó sobre las internas entre las mujeres de la selección argentina y fue contundente",
+      "fuente": "La Nacion",
+      "fecha": "2026-06-13",
+      "url": "https://www.lanacion.com.ar/espectaculos/oriana-sabatini-opino-sobre-las-internas-entre-las-mujeres-de-la-seleccion-argentina-y-fue-nid13062026/"
+    },
+    {
+      "titulo": "Encuentran un cadáver en el maletero de un coche aparcado frente al lugar de entrenamiento de la selección de Irán en…",
+      "fuente": "El Mundo",
+      "fecha": "2026-06-13",
+      "url": "https://www.elmundo.es/deportes/futbol/mundial-de-futbol/2026/06/13/6a2d0591e9cf4a300a8b458d.html"
     }
   ]
 }
