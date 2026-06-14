@@ -3,6 +3,20 @@
   "dato_curioso": "357 jugadores del Mundial 2026 tienen experiencia previa en Copas del Mundo; Craig Gordon de Escocia es el más longevo (43 años) y Gilberto Mora de México es el más joven (17 años)",
   "forma_reciente": [
     {
+      "slug": "alemania",
+      "nombre": "Alemania",
+      "escudo": "https://flagcdn.com/w160/de.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "gf": 19,
+      "gc": 6
+    },
+    {
       "slug": "argentina",
       "nombre": "Argentina",
       "escudo": "https://flagcdn.com/w160/ar.png",
@@ -15,20 +29,6 @@
       ],
       "gf": 14,
       "gc": 1
-    },
-    {
-      "slug": "alemania",
-      "nombre": "Alemania",
-      "escudo": "https://flagcdn.com/w160/de.png",
-      "forma": [
-        "W",
-        "W",
-        "W",
-        "W",
-        "W"
-      ],
-      "gf": 18,
-      "gc": 5
     },
     {
       "slug": "japón",
