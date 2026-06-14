@@ -44,9 +44,14 @@
       "tweet_id": "2066008195144024507",
       "klass": "acertado",
       "breve": false
+    },
+    "81": {
+      "tweet_id": "2066045943775129790",
+      "klass": "no_acertado",
+      "breve": false
     }
   },
-  "postmortem_miss_counter": 2,
+  "postmortem_miss_counter": 3,
   "lesion_snapshot": [],
   "lesion_posted_keys": [
     "112|Leonardo Balerdi",
