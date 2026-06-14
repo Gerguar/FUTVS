@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-13T22:39:26.879470+00:00",
-  "dato_curioso": "España es favorita según IA (18% probabilidades), superando Argentina campeona mundial con +1.12% en predicciones 2026",
+  "generated_at_utc": "2026-06-14T00:13:14.842200+00:00",
+  "dato_curioso": "México defiende invicto desde hace 16 años en partit inaugural: ganó 2-0 a Sudáfrica en 2010 y 2026, ambas en el Azteca",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,31 +119,20 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "Brasil goleó 6-2 a Panamá (31 may): 6 goles en aprovechamiento letal vs rival débil"
+      "texto": "Brasil 6-2 Panamá: xG 2.26 vs 6 goles. Clínica ofensiva de la Canarinha en preparación"
+    },
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Corea del Sur: 2 goles con xG 1.84. Overperformance de +0.16 en debut mundialista"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "España empató 1-1 vs Irak pero ganó 3-1 vs Perú: rendimiento irregular pre-torneo"
+      "texto": "México 2-0 Sudáfrica: 1.41 xG para el local. Eficiencia pero poco volumen de juego"
     }
   ],
   "alertas": [
-    {
-      "nivel": "critical",
-      "flag": "🚨",
-      "texto": "Diego López, operado en Madrid",
-      "fuente": "Marca",
-      "fuente_url": "https://www.marca.com/futbol/valencia/2026/06/10/diego-lopez-operado-madrid.html",
-      "fecha": "2026-06-10"
-    },
-    {
-      "nivel": "critical",
-      "flag": "🚨",
-      "texto": "Marcel Ruiz fue operado por su lesión en la rodilla e inicia su rehabilitación",
-      "fuente": "Record.com.mx",
-      "fuente_url": "https://www.record.com.mx/historia/marcel-ruiz-fue-operado-por-su-lesion-en-la-rodilla-e-inicia-su-rehabilitacion-2026061001434524041",
-      "fecha": "2026-06-10"
-    },
     {
       "nivel": "warning",
       "flag": "⚠️",
@@ -165,17 +154,22 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "Portugal 1.72 xG/partido (mejor ofensiva en amistosos), vence 2-1 a Nigeria"
+      "texto": "España favorita mundial: 16-26% probabilidad según Opta y Goldman Sachs. Invicta en eliminatorias"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "Colombia cerró preparación ganando 2-0 vs Jordania: equipo en racha defensiva sólida"
+      "texto": "Brasil sin Rodrygo y Militao. 6 jugadores confirmados como bajas por lesión. Ancelotti reconfigura ataque"
     },
     {
       "tipo": "other",
-      "flag": "⚠️",
-      "texto": "Argentina con 75% victorias en últimos 20 partidos; balance +1.14 xG por encuentro"
+      "flag": "📈",
+      "texto": "Argentina con 10.7-14% probabilidades. Base campeona de Qatar 2022 con Messi en últimas ventanas"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Francia 19% (Goldman) con semifinal predicha vs España. Profundidad de plantel sin Hugo Ekitiké"
     }
   ],
   "oportunidades": [
