@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-14T16:13:04.638225+00:00",
-  "dato_curioso": "<cite index=\"70-3,70-5\">Brasil y Marruecos empataron 1-1 en debut del Mundial 2026, con Marruecos adelantándose primero</cite>. Resultado histórico para los Leones del Atlas en su segunda jornada de competencia.",
+  "generated_at_utc": "2026-06-14T17:05:52.849494+00:00",
+  "dato_curioso": "357 jugadores del Mundial 2026 tienen experiencia previa en Copas del Mundo; Craig Gordon de Escocia es el más longevo (43 años) y Gilberto Mora de México es el más joven (17 años)",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -119,12 +119,12 @@
     {
       "tipo": "sobre",
       "flag": "🔥",
-      "texto": "<cite index=\"38-1\">Bélgica goleó 5-0 a Túnez en su última preparación</cite>. Ofensiva contundente rumbo al torneo."
+      "texto": "Colombia: 2 goles en 2 amistosos (2-0 vs Jordania, 3-1 vs Costa Rica) dominando con 63.5% posesión"
     },
     {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "<cite index=\"48-1\">Francia perdió 2-1 ante Costa de Marfil en amistoso</cite>. Derrota sorpresiva previo al Mundial."
+      "texto": "Brasil: empate 1-1 vs Marruecos pese a ser favorito; Marruecos superior en primer tiempo"
     }
   ],
   "alertas": [
@@ -165,22 +165,17 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "<cite index=\"31-1\">Alemania atraviesa racha de 9 victorias consecutivas</cite>. Favorita en Grupo E."
+      "texto": "Francia: 4 victorias en últimos 5 amistosos (80% efectividad) antes del torneo"
     },
     {
       "tipo": "other",
       "flag": "📈",
-      "texto": "<cite index=\"63-1,63-2\">España favorita con 15.8% probabilidad vs Francia 15.6% y Argentina 15.3%</cite>. Ranking modelo estadístico actualizado."
+      "texto": "Alemania: 9 victorias consecutivas en amistosos; Bélgica goleó 5-0 a Túnez; México venció 5-0 a Serbia"
     },
     {
       "tipo": "other",
-      "flag": "📈",
-      "texto": "<cite index=\"28-1,28-2\">Brasil 28.4% probabilidad campeón, Francia 22.1%, Argentina 19.8%</cite>. Modelos alternativos de pronósticos."
-    },
-    {
-      "tipo": "other",
-      "flag": "📈",
-      "texto": "<cite index=\"2-4\">Colombia venció 2-0 a Jordania con Jhon Arias figura del partido</cite>. Llega en racha positiva."
+      "flag": "🎯",
+      "texto": "España favorita con 15.6% probabilidad según Opta; Reino Unido (11.3%), Argentina (10.7%) como 2da favorita"
     }
   ],
   "oportunidades": [
