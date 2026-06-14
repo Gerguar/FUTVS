@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-06-14T08:13:09.690008+00:00",
-  "dato_curioso": "Mundial 2026 tendrá 104 partidos vs 64 anteriores. Craig Gordon (Escocia, 43 años) es el más viejo; Gilberto Mora (México, 17) el más joven",
+  "generated_at_utc": "2026-06-14T11:13:03.924171+00:00",
+  "dato_curioso": "Curazao es el país más pequeño en población (185.000 hab.) en jugar un Mundial, superando el récord anterior",
   "forma_reciente": [
     {
       "slug": "argentina",
@@ -117,19 +117,14 @@
   ],
   "xg_performance": [
     {
-      "tipo": "sobre",
-      "flag": "🔥",
-      "texto": "Argentina superó su xG en 18% durante el ciclo clasificatorio"
-    },
-    {
-      "tipo": "sobre",
-      "flag": "🔥",
-      "texto": "USA dominó a Paraguay con xG de 0.65-0.10 en primer tiempo"
-    },
-    {
       "tipo": "bajo",
       "flag": "📉",
-      "texto": "Paraguay generó solo 0.10 xG vs USA pese a conceder 4 goles"
+      "texto": "Brasil empata vs Marruecos tras crear pocas chances netas en debut"
+    },
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Corea del Sur sobrepasa xG: 1.69 xG, 2 goles. Rendimiento +0.3 vs expectativas"
     }
   ],
   "alertas": [],
@@ -137,22 +132,17 @@
     {
       "tipo": "over",
       "flag": "🎯",
-      "texto": "España favorita con 16.1% probabilidades según Opta (25k simulaciones)"
+      "texto": "Alemania: 9 victorias consecutivas. 4 triunfos en 2026 con 12 goles a favor"
     },
     {
-      "tipo": "other",
+      "tipo": "over",
       "flag": "📈",
-      "texto": "Francia 12.78%, Inglaterra 11.01%, Argentina 10.02% en modelos Opta"
+      "texto": "Colombia arranca con racha: 2-0 vs Jordania, Jhon Arias con doblete. Confianza máxima"
     },
     {
       "tipo": "other",
-      "flag": "📊",
-      "texto": "35.9% simulaciones: campeón es selección nunca ganadora de Mundial"
-    },
-    {
-      "tipo": "other",
-      "flag": "⚡",
-      "texto": "USA goleó 4-1 a Paraguay con control total en debut del Grupo D"
+      "flag": "⚠️",
+      "texto": "Favoritos están mermados: Argentina con 11 de 26 con molestias, Brasil sin Rodrygo ni Estevao"
     }
   ],
   "oportunidades": [
