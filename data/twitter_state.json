@@ -34,6 +34,10 @@
       "tweet_id": null,
       "klass": "no_acertado",
       "skipped": true
+    },
+    "79": {
+      "tweet_id": "2065955274377073147",
+      "klass": "ajustado"
     }
   },
   "postmortem_miss_counter": 2,
