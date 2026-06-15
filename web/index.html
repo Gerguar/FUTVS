@@ -2256,12 +2256,23 @@ function generateFactors(pron, homeName, awayName) {
     { icon:'🤕', name:'BAJAS',   val: pron.factor_bajas },
     { icon:'⚡', name:'GOLES',   val: pron.factor_goles },
   ]
+  // Los factor_* son DELTAS (positivo = ventaja local, negativo = visitante,
+  // 0 = parejo o sin datos). NO son probabilidades 0-100. Umbral ±1.5pp
+  // marca diferencia notable; ±0 a ±1.5 se considera parejo. Si el valor
+  // es null, mostramos 'Parejo' (sin sesgo). Antes leiamos como prob 0-100
+  // y los 0 caian como 'Visitante' (advLabel rojo equivocado).
   return defs.map(f => {
-    const v = f.val ?? 50
-    const adv = v >= 65 ? 'home' : v <= 40 ? 'away' : 'draw'
+    const v = f.val
+    let adv = 'draw'
+    if (v != null) {
+      if (v > 1.5)       adv = 'home'
+      else if (v < -1.5) adv = 'away'
+    }
+    const homeBadge = homeName || 'Local'
+    const awayBadge = awayName || 'Visitante'
     return {
       icon: f.icon, name: f.name, adv,
-      advLabel: adv==='home'?'Local':adv==='away'?'Visitante':'Parejo',
+      advLabel: adv === 'home' ? homeBadge : adv === 'away' ? awayBadge : 'Parejo',
       homeVal: v,
       desc: '',  // se llena en buildEnrichedFactors al abrir el detalle
     }
