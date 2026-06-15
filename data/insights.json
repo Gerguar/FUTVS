@@ -1,0 +1,204 @@
+{
+  "generated_at_utc": "2026-06-14T22:48:46.572429+00:00",
+  "dato_curioso": "Argelia ganó 1-0 a Países Bajos en Rotterdam rompiendo racha de 10 partidos invicto, con Luca Zidane (hijo de Zinédine) en defensa de los Zorros del Desierto",
+  "forma_reciente": [
+    {
+      "slug": "alemania",
+      "nombre": "Alemania",
+      "escudo": "https://flagcdn.com/w160/de.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "gf": 19,
+      "gc": 6
+    },
+    {
+      "slug": "argentina",
+      "nombre": "Argentina",
+      "escudo": "https://flagcdn.com/w160/ar.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "gf": 14,
+      "gc": 1
+    },
+    {
+      "slug": "bélgica",
+      "nombre": "Bélgica",
+      "escudo": "https://flagcdn.com/w160/be.png",
+      "forma": [
+        "W",
+        "W",
+        "D",
+        "W",
+        "W"
+      ],
+      "gf": 20,
+      "gc": 3
+    },
+    {
+      "slug": "portugal",
+      "nombre": "Portugal",
+      "escudo": "https://flagcdn.com/w160/pt.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "D",
+        "W"
+      ],
+      "gf": 15,
+      "gc": 3
+    },
+    {
+      "slug": "méxico",
+      "nombre": "México",
+      "escudo": "https://flagcdn.com/w160/mx.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "D"
+      ],
+      "gf": 11,
+      "gc": 2
+    },
+    {
+      "slug": "costa_de_marfil",
+      "nombre": "Costa de Marfil",
+      "escudo": "https://flagcdn.com/w160/ci.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "W"
+      ],
+      "gf": 12,
+      "gc": 4
+    },
+    {
+      "slug": "austria",
+      "nombre": "Austria",
+      "escudo": "https://flagcdn.com/w160/at.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "D",
+        "W"
+      ],
+      "gf": 10,
+      "gc": 2
+    },
+    {
+      "slug": "japón",
+      "nombre": "Japón",
+      "escudo": "https://flagcdn.com/w160/jp.png",
+      "forma": [
+        "D",
+        "W",
+        "W",
+        "W",
+        "W"
+      ],
+      "gf": 8,
+      "gc": 2
+    }
+  ],
+  "xg_performance": [
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Alemania: 9 triunfos consecutivos, 16 goles en últimos 5 partidos, solo 1 encajado"
+    },
+    {
+      "tipo": "bajo",
+      "flag": "📉",
+      "texto": "Países Bajos: dominó ante Argelia (xG superior) pero cayó 0-1 en Rotterdam"
+    },
+    {
+      "tipo": "sobre",
+      "flag": "🔥",
+      "texto": "Paraguay: goleó 4-0 a Nicaragua con 75% posesión y 15 disparos a puerta"
+    }
+  ],
+  "alertas": [
+    {
+      "nivel": "critical",
+      "flag": "🚨",
+      "texto": "Diego López, operado en Madrid",
+      "fuente": "Marca",
+      "fuente_url": "https://www.marca.com/futbol/valencia/2026/06/10/diego-lopez-operado-madrid.html",
+      "fecha": "2026-06-10"
+    },
+    {
+      "nivel": "critical",
+      "flag": "🚨",
+      "texto": "Marcel Ruiz fue operado por su lesión en la rodilla e inicia su rehabilitación",
+      "fuente": "Record.com.mx",
+      "fuente_url": "https://www.record.com.mx/historia/marcel-ruiz-fue-operado-por-su-lesion-en-la-rodilla-e-inicia-su-rehabilitacion-2026061001434524041",
+      "fecha": "2026-06-10"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Selección: el lesionado que llegaría al debut, los que no y cómo es el vínculo con Bielsa",
+      "fuente": "Montevideo.com.uy",
+      "fuente_url": "https://www.montevideo.com.uy/Deportes/Seleccion-el-lesionado-que-llegaria-al-debut-los-que-no-y-como-es-el-vinculo-con-Bielsa-uc964990",
+      "fecha": "2026-06-12"
+    },
+    {
+      "nivel": "warning",
+      "flag": "⚠️",
+      "texto": "Senesi sustituye al lesionado Balerdi en la selección argentina para el Mundial",
+      "fuente": "Europapress.es",
+      "fuente_url": "https://www.europapress.es/deportes/futbol/mundial-00639/noticia-senesi-sustituye-lesionado-balerdi-seleccion-argentina-mundial-20260611214550.html",
+      "fecha": "2026-06-11"
+    }
+  ],
+  "tendencias": [
+    {
+      "tipo": "over",
+      "flag": "🎯",
+      "texto": "Ecuador invicto: 19 partidos (8V-11E), goleó 3-0 a Guatemala en preparación"
+    },
+    {
+      "tipo": "over",
+      "flag": "🎯",
+      "texto": "Costa de Marfil en racha: venció 2-1 a Francia (favorita), ganó 7-0 a Guatemala"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Sorpresas en amistosos: 3 derrotas inesperadas (Francia, Países Bajos, USA vs Alemania)"
+    },
+    {
+      "tipo": "other",
+      "flag": "📈",
+      "texto": "Brasil y Argentina ganaron amistosos (2-1 Egipto, 2-0 Honduras) ante dudas por lesiones"
+    }
+  ],
+  "oportunidades": [
+    {
+      "partido": "Portugal vs RD del Congo",
+      "competition": "Mundial 2026",
+      "apuesta": "Empate",
+      "p_modelo": 29.5,
+      "p_mercado": 16.7,
+      "edge": 12.8,
+      "xg_home": 1.08,
+      "xg_away": null,
+      "kickoff": "2026-06-17T17:00:00"
+    }
+  ]
+}
