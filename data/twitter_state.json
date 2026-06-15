@@ -68,6 +68,11 @@
       "tweet_id": "2066340340873769238",
       "klass": "no_acertado",
       "breve": true
+    },
+    "85": {
+      "tweet_id": "2066378109532999684",
+      "klass": "acertado",
+      "breve": false
     }
   },
   "postmortem_miss_counter": 4,
