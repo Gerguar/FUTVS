@@ -73,20 +73,6 @@
       "gc": 2
     },
     {
-      "slug": "costa_de_marfil",
-      "nombre": "Costa de Marfil",
-      "escudo": "https://flagcdn.com/w160/ci.png",
-      "forma": [
-        "W",
-        "W",
-        "W",
-        "L",
-        "W"
-      ],
-      "gf": 12,
-      "gc": 4
-    },
-    {
       "slug": "austria",
       "nombre": "Austria",
       "escudo": "https://flagcdn.com/w160/at.png",
@@ -99,6 +85,20 @@
       ],
       "gf": 10,
       "gc": 2
+    },
+    {
+      "slug": "costa_de_marfil",
+      "nombre": "Costa de Marfil",
+      "escudo": "https://flagcdn.com/w160/ci.png",
+      "forma": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "L"
+      ],
+      "gf": 10,
+      "gc": 4
     },
     {
       "slug": "japón",
